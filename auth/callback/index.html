@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RiftSkin - Account</title>
+  <style>
+    :root {
+      --bg-top: #0c1626;
+      --bg-bottom: #16293e;
+      --panel: rgba(43, 67, 93, 0.88);
+      --stroke: #48607b;
+      --text-main: #edf3fb;
+      --text-sub: #a9bbd0;
+      --ok: #5aa2c7;
+      --ok-soft: #2a536a;
+      --danger: #ff6f82;
+      --input-bg: #2a435b;
+      --input-stroke: #43627f;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Avenir Next", "Segoe UI", sans-serif;
+      background: radial-gradient(circle at 80% -10%, rgba(74,122,168,.25), transparent 46%),
+                  radial-gradient(circle at -10% 110%, rgba(46,82,118,.28), transparent 38%),
+                  linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
+      color: var(--text-main);
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+    .card {
+      width: min(760px, 100%);
+      border: 1px solid var(--stroke);
+      background: var(--panel);
+      border-radius: 22px;
+      padding: 34px 28px;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.28);
+      text-align: center;
+    }
+    .logo {
+      width: 92px;
+      height: 92px;
+      object-fit: contain;
+      margin: 0 auto 14px;
+      display: block;
+    }
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(28px, 5vw, 40px);
+      line-height: 1.08;
+    }
+    p {
+      margin: 0 auto 16px;
+      max-width: 620px;
+      color: var(--text-sub);
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    .badge {
+      margin: 20px auto 0;
+      display: inline-block;
+      border-radius: 999px;
+      border: 1px solid #5f86a8;
+      background: linear-gradient(180deg, var(--ok), var(--ok-soft));
+      color: #eff7ff;
+      padding: 9px 16px;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 12px;
+    }
+    form {
+      margin: 18px auto 0;
+      max-width: 520px;
+      text-align: left;
+    }
+    label {
+      display: block;
+      margin: 0 0 8px;
+      color: #d9e8f8;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    input {
+      width: 100%;
+      height: 48px;
+      border-radius: 10px;
+      border: 1px solid var(--input-stroke);
+      background: var(--input-bg);
+      color: #eef6ff;
+      font-size: 16px;
+      padding: 0 14px;
+      margin-bottom: 12px;
+      outline: none;
+    }
+    button {
+      width: 100%;
+      height: 48px;
+      border: 1px solid #5f86a8;
+      border-radius: 10px;
+      background: linear-gradient(180deg, var(--ok), var(--ok-soft));
+      color: #eff7ff;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .msg { margin-top: 12px; font-size: 14px; line-height: 1.4; }
+    .msg.error { color: var(--danger); }
+    .msg.ok { color: #7ce6c0; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <img class="logo" src="https://bvajoufrxxntivxghdgs.supabase.co/storage/v1/object/public/email-assets/icon.png" alt="RiftSkin logo" />
+
+    <section id="confirm-view" class="hidden">
+      <h1>Email confirmed</h1>
+      <p>Your email address has been confirmed.<br />You can now return to RiftSkin and click <strong>I've confirmed</strong>.</p>
+      <div class="badge">Account Ready</div>
+    </section>
+
+    <section id="recovery-view" class="hidden">
+      <h1>Choose a new password</h1>
+      <p>Enter your new RiftSkin password, then return to the app and sign in.</p>
+      <form id="reset-form">
+        <label for="password">New password</label>
+        <input id="password" type="password" minlength="8" required />
+        <label for="confirm-password">Confirm password</label>
+        <input id="confirm-password" type="password" minlength="8" required />
+        <button id="submit-btn" type="submit">Update password</button>
+        <div id="message" class="msg"></div>
+      </form>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "https://bvajoufrxxntivxghdgs.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_rY0OywIhbXTT8cYXJUZBZA_6URk4FUe";
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const confirmView = document.getElementById("confirm-view");
+    const recoveryView = document.getElementById("recovery-view");
+    const form = document.getElementById("reset-form");
+    const passwordInput = document.getElementById("password");
+    const confirmInput = document.getElementById("confirm-password");
+    const submitBtn = document.getElementById("submit-btn");
+    const messageEl = document.getElementById("message");
+
+    function parseHashParams() {
+      const hash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : "";
+      const params = new URLSearchParams(hash);
+      return {
+        accessToken: params.get("access_token") || "",
+        refreshToken: params.get("refresh_token") || "",
+        type: params.get("type") || ""
+      };
+    }
+
+    function setMessage(type, text) {
+      messageEl.className = "msg " + type;
+      messageEl.textContent = text;
+    }
+
+    async function init() {
+      const { accessToken, refreshToken, type } = parseHashParams();
+
+      if (type === "recovery") {
+        recoveryView.classList.remove("hidden");
+        if (!accessToken || !refreshToken) {
+          setMessage("error", "Invalid or expired reset link. Please request a new one.");
+          submitBtn.disabled = true;
+          return;
+        }
+        const { error } = await supabaseClient.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken
+        });
+        if (error) {
+          setMessage("error", error.message || "Reset session could not be initialized.");
+          submitBtn.disabled = true;
+          return;
+        }
+        return;
+      }
+
+      // default view: signup/email confirmation callback
+      confirmView.classList.remove("hidden");
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      setMessage("", "");
+      const password = passwordInput.value;
+      const confirm = confirmInput.value;
+      if (password.length < 8) {
+        setMessage("error", "Password must contain at least 8 characters.");
+        return;
+      }
+      if (password !== confirm) {
+        setMessage("error", "Passwords do not match.");
+        return;
+      }
+      submitBtn.disabled = true;
+      const { error } = await supabaseClient.auth.updateUser({ password });
+      submitBtn.disabled = false;
+      if (error) {
+        setMessage("error", error.message || "Could not update password.");
+        return;
+      }
+      setMessage("ok", "Password updated successfully. You can now return to RiftSkin.");
+      form.reset();
+    });
+
+    init();
+  </script>
+</body>
+</html>

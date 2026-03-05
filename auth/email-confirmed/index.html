@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RiftSkin - Email confirmed</title>
+  <style>
+    :root {
+      --bg-top: #0c1626;
+      --bg-bottom: #16293e;
+      --panel: rgba(43, 67, 93, 0.88);
+      --stroke: #48607b;
+      --text-main: #edf3fb;
+      --text-sub: #a9bbd0;
+      --ok: #5aa2c7;
+      --ok-soft: #2a536a;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Avenir Next", "Segoe UI", sans-serif;
+      background: radial-gradient(circle at 80% -10%, rgba(74, 122, 168, 0.25), transparent 46%),
+                  radial-gradient(circle at -10% 110%, rgba(46, 82, 118, 0.28), transparent 38%),
+                  linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
+      color: var(--text-main);
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .card {
+      width: min(760px, 100%);
+      border: 1px solid var(--stroke);
+      background: var(--panel);
+      border-radius: 22px;
+      padding: 34px 28px;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.28);
+      text-align: center;
+    }
+
+    .logo {
+      width: 92px;
+      height: 92px;
+      object-fit: contain;
+      margin: 0 auto 14px;
+      display: block;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(28px, 5vw, 40px);
+      line-height: 1.08;
+      letter-spacing: 0.2px;
+    }
+
+    p {
+      margin: 0 auto;
+      max-width: 620px;
+      color: var(--text-sub);
+      font-size: 18px;
+      line-height: 1.5;
+    }
+
+    .ok {
+      margin: 20px auto 0;
+      display: inline-block;
+      border-radius: 999px;
+      border: 1px solid #5f86a8;
+      background: linear-gradient(180deg, var(--ok), var(--ok-soft));
+      color: #eff7ff;
+      padding: 9px 16px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      font-size: 12px;
+    }
+
+    .small {
+      margin-top: 18px;
+      font-size: 14px;
+      color: #c8d8ea;
+      opacity: 0.95;
+    }
+
+    .small code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      color: #edf6ff;
+      background: rgba(9, 15, 24, 0.35);
+      border: 1px solid #3a5069;
+      border-radius: 8px;
+      padding: 1px 6px;
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <img class="logo" src="https://bvajoufrxxntivxghdgs.supabase.co/storage/v1/object/public/email-assets/icon.png" alt="RiftSkin logo" />
+    <h1>Email confirmed</h1>
+    <p>Your email address has been confirmed.<br />You can now return to RiftSkin and click <strong>I've confirmed</strong>.</p>
+    <div class="ok">Account Ready</div>
+    <p class="small">French: Votre adresse e-mail est confirmee. Retournez dans RiftSkin et cliquez sur <code>J'ai confirme</code>.</p>
+  </main>
+</body>
+</html>
