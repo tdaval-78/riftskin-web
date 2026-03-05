@@ -40,6 +40,15 @@ Edit `/assets/config.js`:
 - Redirect URL: `https://riftskin.com/auth/callback`
 - Email template links should point to `https://riftskin.com/auth/callback`
 - `profiles` table must exist (for unique username check during sign-up)
+- Run SQL bootstrap: [supabase/activation_keys.sql](/Users/thomasdaval/Desktop/riftskin-web/supabase/activation_keys.sql)
+- Add yourself to `app_admins` (SQL comment at bottom of the file)
+
+## Activation key flow
+
+- Admin creates keys from `/account.html` (admin panel)
+- User logs in and redeems key from `/account.html`
+- Access state is stored in `user_access`
+- App-side enforcement should call Supabase RPC `has_active_access()` at login/startup
 
 ## Deploy
 

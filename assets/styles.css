@@ -395,6 +395,53 @@ textarea {
   color: var(--ok);
 }
 
+.key-box {
+  margin-top: 10px;
+  border: 1px solid #4f83b3;
+  border-radius: 10px;
+  background: rgba(14, 31, 49, 0.88);
+  color: #d6ebff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 10px 12px;
+  word-break: break-all;
+}
+
+.keys-table-wrap {
+  overflow: auto;
+  border: 1px solid #426283;
+  border-radius: 12px;
+  background: rgba(17, 34, 52, 0.55);
+}
+
+.keys-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 760px;
+}
+
+.keys-table th,
+.keys-table td {
+  text-align: left;
+  padding: 9px 10px;
+  border-bottom: 1px solid rgba(93, 128, 161, 0.22);
+  font-size: 0.86rem;
+}
+
+.keys-table th {
+  color: #d7e8fa;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.45px;
+  background: rgba(25, 47, 71, 0.72);
+}
+
+.keys-table td {
+  color: #b9d0e8;
+}
+
 .footer {
   margin-top: 20px;
   border: 1px solid var(--stroke);

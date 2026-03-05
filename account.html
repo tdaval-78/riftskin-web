@@ -63,11 +63,66 @@
       <article class="panel" data-logged-in style="display:none; margin-top: 12px;">
         <h3 data-i18n="account_connected_title">Connected account</h3>
         <p class="subtle"><span data-i18n="account_connected_as">Signed in as</span> <strong data-session-email>-</strong></p>
-        <div class="field-row" style="margin-top: 10px;">
+
+        <div class="panel" style="margin-top:12px;">
+          <h3>Activation access</h3>
+          <p class="subtle">Your software access is controlled by activation keys.</p>
+          <div class="notice">Status: <span class="status-badge" data-access-status>Checking...</span></div>
+          <div class="subtle" data-access-meta style="margin-top:6px;"></div>
+
+          <form data-redeem-form style="margin-top:12px;">
+            <div class="field-row">
+              <input type="text" name="key" placeholder="Activation key (example: ABCD-EFGH-IJKL-MNOP)" required />
+              <button class="btn btn-primary" type="submit">Activate key</button>
+            </div>
+            <div class="msg" data-redeem-msg></div>
+          </form>
+        </div>
+
+        <div class="field-row" style="margin-top: 12px;">
           <button class="btn btn-ghost" type="button" data-signout data-i18n="account_signout">Sign out</button>
           <a class="btn btn-ghost" href="/support.html" data-i18n="account_need_help">Need help</a>
         </div>
         <div class="msg" data-session-msg></div>
+      </article>
+
+      <article class="panel" data-admin-only style="display:none; margin-top: 12px;">
+        <h3>Admin - Activation key generator</h3>
+        <p class="subtle">Create private keys for friends/testers. They can redeem on this page after login.</p>
+
+        <form data-admin-create-key>
+          <div class="field-row">
+            <input type="email" name="for_email" placeholder="Optional email target" />
+            <input type="text" name="note" placeholder="Optional note (friend name, group, etc.)" />
+          </div>
+          <div class="field-row">
+            <input type="number" name="max_uses" min="1" max="500" step="1" value="1" placeholder="Max uses" required />
+            <input type="number" name="valid_days" min="1" max="3650" step="1" value="30" placeholder="Key validity in days" required />
+          </div>
+          <div class="field-row">
+            <input type="number" name="grant_days" min="1" max="3650" step="1" placeholder="Access duration in days (empty = no expiry)" />
+            <button class="btn btn-primary" type="submit">Generate key</button>
+          </div>
+          <div class="msg" data-admin-create-msg></div>
+          <div class="key-box" data-admin-key-output style="display:none;"></div>
+        </form>
+
+        <h3 style="margin-top:16px;">Recent keys</h3>
+        <div class="keys-table-wrap">
+          <table class="keys-table" data-admin-keys-table>
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Uses</th>
+                <th>Expires key</th>
+                <th>Access duration</th>
+                <th>Target</th>
+              </tr>
+            </thead>
+            <tbody data-admin-keys-body></tbody>
+          </table>
+        </div>
+        <div class="msg" data-admin-list-msg></div>
       </article>
 
       <div class="notice" style="margin-top:10px;" data-i18n="account_callback_notice">
