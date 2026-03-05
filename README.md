@@ -13,6 +13,13 @@ Marketing + account site for RiftSkin (static HTML/CSS/JS), deployed on Vercel.
 - `/auth/callback` Supabase callback page (email confirmation + password reset form)
 - `/auth/email-confirmed` Optional static confirmation page
 
+## Languages
+
+- Supported: English, French, Spanish, Portuguese, Chinese (Mandarin)
+- Auto language selection based on browser locale
+- Manual language selector in top navigation
+- User choice persisted in `localStorage` key `riftskin_lang`
+
 ## Configuration
 
 Edit `/assets/config.js`:

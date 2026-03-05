@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>RiftSkin - Account</title>
+  <title data-i18n="cb_title">RiftSkin - Account</title>
   <style>
     :root {
       --bg-top: #0c1626;
@@ -116,61 +116,67 @@
     <img class="logo" src="https://bvajoufrxxntivxghdgs.supabase.co/storage/v1/object/public/email-assets/icon.png" alt="RiftSkin logo" />
 
     <section id="confirm-view" class="hidden">
-      <h1>Email confirmed</h1>
-      <p>Your email address has been confirmed.<br />You can now return to RiftSkin and click <strong>I've confirmed</strong>.</p>
-      <div class="badge">Account Ready</div>
+      <h1 data-i18n="cb_confirm_h1">Email confirmed</h1>
+      <p data-i18n-html="cb_confirm_p_html">Your email address has been confirmed.</p>
+      <div class="badge" data-i18n="cb_badge">Account Ready</div>
     </section>
 
     <section id="recovery-view" class="hidden">
-      <h1>Choose a new password</h1>
-      <p>Enter your new RiftSkin password, then return to the app and sign in.</p>
+      <h1 data-i18n="cb_recovery_h1">Choose a new password</h1>
+      <p data-i18n="cb_recovery_p">Enter your new RiftSkin password, then return to the app and sign in.</p>
       <form id="reset-form">
-        <label for="password">New password</label>
+        <label for="password" data-i18n="cb_new_password">New password</label>
         <input id="password" type="password" minlength="8" required />
-        <label for="confirm-password">Confirm password</label>
+        <label for="confirm-password" data-i18n="cb_confirm_password">Confirm password</label>
         <input id="confirm-password" type="password" minlength="8" required />
-        <button id="submit-btn" type="submit">Update password</button>
+        <button id="submit-btn" type="submit" data-i18n="cb_update_password">Update password</button>
         <div id="message" class="msg"></div>
       </form>
     </section>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/assets/translations.js"></script>
+  <script src="/assets/i18n.js"></script>
   <script>
     const SUPABASE_URL = "https://bvajoufrxxntivxghdgs.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_rY0OywIhbXTT8cYXJUZBZA_6URk4FUe";
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const confirmView = document.getElementById("confirm-view");
-    const recoveryView = document.getElementById("recovery-view");
-    const form = document.getElementById("reset-form");
-    const passwordInput = document.getElementById("password");
-    const confirmInput = document.getElementById("confirm-password");
-    const submitBtn = document.getElementById("submit-btn");
-    const messageEl = document.getElementById("message");
+    const confirmView = document.getElementById('confirm-view');
+    const recoveryView = document.getElementById('recovery-view');
+    const form = document.getElementById('reset-form');
+    const passwordInput = document.getElementById('password');
+    const confirmInput = document.getElementById('confirm-password');
+    const submitBtn = document.getElementById('submit-btn');
+    const messageEl = document.getElementById('message');
+
+    function t(key) {
+      return window.RiftSkinI18n ? window.RiftSkinI18n.t(key) : key;
+    }
 
     function parseHashParams() {
-      const hash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : "";
+      const hash = window.location.hash.startsWith('#') ? window.location.hash.slice(1) : '';
       const params = new URLSearchParams(hash);
       return {
-        accessToken: params.get("access_token") || "",
-        refreshToken: params.get("refresh_token") || "",
-        type: params.get("type") || ""
+        accessToken: params.get('access_token') || '',
+        refreshToken: params.get('refresh_token') || '',
+        type: params.get('type') || ''
       };
     }
 
     function setMessage(type, text) {
-      messageEl.className = "msg " + type;
+      messageEl.className = 'msg ' + type;
       messageEl.textContent = text;
     }
 
     async function init() {
       const { accessToken, refreshToken, type } = parseHashParams();
 
-      if (type === "recovery") {
-        recoveryView.classList.remove("hidden");
+      if (type === 'recovery') {
+        recoveryView.classList.remove('hidden');
         if (!accessToken || !refreshToken) {
-          setMessage("error", "Invalid or expired reset link. Please request a new one.");
+          setMessage('error', t('cb_invalid_reset'));
           submitBtn.disabled = true;
           return;
         }
@@ -179,38 +185,37 @@
           refresh_token: refreshToken
         });
         if (error) {
-          setMessage("error", error.message || "Reset session could not be initialized.");
+          setMessage('error', error.message || t('cb_reset_session_failed'));
           submitBtn.disabled = true;
           return;
         }
         return;
       }
 
-      // default view: signup/email confirmation callback
-      confirmView.classList.remove("hidden");
+      confirmView.classList.remove('hidden');
     }
 
-    form.addEventListener("submit", async (event) => {
+    form.addEventListener('submit', async (event) => {
       event.preventDefault();
-      setMessage("", "");
+      setMessage('', '');
       const password = passwordInput.value;
       const confirm = confirmInput.value;
       if (password.length < 8) {
-        setMessage("error", "Password must contain at least 8 characters.");
+        setMessage('error', t('cb_pwd_min'));
         return;
       }
       if (password !== confirm) {
-        setMessage("error", "Passwords do not match.");
+        setMessage('error', t('cb_pwd_mismatch'));
         return;
       }
       submitBtn.disabled = true;
       const { error } = await supabaseClient.auth.updateUser({ password });
       submitBtn.disabled = false;
       if (error) {
-        setMessage("error", error.message || "Could not update password.");
+        setMessage('error', error.message || t('cb_pwd_update_failed'));
         return;
       }
-      setMessage("ok", "Password updated successfully. You can now return to RiftSkin.");
+      setMessage('ok', t('cb_pwd_updated'));
       form.reset();
     });
 

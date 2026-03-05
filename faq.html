@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>RiftSkin FAQ</title>
+  <title data-i18n="faq_title">RiftSkin FAQ</title>
   <link rel="stylesheet" href="/assets/styles.css" />
 </head>
 <body data-page="faq">
@@ -12,68 +12,70 @@
       <a href="/" class="brand"><img src="/assets/logo.png" alt="RiftSkin logo" />RiftSkin</a>
       <button class="btn btn-ghost burger" data-burger type="button">Menu</button>
       <nav class="nav" data-nav>
-        <a data-link="home" href="/">Home</a>
-        <a data-link="pricing" href="/pricing.html">Pricing</a>
-        <a data-link="faq" href="/faq.html">FAQ</a>
-        <a data-link="support" href="/support.html">Support</a>
-        <a data-link="legal" href="/legal.html">Legal</a>
-        <a data-link="account" href="/account.html">My account</a>
+        <a data-link="home" href="/" data-i18n="nav_home">Home</a>
+        <a data-link="pricing" href="/pricing.html" data-i18n="nav_pricing">Pricing</a>
+        <a data-link="faq" href="/faq.html" data-i18n="nav_faq">FAQ</a>
+        <a data-link="support" href="/support.html" data-i18n="nav_support">Support</a>
+        <a data-link="legal" href="/legal.html" data-i18n="nav_legal">Legal</a>
+        <a data-link="account" href="/account.html" data-i18n="nav_account">My account</a>
       </nav>
       <div class="cta-row">
-        <a class="btn btn-primary" href="/pricing.html">Start trial</a>
+        <a class="btn btn-primary" href="/pricing.html" data-i18n="pricing_trial_btn">Start trial</a>
       </div>
     </header>
 
     <section class="section">
-      <h2>Frequently asked questions</h2>
+      <h2 data-i18n="faq_h2">Frequently asked questions</h2>
       <div class="grid-2">
         <article class="faq-item">
-          <h3>Is there a free trial?</h3>
-          <p>Yes. Every account gets 7 days free. After that, access is 20 EUR/month.</p>
+          <h3 data-i18n="faq_q1_t">Is there a free trial?</h3>
+          <p data-i18n="faq_q1_d">Yes. Every account gets 7 days free. After that, access is 20 EUR/month.</p>
         </article>
         <article class="faq-item">
-          <h3>What does subscription unlock?</h3>
-          <p>Active subscription unlocks RiftSkin software access and related account-based features.</p>
+          <h3 data-i18n="faq_q2_t">What does subscription unlock?</h3>
+          <p data-i18n="faq_q2_d">Active subscription unlocks RiftSkin software access and related account-based features.</p>
         </article>
         <article class="faq-item">
-          <h3>Which files can I import?</h3>
-          <p>Use skin packages supported by RiftSkin import workflow. Follow the in-app instruction page for exact supported formats.</p>
+          <h3 data-i18n="faq_q3_t">Which files can I import?</h3>
+          <p data-i18n="faq_q3_d">Use skin packages supported by RiftSkin import workflow.</p>
         </article>
         <article class="faq-item">
-          <h3>Do I need to select default skin in game?</h3>
-          <p>Yes. For replacement to apply, select the champion's default skin in-game as instructed in RiftSkin.</p>
+          <h3 data-i18n="faq_q4_t">Do I need to select default skin in game?</h3>
+          <p data-i18n="faq_q4_d">Yes. For replacement to apply, select the champion's default skin in-game.</p>
         </article>
         <article class="faq-item">
-          <h3>Can I cancel anytime?</h3>
-          <p>Yes. Subscription can be canceled anytime from your billing portal once configured.</p>
+          <h3 data-i18n="faq_q5_t">Can I cancel anytime?</h3>
+          <p data-i18n="faq_q5_d">Yes. Subscription can be canceled anytime from your billing portal once configured.</p>
         </article>
         <article class="faq-item">
-          <h3>How do I reset my password?</h3>
-          <p>Go to <a href="/account.html">My account</a>, enter your email, and use “Forgot password”.</p>
+          <h3 data-i18n="faq_q6_t">How do I reset my password?</h3>
+          <p data-i18n="faq_q6_d">Go to My account, enter your email, and use Forgot password.</p>
         </article>
         <article class="faq-item">
-          <h3>Does RiftSkin support Windows?</h3>
-          <p>Current public workflow is focused on macOS app distribution and account-based access.</p>
+          <h3 data-i18n="faq_q7_t">Does RiftSkin support Windows?</h3>
+          <p data-i18n="faq_q7_d">Current public workflow is focused on macOS app distribution and account-based access.</p>
         </article>
         <article class="faq-item">
-          <h3>Who can see my account data?</h3>
-          <p>Account auth is handled through Supabase services. See legal and privacy section for details.</p>
+          <h3 data-i18n="faq_q8_t">Who can see my account data?</h3>
+          <p data-i18n="faq_q8_d">Account auth is handled through Supabase services. See legal and privacy section for details.</p>
         </article>
       </div>
     </section>
 
     <footer class="footer">
-      <div>© <span data-year></span> RiftSkin</div>
+      <div><span data-i18n="footer_rights">Copyright</span> © <span data-year></span> RiftSkin</div>
       <div class="links">
-        <a href="/">Home</a>
-        <a href="/pricing.html">Pricing</a>
-        <a href="/support.html">Support</a>
-        <a href="/legal.html">Legal</a>
-        <a href="/account.html">My account</a>
+        <a href="/" data-i18n="nav_home">Home</a>
+        <a href="/pricing.html" data-i18n="nav_pricing">Pricing</a>
+        <a href="/support.html" data-i18n="nav_support">Support</a>
+        <a href="/legal.html" data-i18n="nav_legal">Legal</a>
+        <a href="/account.html" data-i18n="nav_account">My account</a>
       </div>
     </footer>
   </div>
 
+  <script src="/assets/translations.js"></script>
+  <script src="/assets/i18n.js"></script>
   <script src="/assets/site.js"></script>
 </body>
 </html>

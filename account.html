@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>RiftSkin Account</title>
-  <meta name="description" content="Sign in to RiftSkin, create your account, and manage subscription access." />
+  <title data-i18n="account_title">RiftSkin Account</title>
+  <meta name="description" data-i18n-content="account_meta_desc" content="Sign in to RiftSkin, create your account, and manage subscription access." />
   <link rel="stylesheet" href="/assets/styles.css" />
 </head>
 <body data-page="account">
@@ -13,34 +13,34 @@
       <a href="/" class="brand"><img src="/assets/logo.png" alt="RiftSkin logo" />RiftSkin</a>
       <button class="btn btn-ghost burger" data-burger type="button">Menu</button>
       <nav class="nav" data-nav>
-        <a data-link="home" href="/">Home</a>
-        <a data-link="pricing" href="/pricing.html">Pricing</a>
-        <a data-link="faq" href="/faq.html">FAQ</a>
-        <a data-link="support" href="/support.html">Support</a>
-        <a data-link="legal" href="/legal.html">Legal</a>
-        <a data-link="account" href="/account.html">My account</a>
+        <a data-link="home" href="/" data-i18n="nav_home">Home</a>
+        <a data-link="pricing" href="/pricing.html" data-i18n="nav_pricing">Pricing</a>
+        <a data-link="faq" href="/faq.html" data-i18n="nav_faq">FAQ</a>
+        <a data-link="support" href="/support.html" data-i18n="nav_support">Support</a>
+        <a data-link="legal" href="/legal.html" data-i18n="nav_legal">Legal</a>
+        <a data-link="account" href="/account.html" data-i18n="nav_account">My account</a>
       </nav>
       <div class="cta-row">
-        <a class="btn btn-primary" href="/pricing.html" data-subscribe>Start free trial</a>
+        <a class="btn btn-primary" href="/pricing.html" data-subscribe data-i18n="account_cta_trial">Start free trial</a>
       </div>
     </header>
 
     <section class="section">
-      <h2>Account access</h2>
-      <p class="subtle">
+      <h2 data-i18n="account_h2">Account access</h2>
+      <p class="subtle" data-i18n="account_intro">
         Create your account, confirm your email, then sign in. Your subscription unlocks software access while active.
       </p>
-      <div class="notice">Session status: <span class="status-badge" data-account-status>Checking...</span></div>
+      <div class="notice"><span data-i18n="account_status_label">Session status</span>: <span class="status-badge" data-account-status>Checking...</span></div>
 
       <div class="grid-2" data-logged-out style="margin-top: 12px;">
         <article class="panel">
-          <h3>Sign in</h3>
+          <h3 data-i18n="account_signin_title">Sign in</h3>
           <form data-signin-form>
-            <input type="email" name="email" placeholder="Email" autocomplete="email" data-account-email required />
-            <input type="password" name="password" placeholder="Password" autocomplete="current-password" required />
+            <input type="email" name="email" data-i18n-placeholder="account_email_ph" placeholder="Email" autocomplete="email" data-account-email required />
+            <input type="password" name="password" data-i18n-placeholder="account_password_ph" placeholder="Password" autocomplete="current-password" required />
             <div class="field-row">
-              <button class="btn btn-primary" type="submit">Sign in</button>
-              <button class="btn btn-ghost" type="button" data-forgot>Forgot password</button>
+              <button class="btn btn-primary" type="submit" data-i18n="account_signin_btn">Sign in</button>
+              <button class="btn btn-ghost" type="button" data-forgot data-i18n="account_forgot_btn">Forgot password</button>
             </div>
             <div class="msg" data-msg></div>
             <div class="msg" data-forgot-msg></div>
@@ -48,51 +48,53 @@
         </article>
 
         <article class="panel">
-          <h3>Create account</h3>
+          <h3 data-i18n="account_signup_title">Create account</h3>
           <form data-signup-form>
-            <input type="text" name="username" placeholder="Username" minlength="3" maxlength="24" required />
-            <input type="email" name="email" placeholder="Email" autocomplete="email" required />
-            <input type="password" name="password" placeholder="Password (min 8 chars)" minlength="8" autocomplete="new-password" required />
-            <input type="password" name="confirm_password" placeholder="Confirm password" minlength="8" autocomplete="new-password" required />
-            <button class="btn btn-primary" type="submit">Create account</button>
+            <input type="text" name="username" data-i18n-placeholder="account_username_ph" placeholder="Username" minlength="3" maxlength="24" required />
+            <input type="email" name="email" data-i18n-placeholder="account_signup_email_ph" placeholder="Email" autocomplete="email" required />
+            <input type="password" name="password" data-i18n-placeholder="account_signup_password_ph" placeholder="Password (min 8 chars)" minlength="8" autocomplete="new-password" required />
+            <input type="password" name="confirm_password" data-i18n-placeholder="account_signup_confirm_ph" placeholder="Confirm password" minlength="8" autocomplete="new-password" required />
+            <button class="btn btn-primary" type="submit" data-i18n="account_signup_btn">Create account</button>
             <div class="msg" data-msg></div>
           </form>
         </article>
       </div>
 
       <article class="panel" data-logged-in style="display:none; margin-top: 12px;">
-        <h3>Connected account</h3>
-        <p class="subtle">Signed in as <strong data-session-email>-</strong></p>
+        <h3 data-i18n="account_connected_title">Connected account</h3>
+        <p class="subtle"><span data-i18n="account_connected_as">Signed in as</span> <strong data-session-email>-</strong></p>
         <div class="field-row">
-          <button class="btn btn-primary" type="button" data-subscribe>Manage subscription</button>
-          <button class="btn btn-ghost" type="button" data-open-portal>Open billing portal</button>
+          <button class="btn btn-primary" type="button" data-subscribe data-i18n="account_manage_sub">Manage subscription</button>
+          <button class="btn btn-ghost" type="button" data-open-portal data-i18n="account_open_portal">Open billing portal</button>
         </div>
         <div class="field-row" style="margin-top: 10px;">
-          <button class="btn btn-ghost" type="button" data-signout>Sign out</button>
-          <a class="btn btn-ghost" href="/support.html">Need help</a>
+          <button class="btn btn-ghost" type="button" data-signout data-i18n="account_signout">Sign out</button>
+          <a class="btn btn-ghost" href="/support.html" data-i18n="account_need_help">Need help</a>
         </div>
         <div class="msg" data-session-msg></div>
       </article>
 
-      <div class="notice" style="margin-top:10px;">
-        Confirmation and password reset emails redirect to <code>/auth/callback</code>.
+      <div class="notice" style="margin-top:10px;" data-i18n="account_callback_notice">
+        Confirmation and password reset emails redirect to /auth/callback.
       </div>
     </section>
 
     <footer class="footer">
-      <div>© <span data-year></span> RiftSkin</div>
+      <div><span data-i18n="footer_rights">Copyright</span> © <span data-year></span> RiftSkin</div>
       <div class="links">
-        <a href="/">Home</a>
-        <a href="/pricing.html">Pricing</a>
-        <a href="/faq.html">FAQ</a>
-        <a href="/support.html">Support</a>
-        <a href="/legal.html">Legal</a>
+        <a href="/" data-i18n="nav_home">Home</a>
+        <a href="/pricing.html" data-i18n="nav_pricing">Pricing</a>
+        <a href="/faq.html" data-i18n="nav_faq">FAQ</a>
+        <a href="/support.html" data-i18n="nav_support">Support</a>
+        <a href="/legal.html" data-i18n="nav_legal">Legal</a>
       </div>
     </footer>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/assets/config.js"></script>
+  <script src="/assets/translations.js"></script>
+  <script src="/assets/i18n.js"></script>
   <script src="/assets/site.js"></script>
   <script src="/assets/paddle.js"></script>
   <script src="/assets/account.js"></script>

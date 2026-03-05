@@ -6,6 +6,10 @@
   const accountEmail = document.querySelector('[data-session-email]');
   const accountEmailInput = document.querySelector('[data-account-email]');
 
+  function t(key) {
+    return window.RiftSkinI18n ? window.RiftSkinI18n.t(key) : key;
+  }
+
   function msg(target, text, type) {
     if (!target) return;
     target.textContent = text || '';
@@ -25,19 +29,19 @@
       if (loggedInView) loggedInView.style.display = 'block';
       if (accountEmail) accountEmail.textContent = user.email || '';
       if (accountEmailInput && user.email) accountEmailInput.value = user.email;
-      setStatus('Connected', 'ok');
+      setStatus(t('msg_status_connected'), 'ok');
       return;
     }
 
     if (loggedOutView) loggedOutView.style.display = 'grid';
     if (loggedInView) loggedInView.style.display = 'none';
     if (accountEmail) accountEmail.textContent = '-';
-    setStatus('Not connected', '');
+    setStatus(t('msg_status_not_connected'), '');
   }
 
   if (!window.supabase || !cfg.supabaseUrl || !cfg.supabaseAnonKey) {
     setSessionUi(null);
-    setStatus('Supabase config missing', 'error');
+    setStatus(t('msg_status_supabase_missing'), 'error');
     return;
   }
 
@@ -54,6 +58,10 @@
     setSessionUi(session);
   });
 
+  document.addEventListener('riftskin:language-changed', function () {
+    refreshSession();
+  });
+
   const signInForm = document.querySelector('[data-signin-form]');
   if (signInForm) {
     signInForm.addEventListener('submit', async function (e) {
@@ -62,15 +70,15 @@
       const password = signInForm.querySelector('[name="password"]').value;
       const out = signInForm.querySelector('[data-msg]');
 
-      msg(out, 'Signing in...');
+      msg(out, t('msg_signing_in'));
       const { error } = await supabaseClient.auth.signInWithPassword({ email: email, password: password });
       if (error) {
-        msg(out, error.message || 'Sign in failed.', 'error');
+        msg(out, error.message || t('msg_sign_in_failed'), 'error');
         return;
       }
 
       if (accountEmailInput) accountEmailInput.value = email;
-      msg(out, 'Signed in.', 'ok');
+      msg(out, t('msg_signed_in'), 'ok');
     });
   }
 
@@ -85,19 +93,19 @@
       const out = signUpForm.querySelector('[data-msg]');
 
       if (!/^[A-Za-z0-9_\-.]{3,24}$/.test(username)) {
-        msg(out, 'Username must be 3-24 chars (letters, numbers, _, -, .).', 'error');
+        msg(out, t('msg_username_rule'), 'error');
         return;
       }
       if (password.length < 8) {
-        msg(out, 'Password must be at least 8 characters.', 'error');
+        msg(out, t('msg_password_len'), 'error');
         return;
       }
       if (password !== confirm) {
-        msg(out, 'Passwords do not match.', 'error');
+        msg(out, t('msg_password_match'), 'error');
         return;
       }
 
-      msg(out, 'Checking username...');
+      msg(out, t('msg_checking_username'));
       const { data: taken, error: checkError } = await supabaseClient
         .from('profiles')
         .select('id')
@@ -106,18 +114,18 @@
 
       if (checkError) {
         if (checkError.code === 'PGRST205') {
-          msg(out, "Profiles table is missing. Run DB setup SQL before enabling sign up.", 'error');
+          msg(out, t('msg_profiles_missing'), 'error');
         } else {
-          msg(out, checkError.message || 'Username check failed.', 'error');
+          msg(out, checkError.message || t('msg_username_check_failed'), 'error');
         }
         return;
       }
       if (taken && taken.length > 0) {
-        msg(out, 'Username already taken.', 'error');
+        msg(out, t('msg_username_taken'), 'error');
         return;
       }
 
-      msg(out, 'Creating account...');
+      msg(out, t('msg_creating_account'));
       const { error } = await supabaseClient.auth.signUp({
         email: email,
         password: password,
@@ -128,12 +136,12 @@
       });
 
       if (error) {
-        msg(out, error.message || 'Sign up failed.', 'error');
+        msg(out, error.message || t('msg_signup_failed'), 'error');
         return;
       }
 
       if (accountEmailInput) accountEmailInput.value = email;
-      msg(out, 'Account created. Check your email to confirm your account.', 'ok');
+      msg(out, t('msg_account_created'), 'ok');
     });
   }
 
@@ -143,21 +151,21 @@
       const out = document.querySelector('[data-forgot-msg]');
       const email = (accountEmailInput && accountEmailInput.value.trim()) || '';
       if (!email || email.indexOf('@') === -1) {
-        msg(out, 'Enter your account email first.', 'error');
+        msg(out, t('msg_enter_email_first'), 'error');
         return;
       }
 
-      msg(out, 'Sending reset email...');
+      msg(out, t('msg_sending_reset'));
       const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
         redirectTo: window.location.origin + '/auth/callback'
       });
 
       if (error) {
-        msg(out, error.message || 'Reset request failed.', 'error');
+        msg(out, error.message || t('msg_reset_failed'), 'error');
         return;
       }
 
-      msg(out, 'Reset email sent. Check your inbox.', 'ok');
+      msg(out, t('msg_reset_sent'), 'ok');
     });
   }
 
@@ -167,10 +175,10 @@
       const out = document.querySelector('[data-session-msg]');
       const { error } = await supabaseClient.auth.signOut();
       if (error) {
-        msg(out, error.message || 'Sign out failed.', 'error');
+        msg(out, error.message || t('msg_signout_failed'), 'error');
         return;
       }
-      msg(out, 'Signed out.', 'ok');
+      msg(out, t('msg_signed_out'), 'ok');
       refreshSession();
     });
   }
@@ -184,7 +192,7 @@
       }
 
       const out = document.querySelector('[data-session-msg]');
-      msg(out, 'Customer portal URL is not configured yet.', 'error');
+      msg(out, t('msg_portal_missing'), 'error');
     });
   }
 })();

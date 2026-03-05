@@ -2,6 +2,10 @@
   const cfg = window.RiftSkinConfig || {};
   const alertEls = document.querySelectorAll('[data-checkout-alert]');
 
+  function t(key) {
+    return window.RiftSkinI18n ? window.RiftSkinI18n.t(key) : key;
+  }
+
   function setAlert(text, kind) {
     alertEls.forEach(function (el) {
       el.textContent = text;
@@ -35,13 +39,13 @@
     }
 
     if (!cfg.paddleClientToken || !cfg.paddlePriceId) {
-      setAlert('Checkout is not configured yet. Add your Paddle token/price in assets/config.js.', 'error');
+      setAlert(t('msg_checkout_not_configured'), 'error');
       return;
     }
 
     const loaded = await ensurePaddleLoaded();
     if (!loaded || !window.Paddle) {
-      setAlert('Unable to load Paddle checkout script.', 'error');
+      setAlert(t('msg_checkout_script_failed'), 'error');
       return;
     }
 
@@ -57,7 +61,7 @@
       });
       setAlert('');
     } catch (err) {
-      setAlert((err && err.message) ? err.message : 'Unable to open checkout.', 'error');
+      setAlert((err && err.message) ? err.message : t('msg_checkout_open_failed'), 'error');
     }
   }
 

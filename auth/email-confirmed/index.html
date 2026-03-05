@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>RiftSkin - Email confirmed</title>
+  <title data-i18n="ec_title">RiftSkin - Email confirmed</title>
   <style>
     :root {
       --bg-top: #0c1626;
@@ -75,31 +75,17 @@
       text-transform: uppercase;
       font-size: 12px;
     }
-
-    .small {
-      margin-top: 18px;
-      font-size: 14px;
-      color: #c8d8ea;
-      opacity: 0.95;
-    }
-
-    .small code {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      color: #edf6ff;
-      background: rgba(9, 15, 24, 0.35);
-      border: 1px solid #3a5069;
-      border-radius: 8px;
-      padding: 1px 6px;
-    }
   </style>
 </head>
 <body>
   <main class="card">
     <img class="logo" src="https://bvajoufrxxntivxghdgs.supabase.co/storage/v1/object/public/email-assets/icon.png" alt="RiftSkin logo" />
-    <h1>Email confirmed</h1>
-    <p>Your email address has been confirmed.<br />You can now return to RiftSkin and click <strong>I've confirmed</strong>.</p>
-    <div class="ok">Account Ready</div>
-    <p class="small">French: Votre adresse e-mail est confirmee. Retournez dans RiftSkin et cliquez sur <code>J'ai confirme</code>.</p>
+    <h1 data-i18n="ec_h1">Email confirmed</h1>
+    <p data-i18n-html="ec_p_html">Your email address has been confirmed.</p>
+    <div class="ok" data-i18n="ec_badge">Account Ready</div>
   </main>
+
+  <script src="/assets/translations.js"></script>
+  <script src="/assets/i18n.js"></script>
 </body>
 </html>
