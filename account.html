@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RiftSkin Account</title>
+  <meta name="description" content="Sign in to RiftSkin, create your account, and manage subscription access." />
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+<body data-page="account">
+  <div class="site-wrap">
+    <header class="topbar">
+      <a href="/" class="brand"><img src="/assets/logo.png" alt="RiftSkin logo" />RiftSkin</a>
+      <button class="btn btn-ghost burger" data-burger type="button">Menu</button>
+      <nav class="nav" data-nav>
+        <a data-link="home" href="/">Home</a>
+        <a data-link="pricing" href="/pricing.html">Pricing</a>
+        <a data-link="faq" href="/faq.html">FAQ</a>
+        <a data-link="support" href="/support.html">Support</a>
+        <a data-link="legal" href="/legal.html">Legal</a>
+        <a data-link="account" href="/account.html">My account</a>
+      </nav>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="/pricing.html" data-subscribe>Start free trial</a>
+      </div>
+    </header>
+
+    <section class="section">
+      <h2>Account access</h2>
+      <p class="subtle">
+        Create your account, confirm your email, then sign in. Your subscription unlocks software access while active.
+      </p>
+      <div class="notice">Session status: <span class="status-badge" data-account-status>Checking...</span></div>
+
+      <div class="grid-2" data-logged-out style="margin-top: 12px;">
+        <article class="panel">
+          <h3>Sign in</h3>
+          <form data-signin-form>
+            <input type="email" name="email" placeholder="Email" autocomplete="email" data-account-email required />
+            <input type="password" name="password" placeholder="Password" autocomplete="current-password" required />
+            <div class="field-row">
+              <button class="btn btn-primary" type="submit">Sign in</button>
+              <button class="btn btn-ghost" type="button" data-forgot>Forgot password</button>
+            </div>
+            <div class="msg" data-msg></div>
+            <div class="msg" data-forgot-msg></div>
+          </form>
+        </article>
+
+        <article class="panel">
+          <h3>Create account</h3>
+          <form data-signup-form>
+            <input type="text" name="username" placeholder="Username" minlength="3" maxlength="24" required />
+            <input type="email" name="email" placeholder="Email" autocomplete="email" required />
+            <input type="password" name="password" placeholder="Password (min 8 chars)" minlength="8" autocomplete="new-password" required />
+            <input type="password" name="confirm_password" placeholder="Confirm password" minlength="8" autocomplete="new-password" required />
+            <button class="btn btn-primary" type="submit">Create account</button>
+            <div class="msg" data-msg></div>
+          </form>
+        </article>
+      </div>
+
+      <article class="panel" data-logged-in style="display:none; margin-top: 12px;">
+        <h3>Connected account</h3>
+        <p class="subtle">Signed in as <strong data-session-email>-</strong></p>
+        <div class="field-row">
+          <button class="btn btn-primary" type="button" data-subscribe>Manage subscription</button>
+          <button class="btn btn-ghost" type="button" data-open-portal>Open billing portal</button>
+        </div>
+        <div class="field-row" style="margin-top: 10px;">
+          <button class="btn btn-ghost" type="button" data-signout>Sign out</button>
+          <a class="btn btn-ghost" href="/support.html">Need help</a>
+        </div>
+        <div class="msg" data-session-msg></div>
+      </article>
+
+      <div class="notice" style="margin-top:10px;">
+        Confirmation and password reset emails redirect to <code>/auth/callback</code>.
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div>© <span data-year></span> RiftSkin</div>
+      <div class="links">
+        <a href="/">Home</a>
+        <a href="/pricing.html">Pricing</a>
+        <a href="/faq.html">FAQ</a>
+        <a href="/support.html">Support</a>
+        <a href="/legal.html">Legal</a>
+      </div>
+    </footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/assets/config.js"></script>
+  <script src="/assets/site.js"></script>
+  <script src="/assets/paddle.js"></script>
+  <script src="/assets/account.js"></script>
+</body>
+</html>

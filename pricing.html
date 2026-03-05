@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RiftSkin Pricing</title>
+  <meta name="description" content="RiftSkin subscription: 7-day free trial then 20 EUR/month for full software access." />
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+<body data-page="pricing">
+  <div class="site-wrap">
+    <header class="topbar">
+      <a href="/" class="brand"><img src="/assets/logo.png" alt="RiftSkin logo" />RiftSkin</a>
+      <button class="btn btn-ghost burger" data-burger type="button">Menu</button>
+      <nav class="nav" data-nav>
+        <a data-link="home" href="/">Home</a>
+        <a data-link="pricing" href="/pricing.html">Pricing</a>
+        <a data-link="faq" href="/faq.html">FAQ</a>
+        <a data-link="support" href="/support.html">Support</a>
+        <a data-link="legal" href="/legal.html">Legal</a>
+        <a data-link="account" href="/account.html">My account</a>
+      </nav>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="/account.html">Sign in</a>
+      </div>
+    </header>
+
+    <section class="section">
+      <h2>Simple subscription for full software access</h2>
+      <p class="subtle">One plan. 7 days free. Then 20 EUR/month. Cancel any time.</p>
+
+      <div class="price-table" style="margin-top:12px">
+        <article class="price-box">
+          <div class="kicker">Free trial</div>
+          <div class="amount">7 days</div>
+          <ul class="list">
+            <li>Full access to RiftSkin app features</li>
+            <li>Import and test compatible custom skins</li>
+            <li>No charge before trial ends</li>
+          </ul>
+          <a class="btn btn-primary" style="margin-top:14px;width:100%" href="#" data-subscribe>Start trial</a>
+        </article>
+
+        <article class="price-box">
+          <div class="kicker">Monthly plan</div>
+          <div class="amount">20 EUR</div>
+          <div class="subtle">per month after trial</div>
+          <ul class="list" style="margin-top:8px">
+            <li>Access retained while subscription is active</li>
+            <li>Updates and ongoing compatibility support</li>
+            <li>Account login on RiftSkin software</li>
+          </ul>
+          <a class="btn btn-primary" style="margin-top:14px;width:100%" href="#" data-subscribe>Subscribe now</a>
+        </article>
+      </div>
+
+      <div class="alert" data-checkout-alert style="display:none"></div>
+      <div class="notice">
+        Checkout uses Paddle. If checkout is not configured yet, complete `assets/config.js` with your Paddle values
+        (`paddleClientToken` + `paddlePriceId` or `paddleCheckoutUrl`).
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>What your subscription unlocks</h2>
+      <div class="grid-2">
+        <div class="panel">
+          <h3>App access</h3>
+          <p class="subtle">Run RiftSkin on macOS and apply supported custom skins with your active account.</p>
+        </div>
+        <div class="panel">
+          <h3>Library tooling</h3>
+          <p class="subtle">Use champion browsing, search, favorites, and import management from one place.</p>
+        </div>
+        <div class="panel">
+          <h3>Auth and account</h3>
+          <p class="subtle">Secure login, email confirmation, and self-service password reset.</p>
+        </div>
+        <div class="panel">
+          <h3>Support</h3>
+          <p class="subtle">Need help? Use the support page or your account email to reach the team.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div>© <span data-year></span> RiftSkin</div>
+      <div class="links">
+        <a href="/">Home</a>
+        <a href="/faq.html">FAQ</a>
+        <a href="/support.html">Support</a>
+        <a href="/legal.html">Legal</a>
+        <a href="/account.html">My account</a>
+      </div>
+    </footer>
+  </div>
+
+  <script src="/assets/config.js"></script>
+  <script src="/assets/site.js"></script>
+  <script src="/assets/paddle.js"></script>
+</body>
+</html>
