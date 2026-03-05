@@ -3,8 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
   <title data-i18n="account_title">RiftSkin Account</title>
-  <meta name="description" data-i18n-content="account_meta_desc" content="Sign in to RiftSkin, create your account, and manage subscription access." />
+  <meta name="description" content="Sign in to RiftSkin, create your account, and access the private free beta." />
   <link rel="stylesheet" href="/assets/styles.css" />
 </head>
 <body data-page="account">
@@ -14,21 +15,20 @@
       <button class="btn btn-ghost burger" data-burger type="button">Menu</button>
       <nav class="nav" data-nav>
         <a data-link="home" href="/" data-i18n="nav_home">Home</a>
-        <a data-link="pricing" href="/pricing.html" data-i18n="nav_pricing">Pricing</a>
         <a data-link="faq" href="/faq.html" data-i18n="nav_faq">FAQ</a>
         <a data-link="support" href="/support.html" data-i18n="nav_support">Support</a>
         <a data-link="legal" href="/legal.html" data-i18n="nav_legal">Legal</a>
         <a data-link="account" href="/account.html" data-i18n="nav_account">My account</a>
       </nav>
       <div class="cta-row">
-        <a class="btn btn-primary" href="/pricing.html" data-subscribe data-i18n="account_cta_trial">Start free trial</a>
+        <a class="btn btn-primary" href="/account.html" data-i18n="nav_account">My account</a>
       </div>
     </header>
 
     <section class="section">
       <h2 data-i18n="account_h2">Account access</h2>
-      <p class="subtle" data-i18n="account_intro">
-        Create your account, confirm your email, then sign in. Your subscription unlocks software access while active.
+      <p class="subtle">
+        Access is currently free in private beta. Create your account, confirm your email, then sign in.
       </p>
       <div class="notice"><span data-i18n="account_status_label">Session status</span>: <span class="status-badge" data-account-status>Checking...</span></div>
 
@@ -63,10 +63,6 @@
       <article class="panel" data-logged-in style="display:none; margin-top: 12px;">
         <h3 data-i18n="account_connected_title">Connected account</h3>
         <p class="subtle"><span data-i18n="account_connected_as">Signed in as</span> <strong data-session-email>-</strong></p>
-        <div class="field-row">
-          <button class="btn btn-primary" type="button" data-subscribe data-i18n="account_manage_sub">Manage subscription</button>
-          <button class="btn btn-ghost" type="button" data-open-portal data-i18n="account_open_portal">Open billing portal</button>
-        </div>
         <div class="field-row" style="margin-top: 10px;">
           <button class="btn btn-ghost" type="button" data-signout data-i18n="account_signout">Sign out</button>
           <a class="btn btn-ghost" href="/support.html" data-i18n="account_need_help">Need help</a>
@@ -83,7 +79,6 @@
       <div><span data-i18n="footer_rights">Copyright</span> © <span data-year></span> RiftSkin</div>
       <div class="links">
         <a href="/" data-i18n="nav_home">Home</a>
-        <a href="/pricing.html" data-i18n="nav_pricing">Pricing</a>
         <a href="/faq.html" data-i18n="nav_faq">FAQ</a>
         <a href="/support.html" data-i18n="nav_support">Support</a>
         <a href="/legal.html" data-i18n="nav_legal">Legal</a>
@@ -96,7 +91,6 @@
   <script src="/assets/translations.js"></script>
   <script src="/assets/i18n.js"></script>
   <script src="/assets/site.js"></script>
-  <script src="/assets/paddle.js"></script>
   <script src="/assets/account.js"></script>
 </body>
 </html>

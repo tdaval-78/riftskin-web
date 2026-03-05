@@ -2,14 +2,20 @@
 
 Marketing + account site for RiftSkin (static HTML/CSS/JS), deployed on Vercel.
 
+## Current mode
+
+- Private free beta
+- Pricing/checkout UI hidden from public navigation
+- `robots.txt` blocks indexing (`Disallow: /`)
+
 ## Routes
 
 - `/` Home / product overview
-- `/pricing.html` Subscription (7-day trial, then 20 EUR/month)
+- `/account.html` Sign in / sign up / password reset trigger / account session
 - `/faq.html` FAQ
 - `/support.html` Support page
 - `/legal.html` Legal summary
-- `/account.html` Sign in / sign up / password reset trigger / account session
+- `/pricing.html` Private placeholder page (not linked publicly)
 - `/auth/callback` Supabase callback page (email confirmation + password reset form)
 - `/auth/email-confirmed` Optional static confirmation page
 
@@ -25,10 +31,8 @@ Marketing + account site for RiftSkin (static HTML/CSS/JS), deployed on Vercel.
 Edit `/assets/config.js`:
 
 - `supabaseUrl`, `supabaseAnonKey`
-- `paddleEnvironment`
-- `paddleClientToken` + `paddlePriceId` (or `paddleCheckoutUrl`)
-- `paddleCustomerPortalUrl`
 - `supportEmail`
+- Paddle fields can stay empty while private beta is free
 
 ## Supabase requirements
 
