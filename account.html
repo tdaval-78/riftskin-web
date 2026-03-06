@@ -12,7 +12,7 @@
   <div class="site-wrap">
     <header class="topbar">
       <a href="/" class="brand"><img src="/assets/logo.png" alt="RiftSkin logo" />RiftSkin</a>
-      <button class="btn btn-ghost burger" data-burger type="button">Menu</button>
+      <button class="btn btn-ghost burger" data-burger type="button" data-i18n="nav_menu">Menu</button>
       <nav class="nav" data-nav>
         <a data-link="home" href="/" data-i18n="nav_home">Home</a>
         <a data-link="pricing" href="/pricing.html" data-i18n="nav_pricing">Pricing</a>
@@ -29,7 +29,7 @@
     <section class="section">
       <h2 data-i18n="account_h2">Account access</h2>
       <p class="subtle" data-i18n="account_intro">Create your account, confirm your email, then sign in. Your subscription unlocks software access while active.</p>
-      <div class="notice"><span data-i18n="account_status_label">Session status</span>: <span class="status-badge" data-account-status>Checking...</span></div>
+      <div class="notice"><span data-i18n="account_status_label">Session status</span>: <span class="status-badge" data-account-status data-i18n="account_checking">Checking...</span></div>
 
       <div class="grid-2" data-logged-out style="margin-top: 12px;">
         <article class="panel">
@@ -66,13 +66,13 @@
         <div class="panel" style="margin-top:12px;">
           <h3 data-i18n="account_access_title">Software access</h3>
           <p class="subtle" data-i18n="account_access_intro">Every account starts with a 7-day free trial. After that, an active key is required unless your account is admin.</p>
-          <div class="notice"><span data-i18n="account_access_status_label">Status</span>: <span class="status-badge" data-access-status data-i18n="admin_loading">Checking...</span></div>
+          <div class="notice"><span data-i18n="account_access_status_label">Status</span>: <span class="status-badge" data-access-status data-i18n="account_checking">Checking...</span></div>
           <div class="subtle" data-access-meta style="margin-top:6px;"></div>
 
           <form data-redeem-form style="margin-top:12px;">
             <div class="field-row">
               <input type="text" name="key" placeholder="Activation key (example: ABCD-EFGH-IJKL-MNOP)" required />
-              <button class="btn btn-primary" type="submit">Activate key</button>
+              <button class="btn btn-primary" type="submit" data-i18n="account_activate_key_btn">Activate key</button>
             </div>
             <div class="msg" data-redeem-msg></div>
           </form>
