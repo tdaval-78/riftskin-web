@@ -20,6 +20,8 @@
   const adminKeyOutput = document.querySelector('[data-admin-key-output]');
   const adminAttachForm = document.querySelector('[data-admin-attach-key]');
   const adminAttachMsg = document.querySelector('[data-admin-attach-msg]');
+  const adminPermanentForm = document.querySelector('[data-admin-permanent-form]');
+  const adminPermanentMsg = document.querySelector('[data-admin-permanent-msg]');
   const adminKeysBody = document.querySelector('[data-admin-keys-body]');
   const adminListMsg = document.querySelector('[data-admin-list-msg]');
   const adminUpdateForm = document.querySelector('[data-admin-update-notice]');
@@ -93,6 +95,14 @@
     return { label: t('admin_state_no_access'), kind: '' };
   }
 
+  function accessSourceLabel(item) {
+    if (item.is_admin) return t('admin_source_admin');
+    if (item.access_source === 'admin_grant' && !item.access_expires_at) return t('admin_source_permanent');
+    if (item.access_source === 'activation_key') return t('admin_source_key');
+    if (item.access_source) return item.access_source;
+    return t('admin_not_available');
+  }
+
   function keyStateInfo(state) {
     if (state === 'available') return { label: t('admin_key_state_available'), kind: 'ok' };
     if (state === 'consumed') return { label: t('admin_key_state_consumed'), kind: '' };
@@ -131,6 +141,17 @@
     if (code === 'published') return t('admin_msg_update_published');
     if (code === 'disabled') return t('admin_msg_update_disabled');
     if (code === 'latest_version_required') return t('admin_msg_update_latest_required');
+    if (code === 'not_authenticated') return t('admin_msg_not_authenticated');
+    if (code === 'not_admin') return t('admin_msg_not_admin');
+    return code;
+  }
+
+  function decodePermanentMessage(code) {
+    if (!code) return '';
+    if (code === 'permanent_enabled') return t('admin_msg_permanent_enabled');
+    if (code === 'permanent_disabled') return t('admin_msg_permanent_disabled');
+    if (code === 'target_is_admin') return t('admin_msg_target_is_admin');
+    if (code === 'user_not_found') return t('admin_msg_user_not_found');
     if (code === 'not_authenticated') return t('admin_msg_not_authenticated');
     if (code === 'not_admin') return t('admin_msg_not_admin');
     return code;
@@ -293,6 +314,15 @@
     }
   }
 
+  function prefillPermanentForm(email, mode) {
+    if (!adminPermanentForm) return;
+    const emailInput = adminPermanentForm.querySelector('[name="user_email"]');
+    const modeInput = adminPermanentForm.querySelector('[name="mode"]');
+    if (emailInput) emailInput.value = email || '';
+    if (modeInput && mode) modeInput.value = mode;
+    if (emailInput) emailInput.focus();
+  }
+
   async function copyToClipboard(text) {
     if (!text) return;
     try {
@@ -362,12 +392,14 @@
       tdAccess.appendChild(createBadge(state.label, state.kind));
       const source = document.createElement('div');
       source.className = 'table-subtle';
-      source.textContent = item.access_source || (item.is_admin ? 'admin' : t('admin_not_available'));
+      source.textContent = accessSourceLabel(item);
       tdAccess.appendChild(source);
       tr.appendChild(tdAccess);
 
       const tdExpires = document.createElement('td');
-      tdExpires.textContent = item.is_admin ? t('admin_no_expiry') : (item.access_expires_at ? formatDate(item.access_expires_at) : t('admin_no_expiry'));
+      tdExpires.textContent = (item.is_admin || (item.access_source === 'admin_grant' && !item.access_expires_at))
+        ? t('admin_permanent_label')
+        : (item.access_expires_at ? formatDate(item.access_expires_at) : t('admin_no_expiry'));
       tr.appendChild(tdExpires);
 
       const tdKey = document.createElement('td');
@@ -391,6 +423,17 @@
       copyBtn.textContent = t('admin_action_copy_email');
       copyBtn.setAttribute('data-copy-email', item.email || '');
       actions.appendChild(copyBtn);
+
+      if (!item.is_admin) {
+        const isPermanent = item.access_source === 'admin_grant' && !item.access_expires_at && item.access_state === 'active';
+        const permanentBtn = document.createElement('button');
+        permanentBtn.type = 'button';
+        permanentBtn.className = 'btn btn-ghost btn-small';
+        permanentBtn.textContent = isPermanent ? t('admin_action_remove_permanent') : t('admin_action_make_permanent');
+        permanentBtn.setAttribute('data-permanent-email', item.email || '');
+        permanentBtn.setAttribute('data-permanent-mode', isPermanent ? 'disable' : 'enable');
+        actions.appendChild(permanentBtn);
+      }
 
       tdActions.appendChild(actions);
       tr.appendChild(tdActions);
@@ -761,6 +804,14 @@
         const email = copyBtn.getAttribute('data-copy-email') || '';
         const copied = await copyToClipboard(email);
         msg(adminAccountsMsg, copied ? t('admin_email_copied') : t('admin_email_copy_failed'), copied ? 'ok' : 'error');
+        return;
+      }
+
+      const permanentBtn = event.target.closest('[data-permanent-email]');
+      if (permanentBtn) {
+        const email = permanentBtn.getAttribute('data-permanent-email') || '';
+        const mode = permanentBtn.getAttribute('data-permanent-mode') || 'enable';
+        prefillPermanentForm(email, mode);
       }
     });
   }
@@ -873,6 +924,40 @@
       await loadAdminSummary();
       await loadAdminAccounts();
       await loadAdminKeys();
+    });
+  }
+
+  if (adminPermanentForm) {
+    adminPermanentForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const fd = new FormData(adminPermanentForm);
+      const userEmail = ((fd.get('user_email') || '').toString().trim()) || '';
+      const mode = ((fd.get('mode') || 'enable').toString().trim()) || 'enable';
+
+      if (!userEmail) {
+        msg(adminPermanentMsg, t('admin_permanent_fields_required'), 'error');
+        return;
+      }
+
+      msg(adminPermanentMsg, mode === 'disable' ? t('admin_permanent_disabling') : t('admin_permanent_enabling'));
+      const { data, error } = await supabaseClient.rpc('set_user_permanent_access', {
+        p_user_email: userEmail,
+        p_enabled: mode !== 'disable'
+      });
+      if (error) {
+        msg(adminPermanentMsg, error.message || t('admin_permanent_failed'), 'error');
+        return;
+      }
+
+      const row = safeArray(data)[0] || {};
+      if (!row.success) {
+        msg(adminPermanentMsg, decodePermanentMessage(row.message || '') || t('admin_permanent_failed'), 'error');
+        return;
+      }
+
+      msg(adminPermanentMsg, decodePermanentMessage(row.message || '') || t('admin_permanent_success'), 'ok');
+      await loadAdminSummary();
+      await loadAdminAccounts();
     });
   }
 

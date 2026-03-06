@@ -160,6 +160,24 @@
           </section>
 
           <section class="panel admin-panel-block">
+            <h3 data-i18n="admin_permanent_title">Permanent license</h3>
+            <p class="subtle" data-i18n="admin_permanent_intro">Search a registered account by email, then grant or remove a permanent software license without making that account admin.</p>
+            <form data-admin-permanent-form>
+              <div class="field-row">
+                <input type="email" name="user_email" placeholder="Target account email" data-i18n-placeholder="admin_target_email_ph" required />
+                <select name="mode">
+                  <option value="enable" data-i18n="admin_permanent_enable">Grant permanent license</option>
+                  <option value="disable" data-i18n="admin_permanent_disable">Remove permanent license</option>
+                </select>
+              </div>
+              <div class="field-row">
+                <button class="btn btn-primary" type="submit" data-i18n="admin_permanent_apply">Apply</button>
+              </div>
+              <div class="msg" data-admin-permanent-msg></div>
+            </form>
+          </section>
+
+          <section class="panel admin-panel-block">
             <h3 data-i18n="admin_attach_title">Attach an existing key</h3>
             <p class="subtle" data-i18n="admin_attach_intro">Use this when you already generated a key and want to bind it to a user account immediately.</p>
             <form data-admin-attach-key>

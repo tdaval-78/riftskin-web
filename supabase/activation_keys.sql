@@ -1032,6 +1032,69 @@ begin
 end;
 $$;
 
+create or replace function public.set_user_permanent_access(
+  p_user_email text,
+  p_enabled boolean default true
+)
+returns table(success boolean, message text)
+language plpgsql
+security definer
+set search_path = public, auth
+as $$
+declare
+  v_admin uuid := auth.uid();
+  v_target_user uuid;
+begin
+  if v_admin is null then
+    return query select false, 'not_authenticated';
+    return;
+  end if;
+
+  if not public.is_app_admin(v_admin) then
+    return query select false, 'not_admin';
+    return;
+  end if;
+
+  select u.id
+    into v_target_user
+  from auth.users u
+  where lower(coalesce(u.email, '')) = lower(trim(coalesce(p_user_email, '')))
+  limit 1;
+
+  if v_target_user is null then
+    return query select false, 'user_not_found';
+    return;
+  end if;
+
+  if public.is_app_admin(v_target_user) then
+    return query select true, 'target_is_admin';
+    return;
+  end if;
+
+  if coalesce(p_enabled, true) then
+    insert into public.user_access (user_id, source, granted_by_key_id, granted_at, expires_at, is_active)
+    values (v_target_user, 'admin_grant', null, now(), null, true)
+    on conflict (user_id)
+    do update set
+      source = 'admin_grant',
+      granted_by_key_id = null,
+      granted_at = now(),
+      expires_at = null,
+      is_active = true;
+
+    return query select true, 'permanent_enabled';
+    return;
+  end if;
+
+  update public.user_access
+  set is_active = false
+  where user_id = v_target_user
+    and source = 'admin_grant';
+
+  return query select true, 'permanent_disabled';
+end;
+$$;
+
 create or replace function public.admin_list_activation_keys(
   p_search text default null,
   p_filter text default 'all'
@@ -1104,6 +1167,7 @@ grant execute on function public.create_activation_key(text, text, integer, inte
 grant execute on function public.admin_dashboard_summary() to authenticated;
 grant execute on function public.admin_list_accounts(text, text) to authenticated;
 grant execute on function public.admin_list_activation_keys(text, text) to authenticated;
+grant execute on function public.set_user_permanent_access(text, boolean) to authenticated;
 
 create or replace function public.get_client_access_state(p_trial_days integer default 7)
 returns table(
