@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex,nofollow" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self' mailto:; img-src 'self' data: https://bvajoufrxxntivxghdgs.supabase.co; style-src 'self' 'unsafe-inline'; script-src 'self' https://cdn.jsdelivr.net https://cdn.paddle.com; connect-src 'self' https://bvajoufrxxntivxghdgs.supabase.co https://api.paddle.com https://sandbox-api.paddle.com https://checkout.paddle.com https://sandbox-checkout.paddle.com; frame-src https://checkout.paddle.com https://sandbox-checkout.paddle.com;" />
   <title data-i18n="account_title">RiftSkin Account</title>
   <meta name="description" data-i18n-content="account_meta_desc" content="Sign in to RiftSkin, create your account, and manage subscription access." />
   <link rel="stylesheet" href="/assets/styles.css" />
@@ -71,7 +72,7 @@
 
           <form data-redeem-form style="margin-top:12px;">
             <div class="field-row">
-              <input type="text" name="key" placeholder="Activation key (example: ABCD-EFGH-IJKL-MNOP)" required />
+              <input type="text" name="key" data-i18n-placeholder="account_activation_key_ph" placeholder="Activation key (example: ABCD-EFGH-IJKL-MNOP)" required />
               <button class="btn btn-primary" type="submit" data-i18n="account_activate_key_btn">Activate key</button>
             </div>
             <div class="msg" data-redeem-msg></div>

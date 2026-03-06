@@ -174,7 +174,7 @@
     setStatus(t('msg_status_not_connected'), '');
     setAccessBadge(t('admin_sign_in_required'), '');
     if (accessMeta) accessMeta.textContent = '';
-    if (myKeysBody) myKeysBody.innerHTML = '';
+    if (myKeysBody) myKeysBody.replaceChildren();
     if (myKeysMsg) msg(myKeysMsg, '');
     if (adminPanel) adminPanel.style.display = 'none';
   }
@@ -338,7 +338,7 @@
 
   async function loadAdminAccounts() {
     if (!adminAccountsBody) return;
-    adminAccountsBody.innerHTML = '';
+    adminAccountsBody.replaceChildren();
     msg(adminAccountsMsg, '');
 
     const { data, error } = await supabaseClient.rpc('admin_list_accounts', {
@@ -444,7 +444,7 @@
 
   async function loadAdminKeys() {
     if (!adminKeysBody) return;
-    adminKeysBody.innerHTML = '';
+    adminKeysBody.replaceChildren();
     msg(adminListMsg, '');
 
     const { data, error } = await supabaseClient.rpc('admin_list_activation_keys', {
@@ -496,7 +496,7 @@
       tr.appendChild(tdAccessExp);
 
       const tdTarget = document.createElement('td');
-      tdTarget.innerHTML = '';
+      tdTarget.replaceChildren();
       const targetMain = document.createElement('div');
       targetMain.textContent = item.created_for_email || '-';
       const targetSub = document.createElement('div');
@@ -560,7 +560,7 @@
 
   async function loadMyKeys(userId) {
     if (!myKeysBody) return;
-    myKeysBody.innerHTML = '';
+    myKeysBody.replaceChildren();
     if (myKeysMsg) msg(myKeysMsg, '');
     if (!userId) return;
 

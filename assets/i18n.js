@@ -48,6 +48,42 @@
     return key;
   }
 
+  function sanitizeTranslatedHtml(html) {
+    const template = document.createElement('template');
+    template.innerHTML = html || '';
+
+    function sanitizeNode(node) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        return document.createTextNode(node.textContent || '');
+      }
+
+      if (node.nodeType !== Node.ELEMENT_NODE) {
+        return document.createTextNode('');
+      }
+
+      const tag = node.tagName.toLowerCase();
+      if (tag !== 'br' && tag !== 'strong') {
+        const fragment = document.createDocumentFragment();
+        Array.from(node.childNodes).forEach(function (child) {
+          fragment.appendChild(sanitizeNode(child));
+        });
+        return fragment;
+      }
+
+      const safe = document.createElement(tag);
+      Array.from(node.childNodes).forEach(function (child) {
+        safe.appendChild(sanitizeNode(child));
+      });
+      return safe;
+    }
+
+    const fragment = document.createDocumentFragment();
+    Array.from(template.content.childNodes).forEach(function (child) {
+      fragment.appendChild(sanitizeNode(child));
+    });
+    return fragment;
+  }
+
   function setDocumentLanguage(lang) {
     const htmlLang = lang === 'zh' ? 'zh-CN' : lang;
     document.documentElement.setAttribute('lang', htmlLang);
@@ -86,7 +122,8 @@
     });
 
     container.querySelectorAll('[data-i18n-html]').forEach(function (el) {
-      el.innerHTML = translate(el.getAttribute('data-i18n-html'));
+      const html = translate(el.getAttribute('data-i18n-html'));
+      el.replaceChildren(sanitizeTranslatedHtml(html));
     });
 
     container.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
