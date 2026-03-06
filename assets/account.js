@@ -67,6 +67,14 @@
     return dt.toLocaleString();
   }
 
+  function fillTemplate(text, vars) {
+    let output = text || '';
+    Object.keys(vars || {}).forEach(function (key) {
+      output = output.replace(new RegExp('\\{' + key + '\\}', 'g'), vars[key]);
+    });
+    return output;
+  }
+
   function safeArray(val) {
     return Array.isArray(val) ? val : [];
   }
@@ -177,18 +185,9 @@
     if (!userId) return;
 
     try {
-      const { data: adminData, error: adminError } = await supabaseClient.rpc('is_app_admin');
-      if (!adminError && adminData === true) {
-        setAccessBadge(t('admin_access_active_admin'), 'ok');
-        if (accessMeta) accessMeta.textContent = t('admin_access_admin_meta');
-        return;
-      }
-
-      const { data, error } = await supabaseClient
-        .from('user_access')
-        .select('is_active, source, expires_at, granted_at')
-        .eq('user_id', userId)
-        .maybeSingle();
+      const { data, error } = await supabaseClient.rpc('get_client_access_state', {
+        p_trial_days: cfg.trialDays || 7
+      });
 
       if (error) {
         setAccessBadge(t('admin_unavailable'), 'error');
@@ -196,24 +195,48 @@
         return;
       }
 
-      if (!data || !data.is_active) {
-        setAccessBadge(t('admin_no_active_key'), 'error');
-        if (accessMeta) accessMeta.textContent = t('admin_redeem_unlock');
+      const row = safeArray(data)[0] || null;
+      if (!row) {
+        setAccessBadge(t('admin_unavailable'), 'error');
+        if (accessMeta) accessMeta.textContent = t('admin_unexpected_error');
         return;
       }
 
-      const expiresAt = data.expires_at ? new Date(data.expires_at) : null;
-      const expired = expiresAt && expiresAt.getTime() <= Date.now();
-      if (expired) {
+      if (row.is_admin) {
+        setAccessBadge(t('admin_access_active_admin'), 'ok');
+        if (accessMeta) accessMeta.textContent = t('admin_access_admin_meta');
+        return;
+      }
+
+      if (row.access_source === 'trial' && row.access_granted) {
+        setAccessBadge(t('account_access_trial_active'), 'ok');
+        if (accessMeta) {
+          accessMeta.textContent = fillTemplate(t('account_access_trial_meta'), {
+            days: row.trial_days_left || 0,
+            date: formatDate(row.trial_expires_at)
+          });
+        }
+        return;
+      }
+
+      if (row.access_granted && (row.access_source === 'activation_key' || row.access_source === 'admin_grant')) {
+        setAccessBadge(t('account_access_key_active'), 'ok');
+        if (accessMeta) {
+          accessMeta.textContent = fillTemplate(t('account_access_key_meta'), {
+            date: formatDate(row.access_expires_at || '')
+          });
+        }
+        return;
+      }
+
+      if (row.access_source === 'expired') {
         setAccessBadge(t('admin_state_expired'), 'error');
-        if (accessMeta) accessMeta.textContent = t('admin_expired_on') + ' ' + formatDate(data.expires_at);
+        if (accessMeta) accessMeta.textContent = t('account_access_expired');
         return;
       }
 
-      setAccessBadge(t('admin_state_active'), 'ok');
-      const source = data.source || 'activation_key';
-      const expiresLabel = data.expires_at ? formatDate(data.expires_at) : t('admin_no_expiry');
-      if (accessMeta) accessMeta.textContent = t('admin_access_source') + ' ' + source + ' - ' + t('admin_access_expires') + ' ' + expiresLabel;
+      setAccessBadge(t('admin_state_no_access'), 'error');
+      if (accessMeta) accessMeta.textContent = t('account_access_no_access');
     } catch (err) {
       setAccessBadge(t('admin_unavailable'), 'error');
       if (accessMeta) accessMeta.textContent = (err && err.message) ? err.message : t('admin_unexpected_error');

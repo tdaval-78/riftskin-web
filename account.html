@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex,nofollow" />
   <title data-i18n="account_title">RiftSkin Account</title>
-  <meta name="description" content="Sign in to RiftSkin, create your account, and access the private free beta." />
+  <meta name="description" data-i18n-content="account_meta_desc" content="Sign in to RiftSkin, create your account, and manage subscription access." />
   <link rel="stylesheet" href="/assets/styles.css" />
 </head>
 <body data-page="account">
@@ -15,6 +15,7 @@
       <button class="btn btn-ghost burger" data-burger type="button">Menu</button>
       <nav class="nav" data-nav>
         <a data-link="home" href="/" data-i18n="nav_home">Home</a>
+        <a data-link="pricing" href="/pricing.html" data-i18n="nav_pricing">Pricing</a>
         <a data-link="faq" href="/faq.html" data-i18n="nav_faq">FAQ</a>
         <a data-link="support" href="/support.html" data-i18n="nav_support">Support</a>
         <a data-link="legal" href="/legal.html" data-i18n="nav_legal">Legal</a>
@@ -27,9 +28,7 @@
 
     <section class="section">
       <h2 data-i18n="account_h2">Account access</h2>
-      <p class="subtle">
-        Access is currently free in private beta. Create your account, confirm your email, then sign in.
-      </p>
+      <p class="subtle" data-i18n="account_intro">Create your account, confirm your email, then sign in. Your subscription unlocks software access while active.</p>
       <div class="notice"><span data-i18n="account_status_label">Session status</span>: <span class="status-badge" data-account-status>Checking...</span></div>
 
       <div class="grid-2" data-logged-out style="margin-top: 12px;">
@@ -65,8 +64,8 @@
         <p class="subtle"><span data-i18n="account_connected_as">Signed in as</span> <strong data-session-email>-</strong></p>
 
         <div class="panel" style="margin-top:12px;">
-          <h3>Activation access</h3>
-          <p class="subtle">Your software access is controlled by activation keys.</p>
+          <h3 data-i18n="account_access_title">Software access</h3>
+          <p class="subtle" data-i18n="account_access_intro">Every account starts with a 7-day free trial. After that, an active key is required unless your account is admin.</p>
           <div class="notice">Status: <span class="status-badge" data-access-status>Checking...</span></div>
           <div class="subtle" data-access-meta style="margin-top:6px;"></div>
 
@@ -273,6 +272,7 @@
       <div><span data-i18n="footer_rights">Copyright</span> © <span data-year></span> RiftSkin</div>
       <div class="links">
         <a href="/" data-i18n="nav_home">Home</a>
+        <a href="/pricing.html" data-i18n="nav_pricing">Pricing</a>
         <a href="/faq.html" data-i18n="nav_faq">FAQ</a>
         <a href="/support.html" data-i18n="nav_support">Support</a>
         <a href="/legal.html" data-i18n="nav_legal">Legal</a>

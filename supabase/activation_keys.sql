@@ -1104,3 +1104,130 @@ grant execute on function public.create_activation_key(text, text, integer, inte
 grant execute on function public.admin_dashboard_summary() to authenticated;
 grant execute on function public.admin_list_accounts(text, text) to authenticated;
 grant execute on function public.admin_list_activation_keys(text, text) to authenticated;
+
+create or replace function public.get_client_access_state(p_trial_days integer default 7)
+returns table(
+  is_admin boolean,
+  access_granted boolean,
+  access_source text,
+  access_expires_at timestamptz,
+  trial_started_at timestamptz,
+  trial_expires_at timestamptz,
+  trial_active boolean,
+  trial_days_left integer
+)
+language plpgsql
+stable
+security definer
+set search_path = public, auth
+as $$
+declare
+  v_user uuid := auth.uid();
+  v_user_created_at timestamptz;
+  v_trial_started_at timestamptz;
+  v_trial_expires_at timestamptz;
+  v_trial_active boolean := false;
+  v_trial_days_left integer := 0;
+  v_is_admin boolean := false;
+  v_access public.user_access%rowtype;
+begin
+  if v_user is null then
+    raise exception 'Not authenticated';
+  end if;
+
+  if p_trial_days is null or p_trial_days < 0 or p_trial_days > 365 then
+    raise exception 'Invalid trial days';
+  end if;
+
+  select public.is_app_admin(v_user) into v_is_admin;
+  if v_is_admin then
+    return query
+    select
+      true,
+      true,
+      'admin'::text,
+      null::timestamptz,
+      null::timestamptz,
+      null::timestamptz,
+      false,
+      0;
+    return;
+  end if;
+
+  select u.created_at
+    into v_user_created_at
+  from auth.users u
+  where u.id = v_user;
+
+  v_trial_started_at := v_user_created_at;
+  if v_user_created_at is not null and p_trial_days > 0 then
+    v_trial_expires_at := v_user_created_at + make_interval(days => p_trial_days);
+    v_trial_active := v_trial_expires_at > now();
+    if v_trial_active then
+      v_trial_days_left := greatest(1, ceil(extract(epoch from (v_trial_expires_at - now())) / 86400.0)::integer);
+    end if;
+  end if;
+
+  select *
+    into v_access
+  from public.user_access ua
+  where ua.user_id = v_user
+    and ua.is_active = true
+  limit 1;
+
+  if found and (v_access.expires_at is null or v_access.expires_at > now()) then
+    return query
+    select
+      false,
+      true,
+      coalesce(v_access.source, 'activation_key')::text,
+      v_access.expires_at,
+      v_trial_started_at,
+      v_trial_expires_at,
+      v_trial_active,
+      v_trial_days_left;
+    return;
+  end if;
+
+  if v_trial_active then
+    return query
+    select
+      false,
+      true,
+      'trial'::text,
+      v_trial_expires_at,
+      v_trial_started_at,
+      v_trial_expires_at,
+      true,
+      v_trial_days_left;
+    return;
+  end if;
+
+  if found and v_access.expires_at is not null and v_access.expires_at <= now() then
+    return query
+    select
+      false,
+      false,
+      'expired'::text,
+      v_access.expires_at,
+      v_trial_started_at,
+      v_trial_expires_at,
+      false,
+      0;
+    return;
+  end if;
+
+  return query
+  select
+    false,
+    false,
+    'no_access'::text,
+    null::timestamptz,
+    v_trial_started_at,
+    v_trial_expires_at,
+    false,
+    0;
+end;
+$$;
+
+grant execute on function public.get_client_access_state(integer) to authenticated;

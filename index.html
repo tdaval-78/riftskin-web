@@ -15,6 +15,7 @@
       <button class="btn btn-ghost burger" data-burger type="button">Menu</button>
       <nav class="nav" data-nav>
         <a data-link="home" href="/" data-i18n="nav_home">Home</a>
+        <a data-link="pricing" href="/pricing.html" data-i18n="nav_pricing">Pricing</a>
         <a data-link="faq" href="/faq.html" data-i18n="nav_faq">FAQ</a>
         <a data-link="support" href="/support.html" data-i18n="nav_support">Support</a>
         <a data-link="legal" href="/legal.html" data-i18n="nav_legal">Legal</a>
@@ -30,27 +31,25 @@
         <div>
           <span class="kicker" data-i18n="home_kicker">macOS skin manager</span>
           <h1 data-i18n="home_h1">Install and manage custom LoL skins on Mac, with zero clutter.</h1>
-          <p class="lead">
-            RiftSkin is currently in a private free beta. Access is limited while we stabilize the product,
-            improve compatibility, and finalize the public launch.
-          </p>
+          <p class="lead" data-i18n="home_lead">RiftSkin gives you a clean workflow to import compatible skins, manage your library, and apply them before launch. Start with a 7-day free trial, then keep full access for 20 EUR/month.</p>
           <div class="cta-row" style="margin-top:16px">
-            <a class="btn btn-primary" href="/account.html" data-i18n="nav_account">My account</a>
+            <a class="btn btn-primary" href="/account.html" data-i18n="home_cta_trial">Start 7-day free trial</a>
             <a class="btn btn-ghost" href="/support.html" data-i18n="nav_support">Support</a>
           </div>
           <div class="notice" data-i18n="home_notice">Use in-game default skin selection when playing, as explained in the in-app instructions.</div>
         </div>
 
         <aside class="hero-card">
-          <div class="subtle">Private beta</div>
-          <div class="hero-price">Free access</div>
-          <div class="subtle">Payments and subscriptions are temporarily disabled.</div>
+          <div class="subtle" data-i18n="home_sub_title">Subscription</div>
+          <div class="hero-price" data-i18n="home_sub_price">20 EUR / month</div>
+          <div class="subtle" data-i18n="home_sub_caption">7-day free trial first. Cancel any time.</div>
           <ul class="list" style="margin-top:12px">
-            <li>Early users can test imports and report issues</li>
-            <li>Focus on stability and macOS compatibility</li>
-            <li>Public pricing will be enabled later</li>
+            <li data-i18n="home_sub_li_1">Unlimited imports of compatible skin packs</li>
+            <li data-i18n="home_sub_li_2">Champion library and filtering tools</li>
+            <li data-i18n="home_sub_li_3">Account-based access to RiftSkin app</li>
+            <li data-i18n="home_sub_li_4">Support and regular compatibility updates</li>
           </ul>
-          <a class="btn btn-primary" style="margin-top:14px;width:100%" href="/account.html" data-i18n="nav_account">My account</a>
+          <a class="btn btn-primary" style="margin-top:14px;width:100%" href="/pricing.html" data-i18n="home_sub_btn">Subscribe now</a>
         </aside>
       </div>
 
@@ -63,6 +62,10 @@
           <h3 data-i18n="home_feat_2_title">Account and auth ready</h3>
           <p data-i18n="home_feat_2_desc">Integrated sign up/sign in, confirmation emails, and password reset flow via Supabase.</p>
         </article>
+        <article class="feature">
+          <h3 data-i18n="home_feat_3_title">Subscription access</h3>
+          <p data-i18n="home_feat_3_desc">Single subscription unlocks the software while your plan is active.</p>
+        </article>
       </div>
     </section>
 
@@ -72,6 +75,10 @@
         <div class="panel">
           <h3 data-i18n="home_step_1_title">1. Create your account</h3>
           <p class="subtle" data-i18n="home_step_1_desc">Sign up once, confirm your email, and keep your session in the app.</p>
+        </div>
+        <div class="panel">
+          <h3 data-i18n="home_step_2_title">2. Start your free trial</h3>
+          <p class="subtle" data-i18n="home_step_2_desc">Get 7 days free, then continue with the 20 EUR/month subscription.</p>
         </div>
         <div class="panel">
           <h3 data-i18n="home_step_3_title">3. Import compatible skins</h3>
@@ -87,6 +94,7 @@
     <footer class="footer">
       <div><span data-i18n="footer_rights">Copyright</span> © <span data-year></span> RiftSkin</div>
       <div class="links">
+        <a href="/pricing.html" data-i18n="nav_pricing">Pricing</a>
         <a href="/faq.html" data-i18n="nav_faq">FAQ</a>
         <a href="/support.html" data-i18n="nav_support">Support</a>
         <a href="/legal.html" data-i18n="nav_legal">Legal</a>

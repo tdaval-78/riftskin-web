@@ -3,31 +3,101 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>RiftSkin - Private Beta</title>
   <meta name="robots" content="noindex,nofollow" />
+  <title data-i18n="pricing_title">RiftSkin Pricing</title>
+  <meta name="description" data-i18n-content="pricing_meta_desc" content="RiftSkin subscription: 7-day free trial then 20 EUR/month for full software access." />
   <link rel="stylesheet" href="/assets/styles.css" />
 </head>
-<body>
+<body data-page="pricing">
   <div class="site-wrap">
     <header class="topbar">
       <a href="/" class="brand"><img src="/assets/logo.png" alt="RiftSkin logo" />RiftSkin</a>
+      <button class="btn btn-ghost burger" data-burger type="button">Menu</button>
+      <nav class="nav" data-nav>
+        <a data-link="home" href="/" data-i18n="nav_home">Home</a>
+        <a data-link="pricing" href="/pricing.html" data-i18n="nav_pricing">Pricing</a>
+        <a data-link="faq" href="/faq.html" data-i18n="nav_faq">FAQ</a>
+        <a data-link="support" href="/support.html" data-i18n="nav_support">Support</a>
+        <a data-link="legal" href="/legal.html" data-i18n="nav_legal">Legal</a>
+        <a data-link="account" href="/account.html" data-i18n="nav_account">My account</a>
+      </nav>
       <div class="cta-row">
-        <a class="btn btn-primary" href="/account.html">My account</a>
+        <a class="btn btn-primary" href="/account.html" data-i18n="pricing_cta_signin">Sign in</a>
       </div>
     </header>
 
     <section class="section">
-      <h2>Pricing is hidden for now</h2>
-      <p class="subtle">
-        RiftSkin is currently running as a free private beta. Payments and public subscription pages are disabled.
-      </p>
-      <div class="cta-row" style="margin-top:14px;">
-        <a class="btn btn-primary" href="/account.html">Open account</a>
-        <a class="btn btn-ghost" href="/support.html">Contact support</a>
+      <h2 data-i18n="pricing_h2">Simple subscription for full software access</h2>
+      <p class="subtle" data-i18n="pricing_intro">One plan. 7 days free. Then 20 EUR/month. Cancel any time.</p>
+
+      <div class="grid-2" style="margin-top:16px">
+        <article class="panel">
+          <div class="kicker" data-i18n="pricing_trial_kicker">Free trial</div>
+          <div class="hero-price" data-i18n="pricing_trial_amount">7 days</div>
+          <ul class="list" style="margin-top:12px">
+            <li data-i18n="pricing_trial_li_1">Full access to RiftSkin app features</li>
+            <li data-i18n="pricing_trial_li_2">Import and test compatible custom skins</li>
+            <li data-i18n="pricing_trial_li_3">No charge before trial ends</li>
+          </ul>
+          <a class="btn btn-primary" style="margin-top:14px;width:100%" href="/account.html" data-i18n="pricing_trial_btn">Start trial</a>
+        </article>
+
+        <article class="panel">
+          <div class="kicker" data-i18n="pricing_monthly_kicker">Monthly plan</div>
+          <div class="hero-price" data-i18n="pricing_monthly_amount">20 EUR</div>
+          <div class="subtle" data-i18n="pricing_monthly_sub">per month after trial</div>
+          <ul class="list" style="margin-top:12px">
+            <li data-i18n="pricing_monthly_li_1">Access retained while subscription is active</li>
+            <li data-i18n="pricing_monthly_li_2">Updates and ongoing compatibility support</li>
+            <li data-i18n="pricing_monthly_li_3">Account login on RiftSkin software</li>
+          </ul>
+          <a class="btn btn-primary" style="margin-top:14px;width:100%" href="/account.html" data-i18n="pricing_monthly_btn">Subscribe now</a>
+        </article>
+      </div>
+
+      <div class="notice" style="margin-top:16px" data-i18n="pricing_checkout_notice">
+        Checkout uses Paddle. If checkout is not configured yet, complete assets/config.js with your Paddle values (paddleClientToken + paddlePriceId or paddleCheckoutUrl).
       </div>
     </section>
+
+    <section class="section">
+      <h2 data-i18n="pricing_unlock_h2">What your subscription unlocks</h2>
+      <div class="features">
+        <article class="feature">
+          <h3 data-i18n="pricing_unlock_1_title">App access</h3>
+          <p data-i18n="pricing_unlock_1_desc">Run RiftSkin on macOS and apply supported custom skins with your active account.</p>
+        </article>
+        <article class="feature">
+          <h3 data-i18n="pricing_unlock_2_title">Library tooling</h3>
+          <p data-i18n="pricing_unlock_2_desc">Use champion browsing, search, favorites, and import management from one place.</p>
+        </article>
+        <article class="feature">
+          <h3 data-i18n="pricing_unlock_3_title">Auth and account</h3>
+          <p data-i18n="pricing_unlock_3_desc">Secure login, email confirmation, and self-service password reset.</p>
+        </article>
+        <article class="feature">
+          <h3 data-i18n="pricing_unlock_4_title">Support</h3>
+          <p data-i18n="pricing_unlock_4_desc">Need help? Use the support page or your account email to reach the team.</p>
+        </article>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div><span data-i18n="footer_rights">Copyright</span> © <span data-year></span> RiftSkin</div>
+      <div class="links">
+        <a href="/" data-i18n="nav_home">Home</a>
+        <a href="/pricing.html" data-i18n="nav_pricing">Pricing</a>
+        <a href="/faq.html" data-i18n="nav_faq">FAQ</a>
+        <a href="/support.html" data-i18n="nav_support">Support</a>
+        <a href="/legal.html" data-i18n="nav_legal">Legal</a>
+        <a href="/account.html" data-i18n="nav_account">My account</a>
+      </div>
+    </footer>
   </div>
 
+  <script src="/assets/config.js"></script>
+  <script src="/assets/translations.js"></script>
+  <script src="/assets/i18n.js"></script>
   <script src="/assets/site.js"></script>
 </body>
 </html>
