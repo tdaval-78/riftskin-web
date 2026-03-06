@@ -11,5 +11,9 @@ window.RiftSkinConfig = {
   paddleClientToken: "",
   paddlePriceId: "",
   paddleCheckoutUrl: "",
-  paddleCustomerPortalUrl: ""
+  paddleCustomerPortalUrl: "",
+
+  downloadInstallerUrl: "https://github.com/tdaval-78/riftskin-updates/releases/latest/download/RiftSkin-macos-installer.zip",
+  downloadDirectAppUrl: "https://github.com/tdaval-78/riftskin-updates/releases/latest/download/RiftSkin-macos-arm64.zip",
+  publicReleasesUrl: "https://github.com/tdaval-78/riftskin-updates/releases"
 };

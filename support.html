@@ -30,6 +30,23 @@
       <h2 data-i18n="support_h2">Support</h2>
       <p class="subtle" data-i18n="support_intro">Need help with account, billing, or skin import workflow? Send us a support request.</p>
 
+      <div class="panel" id="install" style="margin-top:12px">
+        <h3 data-i18n="support_install_title">Download and install on macOS</h3>
+        <p class="subtle" data-i18n="support_install_intro">Use the simple installer bundle if you want the easiest path. It copies RiftSkin into Applications and removes the quarantine flag.</p>
+        <div class="cta-row" style="margin-top:12px">
+          <a class="btn btn-primary" data-download-installer href="https://github.com/tdaval-78/riftskin-updates/releases/latest/download/RiftSkin-macos-installer.zip" data-i18n="support_install_btn">Download simple installer</a>
+          <a class="btn btn-ghost" data-download-direct href="https://github.com/tdaval-78/riftskin-updates/releases/latest/download/RiftSkin-macos-arm64.zip" data-i18n="support_direct_btn">Download app only</a>
+          <a class="btn btn-ghost" data-public-releases href="https://github.com/tdaval-78/riftskin-updates/releases" data-i18n="support_release_btn">Open releases</a>
+        </div>
+        <ul class="list" style="margin-top:12px">
+          <li data-i18n="support_install_li_1">Unzip the downloaded archive</li>
+          <li data-i18n="support_install_li_2">Double click install.command to copy RiftSkin into Applications</li>
+          <li data-i18n="support_install_li_3">If macOS asks, enter your administrator password</li>
+          <li data-i18n="support_install_li_4">On first launch, if macOS blocks the app, right click RiftSkin and choose Open, then Open again</li>
+          <li data-i18n="support_install_li_5">If needed, go to System Settings, Privacy & Security, then click Open Anyway</li>
+        </ul>
+      </div>
+
       <div class="grid-2" style="margin-top:12px">
         <div class="panel">
           <h3 data-i18n="support_contact_title">Contact details</h3>
@@ -80,36 +97,6 @@
   <script src="/assets/translations.js"></script>
   <script src="/assets/i18n.js"></script>
   <script src="/assets/site.js"></script>
-  <script>
-    (function () {
-      const cfg = window.RiftSkinConfig || {};
-      const form = document.getElementById('support-form');
-      const out = document.getElementById('support-msg');
-      const i18n = window.RiftSkinI18n;
-      const t = function (key) { return i18n ? i18n.t(key) : key; };
-      if (!form) return;
-
-      form.addEventListener('submit', function (e) {
-        e.preventDefault();
-        const data = new FormData(form);
-        const name = (data.get('name') || '').toString().trim();
-        const email = (data.get('email') || '').toString().trim();
-        const topic = (data.get('topic') || '').toString().trim();
-        const message = (data.get('message') || '').toString().trim();
-        const to = cfg.supportEmail || 'support@riftskin.com';
-        const subject = encodeURIComponent('[RiftSkin Support] ' + topic);
-        const body = encodeURIComponent(
-          'Name: ' + name + '\n' +
-          'Email: ' + email + '\n' +
-          'Topic: ' + topic + '\n\n' +
-          message + '\n\n' +
-          '---\nSent from riftskin.com/support'
-        );
-        window.location.href = 'mailto:' + to + '?subject=' + subject + '&body=' + body;
-        out.textContent = t('support_mail_opened');
-        out.className = 'msg ok';
-      });
-    })();
-  </script>
+  <script src="/assets/support.js"></script>
 </body>
 </html>
