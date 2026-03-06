@@ -572,7 +572,7 @@
       .limit(20);
 
     if (error) {
-      if (myKeysMsg) msg(myKeysMsg, error.message || 'Could not load your keys.', 'error');
+      if (myKeysMsg) msg(myKeysMsg, error.message || t('account_my_key_load_failed'), 'error');
       return;
     }
 
@@ -581,7 +581,7 @@
       const tr = document.createElement('tr');
       const td = document.createElement('td');
       td.colSpan = 4;
-      td.textContent = 'No key attached yet.';
+      td.textContent = t('account_my_key_empty');
       tr.appendChild(td);
       myKeysBody.appendChild(tr);
       return;
@@ -713,26 +713,26 @@
   if (redeemForm) {
     redeemForm.addEventListener('submit', async function (e) {
       e.preventDefault();
-      msg(redeemMsg, 'Redeeming key...');
+      msg(redeemMsg, t('account_redeeming_key'));
       const raw = (redeemForm.querySelector('[name="key"]').value || '').trim();
       if (!raw) {
-        msg(redeemMsg, 'Enter a key first.', 'error');
+        msg(redeemMsg, t('account_enter_key_first'), 'error');
         return;
       }
 
       const { data, error } = await supabaseClient.rpc('redeem_activation_key', { p_code: raw });
       if (error) {
-        msg(redeemMsg, error.message || 'Redeem failed.', 'error');
+        msg(redeemMsg, error.message || t('account_redeem_failed'), 'error');
         return;
       }
 
       const row = safeArray(data)[0] || {};
       if (!row.success) {
-        msg(redeemMsg, decodeActivationMessage(row.message || '') || 'Key invalid or expired.', 'error');
+        msg(redeemMsg, decodeActivationMessage(row.message || '') || t('account_redeem_invalid'), 'error');
         return;
       }
 
-      msg(redeemMsg, decodeActivationMessage(row.message || '') || 'Key accepted. Access is now active.', 'ok');
+      msg(redeemMsg, decodeActivationMessage(row.message || '') || t('account_redeem_success'), 'ok');
       redeemForm.reset();
       const session = await getSession();
       if (session && session.user) {

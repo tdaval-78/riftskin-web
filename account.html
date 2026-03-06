@@ -66,7 +66,7 @@
         <div class="panel" style="margin-top:12px;">
           <h3 data-i18n="account_access_title">Software access</h3>
           <p class="subtle" data-i18n="account_access_intro">Every account starts with a 7-day free trial. After that, an active key is required unless your account is admin.</p>
-          <div class="notice">Status: <span class="status-badge" data-access-status>Checking...</span></div>
+          <div class="notice"><span data-i18n="account_access_status_label">Status</span>: <span class="status-badge" data-access-status data-i18n="admin_loading">Checking...</span></div>
           <div class="subtle" data-access-meta style="margin-top:6px;"></div>
 
           <form data-redeem-form style="margin-top:12px;">
@@ -79,16 +79,16 @@
         </div>
 
         <div class="panel" style="margin-top:12px;">
-          <h3>My key</h3>
-          <p class="subtle">If a key was attached to your account by admin, you will see it here.</p>
+          <h3 data-i18n="account_my_key_title">My key</h3>
+          <p class="subtle" data-i18n="account_my_key_intro">If a key was attached to your account by admin, you will see it here.</p>
           <div class="keys-table-wrap">
             <table class="keys-table">
               <thead>
                 <tr>
-                  <th>Code</th>
-                  <th>Redeemed at</th>
-                  <th>Key expires</th>
-                  <th>Status</th>
+                  <th data-i18n="account_my_key_col_code">Code</th>
+                  <th data-i18n="account_my_key_col_redeemed_at">Redeemed at</th>
+                  <th data-i18n="account_my_key_col_expires">Key expires</th>
+                  <th data-i18n="account_my_key_col_status">Status</th>
                 </tr>
               </thead>
               <tbody data-my-keys-body></tbody>
@@ -276,7 +276,7 @@
           </form>
           <div class="panel" style="margin-top:12px;">
             <h3 data-i18n="account_admin_update_live_title">Current live notice</h3>
-            <div class="subtle" data-admin-update-live>Loading...</div>
+            <div class="subtle" data-admin-update-live data-i18n="admin_loading">Loading...</div>
           </div>
         </section>
       </article>
