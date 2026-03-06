@@ -8,6 +8,7 @@ window.RiftSkinTranslations = {
     language_label: "Language",
 
     nav_home: "Home",
+    nav_download: "Download",
     nav_pricing: "Pricing",
     nav_faq: "FAQ",
     nav_support: "Support",
@@ -98,6 +99,9 @@ window.RiftSkinTranslations = {
     faq_q8_t: "Who can see my account data?",
     faq_q8_d: "Account auth is handled through Supabase services. See legal and privacy section for details.",
 
+    download_title: "RiftSkin Download",
+    download_h2: "Download RiftSkin for macOS",
+    download_intro: "Choose the simple installer if you want the smoothest free distribution flow without Apple notarization.",
     support_title: "RiftSkin Support",
     support_h2: "Support",
     support_intro: "Need help with account, billing, or skin import workflow? Send us a support request.",
@@ -402,6 +406,7 @@ window.RiftSkinTranslations = {
     language_label: "Langue",
 
     nav_home: "Accueil",
+    nav_download: "Telecharger",
     nav_pricing: "Abonnement",
     nav_faq: "FAQ",
     nav_support: "Support",
@@ -492,6 +497,9 @@ window.RiftSkinTranslations = {
     faq_q8_t: "Qui peut voir mes donnees de compte ?",
     faq_q8_d: "L'authentification est geree par Supabase. Voir la section legale et confidentialite.",
 
+    download_title: "RiftSkin Telechargement",
+    download_h2: "Telecharger RiftSkin pour macOS",
+    download_intro: "Choisissez l'installeur simple si vous voulez le flux gratuit le plus propre sans notarization Apple.",
     support_title: "RiftSkin Support",
     support_h2: "Support",
     support_intro: "Besoin d'aide pour le compte, la facturation ou l'import de skins ? Envoyez une demande.",
@@ -796,6 +804,7 @@ window.RiftSkinTranslations = {
     language_label: "Idioma",
 
     nav_home: "Inicio",
+    nav_download: "Descargar",
     nav_pricing: "Precios",
     nav_faq: "FAQ",
     nav_support: "Soporte",
@@ -886,6 +895,9 @@ window.RiftSkinTranslations = {
     faq_q8_t: "Quien ve mis datos de cuenta?",
     faq_q8_d: "La autenticacion se gestiona con Supabase. Revisa la seccion legal.",
 
+    download_title: "RiftSkin Descarga",
+    download_h2: "Descargar RiftSkin para macOS",
+    download_intro: "Elige el instalador simple si quieres el flujo gratuito mas limpio sin notarizacion de Apple.",
     support_title: "RiftSkin Soporte",
     support_h2: "Soporte",
     support_intro: "Necesitas ayuda con cuenta, pagos o importacion de skins? Envia una solicitud.",
@@ -1076,6 +1088,7 @@ window.RiftSkinTranslations = {
     language_label: "Idioma",
 
     nav_home: "Inicio",
+    nav_download: "Baixar",
     nav_pricing: "Preco",
     nav_faq: "FAQ",
     nav_support: "Suporte",
@@ -1166,6 +1179,9 @@ window.RiftSkinTranslations = {
     faq_q8_t: "Quem pode ver meus dados da conta?",
     faq_q8_d: "A autenticacao e gerenciada pelo Supabase. Veja a secao legal.",
 
+    download_title: "RiftSkin Download",
+    download_h2: "Baixar RiftSkin para macOS",
+    download_intro: "Escolha o instalador simples se quiser o fluxo gratuito mais limpo sem notarizacao Apple.",
     support_title: "RiftSkin Suporte",
     support_h2: "Suporte",
     support_intro: "Precisa de ajuda com conta, cobranca ou importacao de skins? Envie uma solicitacao.",
@@ -1356,6 +1372,7 @@ window.RiftSkinTranslations = {
     language_label: "语言",
 
     nav_home: "首页",
+    nav_download: "下载",
     nav_pricing: "订阅",
     nav_faq: "常见问题",
     nav_support: "支持",
@@ -1446,6 +1463,9 @@ window.RiftSkinTranslations = {
     faq_q8_t: "谁可以看到我的账户数据？",
     faq_q8_d: "账户认证由 Supabase 处理。详见法律页面。",
 
+    download_title: "RiftSkin 下载",
+    download_h2: "下载 macOS 版 RiftSkin",
+    download_intro: "如果你想使用不依赖 Apple notarization 的免费分发流程，请选择简易安装包。",
     support_title: "RiftSkin 支持",
     support_h2: "支持",
     support_intro: "如需账户、支付或皮肤导入帮助，请提交支持请求。",
