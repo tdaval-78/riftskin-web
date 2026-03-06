@@ -566,3 +566,541 @@ grant select on public.activation_keys to authenticated;
 -- insert into public.app_admins(user_id)
 -- select id from auth.users where lower(email) = lower('tdaval@icloud.com')
 -- on conflict do nothing;
+
+alter table public.activation_keys
+  add column if not exists valid_months integer,
+  add column if not exists grant_months integer;
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint
+    where conname = 'activation_keys_valid_months_check'
+  ) then
+    alter table public.activation_keys
+      add constraint activation_keys_valid_months_check
+      check (valid_months is null or valid_months > 0);
+  end if;
+
+  if not exists (
+    select 1 from pg_constraint
+    where conname = 'activation_keys_grant_months_check'
+  ) then
+    alter table public.activation_keys
+      add constraint activation_keys_grant_months_check
+      check (grant_months is null or grant_months > 0);
+  end if;
+end $$;
+
+update public.activation_keys
+set valid_months = greatest(
+      1,
+      ceil(extract(epoch from (coalesce(expires_at, created_at) - created_at)) / 2592000.0)::integer
+    )
+where valid_months is null
+  and expires_at is not null;
+
+update public.activation_keys
+set grant_months = greatest(1, ceil(grant_days / 30.0)::integer)
+where grant_months is null
+  and grant_days is not null;
+
+drop function if exists public.create_activation_key(text, text, integer, integer, integer);
+
+create function public.create_activation_key(
+  p_for_email text default null,
+  p_note text default null,
+  p_max_uses integer default 1,
+  p_valid_months integer default 1,
+  p_grant_months integer default null
+)
+returns table(code text, expires_at timestamptz)
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_user uuid := auth.uid();
+  v_raw text;
+  v_code text;
+  v_key_exp timestamptz;
+begin
+  if v_user is null then
+    raise exception 'Not authenticated';
+  end if;
+
+  if not public.is_app_admin(v_user) then
+    raise exception 'Only admins can create activation keys';
+  end if;
+
+  if p_max_uses is null or p_max_uses < 1 or p_max_uses > 500 then
+    raise exception 'Invalid max uses (1-500)';
+  end if;
+
+  if p_valid_months is null or p_valid_months < 1 or p_valid_months > 120 then
+    raise exception 'Invalid key validity months (1-120)';
+  end if;
+
+  if p_grant_months is not null and (p_grant_months < 1 or p_grant_months > 120) then
+    raise exception 'Invalid grant months (1-120)';
+  end if;
+
+  loop
+    v_raw := upper(encode(gen_random_bytes(8), 'hex'));
+    v_code := substr(v_raw, 1, 4) || '-' || substr(v_raw, 5, 4) || '-' || substr(v_raw, 9, 4) || '-' || substr(v_raw, 13, 4);
+    exit when not exists (select 1 from public.activation_keys where code = v_code);
+  end loop;
+
+  v_key_exp := now() + make_interval(months => p_valid_months);
+
+  insert into public.activation_keys (
+    code,
+    created_by,
+    created_for_email,
+    note,
+    max_uses,
+    grant_days,
+    grant_months,
+    valid_months,
+    expires_at
+  ) values (
+    v_code,
+    v_user,
+    nullif(trim(p_for_email), ''),
+    nullif(trim(p_note), ''),
+    p_max_uses,
+    case when p_grant_months is null then null else p_grant_months * 30 end,
+    p_grant_months,
+    p_valid_months,
+    v_key_exp
+  );
+
+  return query select v_code, v_key_exp;
+end;
+$$;
+
+create or replace function public.redeem_activation_key(p_code text)
+returns table(success boolean, message text, access_expires_at timestamptz)
+language plpgsql
+security definer
+set search_path = public, auth
+as $$
+declare
+  v_user uuid := auth.uid();
+  v_user_email text;
+  v_key public.activation_keys%rowtype;
+  v_access_exp timestamptz;
+begin
+  if v_user is null then
+    return query select false, 'not_authenticated', null::timestamptz;
+    return;
+  end if;
+
+  select *
+    into v_key
+  from public.activation_keys
+  where code = upper(trim(coalesce(p_code, '')))
+  for update;
+
+  if not found then
+    return query select false, 'invalid_key', null::timestamptz;
+    return;
+  end if;
+
+  if not v_key.is_active then
+    return query select false, 'inactive_key', null::timestamptz;
+    return;
+  end if;
+
+  select u.email into v_user_email
+  from auth.users u
+  where u.id = v_user;
+
+  if v_key.created_for_email is not null
+     and coalesce(lower(trim(v_user_email)), '') <> lower(trim(v_key.created_for_email)) then
+    return query select false, 'key_reserved_for_other_email', null::timestamptz;
+    return;
+  end if;
+
+  if v_key.expires_at is not null and v_key.expires_at <= now() then
+    return query select false, 'expired_key', null::timestamptz;
+    return;
+  end if;
+
+  if exists(select 1 from public.key_redemptions kr where kr.key_id = v_key.id and kr.user_id = v_user) then
+    return query select true, 'already_redeemed', (
+      select ua.expires_at from public.user_access ua where ua.user_id = v_user
+    );
+    return;
+  end if;
+
+  if v_key.used_count >= v_key.max_uses then
+    return query select false, 'key_limit_reached', null::timestamptz;
+    return;
+  end if;
+
+  if v_key.grant_months is not null then
+    v_access_exp := now() + make_interval(months => v_key.grant_months);
+  elsif v_key.grant_days is not null then
+    v_access_exp := now() + make_interval(days => v_key.grant_days);
+  else
+    v_access_exp := null;
+  end if;
+
+  insert into public.key_redemptions (key_id, user_id)
+  values (v_key.id, v_user);
+
+  update public.activation_keys
+  set used_count = used_count + 1
+  where id = v_key.id;
+
+  insert into public.user_access (user_id, source, granted_by_key_id, granted_at, expires_at, is_active)
+  values (v_user, 'activation_key', v_key.id, now(), v_access_exp, true)
+  on conflict (user_id)
+  do update
+    set source = 'activation_key',
+        granted_by_key_id = excluded.granted_by_key_id,
+        granted_at = now(),
+        expires_at = case
+          when public.user_access.expires_at is null then null
+          when excluded.expires_at is null then null
+          else greatest(public.user_access.expires_at, excluded.expires_at)
+        end,
+        is_active = true;
+
+  return query select true, 'redeemed', v_access_exp;
+end;
+$$;
+
+create or replace function public.attach_activation_key_to_user(
+  p_code text,
+  p_user_email text
+)
+returns table(success boolean, message text, access_expires_at timestamptz)
+language plpgsql
+security definer
+set search_path = public, auth
+as $$
+declare
+  v_admin uuid := auth.uid();
+  v_target_user uuid;
+  v_target_email text;
+  v_key public.activation_keys%rowtype;
+  v_access_exp timestamptz;
+begin
+  if v_admin is null then
+    return query select false, 'not_authenticated', null::timestamptz;
+    return;
+  end if;
+
+  if not public.is_app_admin(v_admin) then
+    return query select false, 'not_admin', null::timestamptz;
+    return;
+  end if;
+
+  v_target_email := lower(trim(coalesce(p_user_email, '')));
+  if v_target_email = '' then
+    return query select false, 'user_not_found', null::timestamptz;
+    return;
+  end if;
+
+  select u.id
+    into v_target_user
+  from auth.users u
+  where lower(u.email) = v_target_email
+  limit 1;
+
+  if v_target_user is null then
+    return query select false, 'user_not_found', null::timestamptz;
+    return;
+  end if;
+
+  select *
+    into v_key
+  from public.activation_keys
+  where code = upper(trim(coalesce(p_code, '')))
+  for update;
+
+  if not found then
+    return query select false, 'invalid_key', null::timestamptz;
+    return;
+  end if;
+
+  if not v_key.is_active then
+    return query select false, 'inactive_key', null::timestamptz;
+    return;
+  end if;
+
+  if v_key.expires_at is not null and v_key.expires_at <= now() then
+    return query select false, 'expired_key', null::timestamptz;
+    return;
+  end if;
+
+  if v_key.created_for_email is not null
+     and lower(trim(v_key.created_for_email)) <> v_target_email then
+    return query select false, 'email_mismatch', null::timestamptz;
+    return;
+  end if;
+
+  if exists(select 1 from public.key_redemptions kr where kr.key_id = v_key.id and kr.user_id = v_target_user) then
+    return query select true, 'already_redeemed', (
+      select ua.expires_at from public.user_access ua where ua.user_id = v_target_user
+    );
+    return;
+  end if;
+
+  if v_key.used_count >= v_key.max_uses then
+    return query select false, 'key_limit_reached', null::timestamptz;
+    return;
+  end if;
+
+  if v_key.grant_months is not null then
+    v_access_exp := now() + make_interval(months => v_key.grant_months);
+  elsif v_key.grant_days is not null then
+    v_access_exp := now() + make_interval(days => v_key.grant_days);
+  else
+    v_access_exp := null;
+  end if;
+
+  insert into public.key_redemptions (key_id, user_id)
+  values (v_key.id, v_target_user);
+
+  update public.activation_keys
+  set used_count = used_count + 1
+  where id = v_key.id;
+
+  insert into public.user_access (user_id, source, granted_by_key_id, granted_at, expires_at, is_active)
+  values (v_target_user, 'activation_key', v_key.id, now(), v_access_exp, true)
+  on conflict (user_id)
+  do update
+    set source = 'activation_key',
+        granted_by_key_id = excluded.granted_by_key_id,
+        granted_at = now(),
+        expires_at = case
+          when public.user_access.expires_at is null then null
+          when excluded.expires_at is null then null
+          else greatest(public.user_access.expires_at, excluded.expires_at)
+        end,
+        is_active = true;
+
+  return query select true, 'attached', v_access_exp;
+end;
+$$;
+
+create or replace function public.admin_dashboard_summary()
+returns table(
+  total_accounts bigint,
+  confirmed_accounts bigint,
+  active_accounts bigint,
+  expired_accounts bigint,
+  no_access_accounts bigint,
+  admin_accounts bigint,
+  total_keys bigint,
+  active_keys bigint,
+  attached_keys bigint
+)
+language plpgsql
+stable
+security definer
+set search_path = public, auth
+as $$
+begin
+  if not public.is_app_admin(auth.uid()) then
+    raise exception 'not_admin';
+  end if;
+
+  return query
+    with account_states as (
+      select
+        u.id,
+        u.email_confirmed_at,
+        exists(select 1 from public.app_admins aa where aa.user_id = u.id) as is_admin,
+        case
+          when exists(select 1 from public.app_admins aa where aa.user_id = u.id) then 'admin'
+          when ua.user_id is null or ua.is_active = false then 'no_access'
+          when ua.expires_at is not null and ua.expires_at <= now() then 'expired'
+          else 'active'
+        end as access_state
+      from auth.users u
+      left join public.user_access ua on ua.user_id = u.id
+    )
+    select
+      count(*)::bigint as total_accounts,
+      count(*) filter (where email_confirmed_at is not null)::bigint as confirmed_accounts,
+      count(*) filter (where access_state = 'active')::bigint as active_accounts,
+      count(*) filter (where access_state = 'expired')::bigint as expired_accounts,
+      count(*) filter (where access_state = 'no_access')::bigint as no_access_accounts,
+      count(*) filter (where is_admin = true)::bigint as admin_accounts,
+      (select count(*)::bigint from public.activation_keys) as total_keys,
+      (
+        select count(*)::bigint
+        from public.activation_keys ak
+        where ak.is_active = true
+          and (ak.expires_at is null or ak.expires_at > now())
+          and ak.used_count < ak.max_uses
+      ) as active_keys,
+      (select count(*)::bigint from public.key_redemptions) as attached_keys;
+end;
+$$;
+
+create or replace function public.admin_list_accounts(
+  p_search text default null,
+  p_filter text default 'all'
+)
+returns table(
+  user_id uuid,
+  email text,
+  username text,
+  created_at timestamptz,
+  email_confirmed_at timestamptz,
+  last_sign_in_at timestamptz,
+  is_admin boolean,
+  access_state text,
+  access_source text,
+  access_granted_at timestamptz,
+  access_expires_at timestamptz,
+  latest_key_code text,
+  latest_key_redeemed_at timestamptz
+)
+language plpgsql
+stable
+security definer
+set search_path = public, auth
+as $$
+begin
+  if not public.is_app_admin(auth.uid()) then
+    raise exception 'not_admin';
+  end if;
+
+  return query
+    with rows as (
+      select
+        u.id as user_id,
+        u.email,
+        p.username,
+        u.created_at,
+        u.email_confirmed_at,
+        u.last_sign_in_at,
+        exists(select 1 from public.app_admins aa where aa.user_id = u.id) as is_admin,
+        case
+          when exists(select 1 from public.app_admins aa where aa.user_id = u.id) then 'admin'
+          when ua.user_id is null or ua.is_active = false then 'no_access'
+          when ua.expires_at is not null and ua.expires_at <= now() then 'expired'
+          else 'active'
+        end as access_state,
+        ua.source as access_source,
+        ua.granted_at as access_granted_at,
+        ua.expires_at as access_expires_at,
+        lk.code as latest_key_code,
+        lk.redeemed_at as latest_key_redeemed_at
+      from auth.users u
+      left join public.profiles p on p.id = u.id
+      left join public.user_access ua on ua.user_id = u.id
+      left join lateral (
+        select
+          ak.code,
+          kr.redeemed_at
+        from public.key_redemptions kr
+        join public.activation_keys ak on ak.id = kr.key_id
+        where kr.user_id = u.id
+        order by kr.redeemed_at desc
+        limit 1
+      ) lk on true
+      where (
+        coalesce(nullif(trim(p_search), ''), '') = ''
+        or lower(coalesce(u.email, '')) like '%' || lower(trim(p_search)) || '%'
+        or lower(coalesce(p.username, '')) like '%' || lower(trim(p_search)) || '%'
+      )
+    )
+    select *
+    from rows
+    where case lower(coalesce(p_filter, 'all'))
+      when 'active' then access_state = 'active'
+      when 'expired' then access_state = 'expired'
+      when 'no_access' then access_state = 'no_access'
+      when 'admin' then access_state = 'admin'
+      else true
+    end
+    order by
+      case access_state
+        when 'admin' then 0
+        when 'active' then 1
+        when 'expired' then 2
+        else 3
+      end,
+      created_at desc;
+end;
+$$;
+
+create or replace function public.admin_list_activation_keys(
+  p_search text default null,
+  p_filter text default 'all'
+)
+returns table(
+  code text,
+  created_for_email text,
+  note text,
+  max_uses integer,
+  used_count integer,
+  created_at timestamptz,
+  expires_at timestamptz,
+  valid_months integer,
+  grant_months integer,
+  is_active boolean,
+  availability_state text
+)
+language plpgsql
+stable
+security definer
+set search_path = public
+as $$
+begin
+  if not public.is_app_admin(auth.uid()) then
+    raise exception 'not_admin';
+  end if;
+
+  return query
+    with rows as (
+      select
+        ak.code,
+        ak.created_for_email,
+        ak.note,
+        ak.max_uses,
+        ak.used_count,
+        ak.created_at,
+        ak.expires_at,
+        ak.valid_months,
+        ak.grant_months,
+        ak.is_active,
+        case
+          when ak.is_active = false then 'inactive'
+          when ak.expires_at is not null and ak.expires_at <= now() then 'expired'
+          when ak.used_count >= ak.max_uses then 'consumed'
+          else 'available'
+        end as availability_state
+      from public.activation_keys ak
+      where (
+        coalesce(nullif(trim(p_search), ''), '') = ''
+        or lower(coalesce(ak.code, '')) like '%' || lower(trim(p_search)) || '%'
+        or lower(coalesce(ak.created_for_email, '')) like '%' || lower(trim(p_search)) || '%'
+        or lower(coalesce(ak.note, '')) like '%' || lower(trim(p_search)) || '%'
+      )
+    )
+    select *
+    from rows
+    where case lower(coalesce(p_filter, 'all'))
+      when 'available' then availability_state = 'available'
+      when 'consumed' then availability_state = 'consumed'
+      when 'expired' then availability_state = 'expired'
+      when 'inactive' then availability_state = 'inactive'
+      else true
+    end
+    order by created_at desc
+    limit 80;
+end;
+$$;
+
+grant execute on function public.create_activation_key(text, text, integer, integer, integer) to authenticated;
+grant execute on function public.admin_dashboard_summary() to authenticated;
+grant execute on function public.admin_list_accounts(text, text) to authenticated;
+grant execute on function public.admin_list_activation_keys(text, text) to authenticated;

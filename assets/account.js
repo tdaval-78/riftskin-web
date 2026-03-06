@@ -14,6 +14,7 @@
   const myKeysMsg = document.querySelector('[data-my-keys-msg]');
 
   const adminPanel = document.querySelector('[data-admin-only]');
+  const adminRefreshBtn = document.querySelector('[data-admin-refresh]');
   const adminCreateForm = document.querySelector('[data-admin-create-key]');
   const adminCreateMsg = document.querySelector('[data-admin-create-msg]');
   const adminKeyOutput = document.querySelector('[data-admin-key-output]');
@@ -24,6 +25,18 @@
   const adminUpdateForm = document.querySelector('[data-admin-update-notice]');
   const adminUpdateMsg = document.querySelector('[data-admin-update-msg]');
   const adminUpdateLive = document.querySelector('[data-admin-update-live]');
+  const adminAccountsBody = document.querySelector('[data-admin-accounts-body]');
+  const adminAccountsMsg = document.querySelector('[data-admin-accounts-msg]');
+  const adminAccountSearch = document.querySelector('[data-admin-account-search]');
+  const adminAccountFilter = document.querySelector('[data-admin-account-filter]');
+  const adminKpis = Array.from(document.querySelectorAll('[data-admin-kpi]'));
+  const adminKpiSubs = Array.from(document.querySelectorAll('[data-admin-kpi-sub]'));
+
+  const adminState = {
+    search: '',
+    filter: 'all',
+    searchTimer: null
+  };
 
   function t(key) {
     return window.RiftSkinI18n ? window.RiftSkinI18n.t(key) : key;
@@ -48,7 +61,7 @@
   }
 
   function formatDate(isoString) {
-    if (!isoString) return 'Never';
+    if (!isoString) return t('admin_not_available');
     const dt = new Date(isoString);
     if (Number.isNaN(dt.getTime())) return isoString;
     return dt.toLocaleString();
@@ -58,30 +71,60 @@
     return Array.isArray(val) ? val : [];
   }
 
+  function createBadge(label, kind) {
+    const span = document.createElement('span');
+    span.className = 'status-badge ' + (kind || '');
+    span.textContent = label;
+    return span;
+  }
+
+  function accessStateInfo(state) {
+    if (state === 'admin') return { label: t('admin_state_admin'), kind: 'ok' };
+    if (state === 'active') return { label: t('admin_state_active'), kind: 'ok' };
+    if (state === 'expired') return { label: t('admin_state_expired'), kind: 'error' };
+    return { label: t('admin_state_no_access'), kind: '' };
+  }
+
+  function keyStateInfo(state) {
+    if (state === 'available') return { label: t('admin_key_state_available'), kind: 'ok' };
+    if (state === 'consumed') return { label: t('admin_key_state_consumed'), kind: '' };
+    if (state === 'expired') return { label: t('admin_key_state_expired'), kind: 'error' };
+    return { label: t('admin_key_state_inactive'), kind: '' };
+  }
+
+  function confirmationLabel(item) {
+    return item && item.email_confirmed_at ? t('admin_confirmed') : t('admin_pending_confirmation');
+  }
+
+  function formatMonths(months) {
+    if (!months) return t('admin_no_expiry');
+    return months + ' ' + (months > 1 ? t('admin_months') : t('admin_month'));
+  }
+
   function decodeActivationMessage(code) {
     if (!code) return '';
-    if (code === 'redeemed') return 'Activation key accepted.';
-    if (code === 'attached') return 'Activation key attached to account.';
-    if (code === 'already_redeemed') return 'This account already has this key attached.';
-    if (code === 'invalid_key') return 'Activation key is invalid.';
-    if (code === 'inactive_key') return 'Activation key is inactive.';
-    if (code === 'expired_key') return 'Activation key is expired.';
-    if (code === 'key_limit_reached') return 'Activation key usage limit is reached.';
-    if (code === 'not_authenticated') return 'Please sign in first.';
-    if (code === 'user_not_found') return 'No account found for this email.';
-    if (code === 'email_mismatch') return 'Key is locked to another email.';
-    if (code === 'key_reserved_for_other_email') return 'This key is reserved for another email.';
-    if (code === 'not_admin') return 'Admin rights are required.';
+    if (code === 'redeemed') return t('admin_msg_key_redeemed');
+    if (code === 'attached') return t('admin_msg_key_attached');
+    if (code === 'already_redeemed') return t('admin_msg_key_already_attached');
+    if (code === 'invalid_key') return t('admin_msg_invalid_key');
+    if (code === 'inactive_key') return t('admin_msg_inactive_key');
+    if (code === 'expired_key') return t('admin_msg_expired_key');
+    if (code === 'key_limit_reached') return t('admin_msg_key_limit');
+    if (code === 'not_authenticated') return t('admin_msg_not_authenticated');
+    if (code === 'user_not_found') return t('admin_msg_user_not_found');
+    if (code === 'email_mismatch') return t('admin_msg_email_mismatch');
+    if (code === 'key_reserved_for_other_email') return t('admin_msg_reserved_other_email');
+    if (code === 'not_admin') return t('admin_msg_not_admin');
     return code;
   }
 
   function decodeUpdateAdminMessage(code) {
     if (!code) return '';
-    if (code === 'published') return 'Update notice published.';
-    if (code === 'disabled') return 'Update notice disabled.';
-    if (code === 'latest_version_required') return 'Latest version is required when notice is enabled.';
-    if (code === 'not_authenticated') return 'Please sign in first.';
-    if (code === 'not_admin') return 'Admin rights are required.';
+    if (code === 'published') return t('admin_msg_update_published');
+    if (code === 'disabled') return t('admin_msg_update_disabled');
+    if (code === 'latest_version_required') return t('admin_msg_update_latest_required');
+    if (code === 'not_authenticated') return t('admin_msg_not_authenticated');
+    if (code === 'not_admin') return t('admin_msg_not_admin');
     return code;
   }
 
@@ -100,7 +143,7 @@
     if (loggedInView) loggedInView.style.display = 'none';
     if (accountEmail) accountEmail.textContent = '-';
     setStatus(t('msg_status_not_connected'), '');
-    setAccessBadge('Sign in required', '');
+    setAccessBadge(t('admin_sign_in_required'), '');
     if (accessMeta) accessMeta.textContent = '';
     if (myKeysBody) myKeysBody.innerHTML = '';
     if (myKeysMsg) msg(myKeysMsg, '');
@@ -136,8 +179,8 @@
     try {
       const { data: adminData, error: adminError } = await supabaseClient.rpc('is_app_admin');
       if (!adminError && adminData === true) {
-        setAccessBadge('Active (admin)', 'ok');
-        if (accessMeta) accessMeta.textContent = 'Admin account: no activation key required.';
+        setAccessBadge(t('admin_access_active_admin'), 'ok');
+        if (accessMeta) accessMeta.textContent = t('admin_access_admin_meta');
         return;
       }
 
@@ -148,32 +191,32 @@
         .maybeSingle();
 
       if (error) {
-        setAccessBadge('Unavailable', 'error');
-        if (accessMeta) accessMeta.textContent = error.message || 'Access table unavailable.';
+        setAccessBadge(t('admin_unavailable'), 'error');
+        if (accessMeta) accessMeta.textContent = error.message || t('admin_access_table_unavailable');
         return;
       }
 
       if (!data || !data.is_active) {
-        setAccessBadge('No active key', 'error');
-        if (accessMeta) accessMeta.textContent = 'Redeem an activation key to unlock software access.';
+        setAccessBadge(t('admin_no_active_key'), 'error');
+        if (accessMeta) accessMeta.textContent = t('admin_redeem_unlock');
         return;
       }
 
       const expiresAt = data.expires_at ? new Date(data.expires_at) : null;
       const expired = expiresAt && expiresAt.getTime() <= Date.now();
       if (expired) {
-        setAccessBadge('Expired', 'error');
-        if (accessMeta) accessMeta.textContent = 'Expired on ' + formatDate(data.expires_at);
+        setAccessBadge(t('admin_state_expired'), 'error');
+        if (accessMeta) accessMeta.textContent = t('admin_expired_on') + ' ' + formatDate(data.expires_at);
         return;
       }
 
-      setAccessBadge('Active', 'ok');
+      setAccessBadge(t('admin_state_active'), 'ok');
       const source = data.source || 'activation_key';
-      const expiresLabel = data.expires_at ? formatDate(data.expires_at) : 'No expiry';
-      if (accessMeta) accessMeta.textContent = 'Source: ' + source + ' - Expires: ' + expiresLabel;
+      const expiresLabel = data.expires_at ? formatDate(data.expires_at) : t('admin_no_expiry');
+      if (accessMeta) accessMeta.textContent = t('admin_access_source') + ' ' + source + ' - ' + t('admin_access_expires') + ' ' + expiresLabel;
     } catch (err) {
-      setAccessBadge('Unavailable', 'error');
-      if (accessMeta) accessMeta.textContent = (err && err.message) ? err.message : 'Unexpected error.';
+      setAccessBadge(t('admin_unavailable'), 'error');
+      if (accessMeta) accessMeta.textContent = (err && err.message) ? err.message : t('admin_unexpected_error');
     }
   }
 
@@ -183,19 +226,168 @@
     return data === true;
   }
 
+  function setKpi(name, value) {
+    adminKpis.forEach(function (el) {
+      if (el.getAttribute('data-admin-kpi') === name) {
+        el.textContent = value;
+      }
+    });
+  }
+
+  function setKpiSub(name, text) {
+    adminKpiSubs.forEach(function (el) {
+      if (el.getAttribute('data-admin-kpi-sub') === name) {
+        el.textContent = text;
+      }
+    });
+  }
+
+  async function loadAdminSummary() {
+    const { data, error } = await supabaseClient.rpc('admin_dashboard_summary');
+    if (error) {
+      msg(adminAccountsMsg, error.message || t('admin_summary_failed'), 'error');
+      return;
+    }
+
+    const row = safeArray(data)[0] || {};
+    setKpi('total_accounts', String(row.total_accounts || 0));
+    setKpi('active_accounts', String(row.active_accounts || 0));
+    setKpi('no_access_accounts', String(row.no_access_accounts || 0));
+    setKpi('total_keys', String(row.total_keys || 0));
+
+    setKpiSub('confirmed_accounts', (row.confirmed_accounts || 0) + ' ' + t('admin_confirmed').toLowerCase());
+    setKpiSub('expired_accounts', (row.expired_accounts || 0) + ' ' + t('admin_state_expired').toLowerCase());
+    setKpiSub('admin_accounts', (row.admin_accounts || 0) + ' ' + t('admin_filter_admin').toLowerCase());
+    setKpiSub('active_keys', (row.active_keys || 0) + ' ' + t('admin_key_state_available').toLowerCase());
+  }
+
+  function prefillCreateKeyForm(email) {
+    if (!adminCreateForm) return;
+    const input = adminCreateForm.querySelector('[name="for_email"]');
+    if (input) {
+      input.value = email || '';
+      input.focus();
+    }
+  }
+
+  async function copyToClipboard(text) {
+    if (!text) return;
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text);
+        return true;
+      }
+    } catch (_err) {
+      // fall through
+    }
+    return false;
+  }
+
+  async function loadAdminAccounts() {
+    if (!adminAccountsBody) return;
+    adminAccountsBody.innerHTML = '';
+    msg(adminAccountsMsg, '');
+
+    const { data, error } = await supabaseClient.rpc('admin_list_accounts', {
+      p_search: adminState.search || null,
+      p_filter: adminState.filter || 'all'
+    });
+
+    if (error) {
+      msg(adminAccountsMsg, error.message || t('admin_accounts_failed'), 'error');
+      return;
+    }
+
+    const rows = safeArray(data);
+    if (!rows.length) {
+      const tr = document.createElement('tr');
+      const td = document.createElement('td');
+      td.colSpan = 8;
+      td.textContent = t('admin_accounts_empty');
+      tr.appendChild(td);
+      adminAccountsBody.appendChild(tr);
+      return;
+    }
+
+    rows.forEach(function (item) {
+      const tr = document.createElement('tr');
+
+      const tdEmail = document.createElement('td');
+      const emailStrong = document.createElement('div');
+      emailStrong.textContent = item.email || '-';
+      const emailSub = document.createElement('div');
+      emailSub.className = 'table-subtle';
+      emailSub.textContent = confirmationLabel(item);
+      tdEmail.appendChild(emailStrong);
+      tdEmail.appendChild(emailSub);
+      tr.appendChild(tdEmail);
+
+      const tdUsername = document.createElement('td');
+      tdUsername.textContent = item.username || '-';
+      tr.appendChild(tdUsername);
+
+      const tdCreated = document.createElement('td');
+      tdCreated.textContent = formatDate(item.created_at);
+      tr.appendChild(tdCreated);
+
+      const tdSeen = document.createElement('td');
+      tdSeen.textContent = item.last_sign_in_at ? formatDate(item.last_sign_in_at) : t('admin_not_available');
+      tr.appendChild(tdSeen);
+
+      const tdAccess = document.createElement('td');
+      const state = accessStateInfo(item.access_state);
+      tdAccess.appendChild(createBadge(state.label, state.kind));
+      const source = document.createElement('div');
+      source.className = 'table-subtle';
+      source.textContent = item.access_source || (item.is_admin ? 'admin' : t('admin_not_available'));
+      tdAccess.appendChild(source);
+      tr.appendChild(tdAccess);
+
+      const tdExpires = document.createElement('td');
+      tdExpires.textContent = item.is_admin ? t('admin_no_expiry') : (item.access_expires_at ? formatDate(item.access_expires_at) : t('admin_no_expiry'));
+      tr.appendChild(tdExpires);
+
+      const tdKey = document.createElement('td');
+      tdKey.textContent = item.latest_key_code || '-';
+      tr.appendChild(tdKey);
+
+      const tdActions = document.createElement('td');
+      const actions = document.createElement('div');
+      actions.className = 'inline-actions';
+
+      const prefillBtn = document.createElement('button');
+      prefillBtn.type = 'button';
+      prefillBtn.className = 'btn btn-ghost btn-small';
+      prefillBtn.textContent = t('admin_action_prefill');
+      prefillBtn.setAttribute('data-prefill-email', item.email || '');
+      actions.appendChild(prefillBtn);
+
+      const copyBtn = document.createElement('button');
+      copyBtn.type = 'button';
+      copyBtn.className = 'btn btn-ghost btn-small';
+      copyBtn.textContent = t('admin_action_copy_email');
+      copyBtn.setAttribute('data-copy-email', item.email || '');
+      actions.appendChild(copyBtn);
+
+      tdActions.appendChild(actions);
+      tr.appendChild(tdActions);
+
+      adminAccountsBody.appendChild(tr);
+    });
+  }
+
   async function loadAdminKeys() {
     if (!adminKeysBody) return;
     adminKeysBody.innerHTML = '';
     msg(adminListMsg, '');
 
-    const { data, error } = await supabaseClient
-      .from('activation_keys')
-      .select('code, used_count, max_uses, expires_at, grant_days, created_for_email, note, is_active, created_at')
-      .order('created_at', { ascending: false })
-      .limit(30);
+    const { data, error } = await supabaseClient.rpc('admin_list_activation_keys', {
+      p_search: null,
+      p_filter: 'all'
+    });
 
     if (error) {
-      msg(adminListMsg, error.message || 'Could not load keys.', 'error');
+      msg(adminListMsg, error.message || t('admin_keys_failed'), 'error');
       return;
     }
 
@@ -204,7 +396,7 @@
       const tr = document.createElement('tr');
       const td = document.createElement('td');
       td.colSpan = 5;
-      td.textContent = 'No keys yet.';
+      td.textContent = t('admin_keys_empty');
       tr.appendChild(td);
       adminKeysBody.appendChild(tr);
       return;
@@ -214,7 +406,15 @@
       const tr = document.createElement('tr');
 
       const tdCode = document.createElement('td');
-      tdCode.textContent = item.code + (item.is_active ? '' : ' (inactive)');
+      const code = document.createElement('div');
+      code.className = 'mono-text';
+      code.textContent = item.code;
+      const state = keyStateInfo(item.availability_state);
+      const codeSub = document.createElement('div');
+      codeSub.className = 'table-subtle';
+      codeSub.textContent = state.label;
+      tdCode.appendChild(code);
+      tdCode.appendChild(codeSub);
       tr.appendChild(tdCode);
 
       const tdUses = document.createElement('td');
@@ -222,44 +422,41 @@
       tr.appendChild(tdUses);
 
       const tdKeyExp = document.createElement('td');
-      tdKeyExp.textContent = item.expires_at ? formatDate(item.expires_at) : 'No expiry';
+      tdKeyExp.textContent = item.expires_at ? formatDate(item.expires_at) : t('admin_no_expiry');
       tr.appendChild(tdKeyExp);
 
       const tdAccessExp = document.createElement('td');
-      tdAccessExp.textContent = item.grant_days ? String(item.grant_days) + ' days' : 'No expiry';
+      tdAccessExp.textContent = formatMonths(item.grant_months);
       tr.appendChild(tdAccessExp);
 
       const tdTarget = document.createElement('td');
-      tdTarget.textContent = [item.created_for_email || '-', item.note || '-'].join(' / ');
+      tdTarget.innerHTML = '';
+      const targetMain = document.createElement('div');
+      targetMain.textContent = item.created_for_email || '-';
+      const targetSub = document.createElement('div');
+      targetSub.className = 'table-subtle';
+      targetSub.textContent = item.note || '-';
+      tdTarget.appendChild(targetMain);
+      tdTarget.appendChild(targetSub);
       tr.appendChild(tdTarget);
 
       adminKeysBody.appendChild(tr);
     });
   }
 
-  async function refreshAdminPanels() {
-    if (!adminPanel) return;
-    const isAdmin = await checkIsAdmin();
-    adminPanel.style.display = isAdmin ? 'block' : 'none';
-    if (isAdmin) {
-      await loadAdminKeys();
-      await loadAdminUpdateNotice();
-    }
-  }
-
   async function loadAdminUpdateNotice() {
     if (!adminUpdateLive) return;
-    adminUpdateLive.textContent = 'Loading...';
+    adminUpdateLive.textContent = t('admin_loading');
 
     const { data, error } = await supabaseClient.rpc('get_public_update_notice', { p_channel: 'stable' });
     if (error) {
-      adminUpdateLive.textContent = error.message || 'Could not load live notice.';
+      adminUpdateLive.textContent = error.message || t('admin_update_load_failed');
       return;
     }
 
     const row = safeArray(data)[0] || null;
     if (!row) {
-      adminUpdateLive.textContent = 'No live notice published.';
+      adminUpdateLive.textContent = t('admin_update_none_live');
       if (adminUpdateForm) {
         adminUpdateForm.querySelector('[name="enabled"]').checked = false;
       }
@@ -267,14 +464,12 @@
     }
 
     const parts = [
-      'Latest: ' + (row.latest_version || '-'),
-      'Minimum: ' + (row.minimum_version || '-'),
-      'Mandatory: ' + (row.mandatory ? 'yes' : 'no'),
-      'Published: ' + formatDate(row.published_at)
+      t('admin_update_latest') + ' ' + (row.latest_version || '-'),
+      t('admin_update_minimum') + ' ' + (row.minimum_version || '-'),
+      t('admin_update_mandatory_label') + ' ' + (row.mandatory ? t('admin_yes') : t('admin_no')),
+      t('admin_update_published') + ' ' + formatDate(row.published_at)
     ];
-    if (row.message) {
-      parts.push('Message: ' + row.message);
-    }
+    if (row.message) parts.push(row.message);
     adminUpdateLive.textContent = parts.join(' | ');
 
     if (adminUpdateForm) {
@@ -284,6 +479,17 @@
       adminUpdateForm.querySelector('[name="mandatory"]').checked = !!row.mandatory;
       adminUpdateForm.querySelector('[name="enabled"]').checked = !!row.enabled;
     }
+  }
+
+  async function refreshAdminPanels() {
+    if (!adminPanel) return;
+    const isAdmin = await checkIsAdmin();
+    adminPanel.style.display = isAdmin ? 'block' : 'none';
+    if (!isAdmin) return;
+    await loadAdminSummary();
+    await loadAdminAccounts();
+    await loadAdminKeys();
+    await loadAdminUpdateNotice();
   }
 
   async function loadMyKeys(userId) {
@@ -328,11 +534,11 @@
       tr.appendChild(tdRedeemed);
 
       const tdExpires = document.createElement('td');
-      tdExpires.textContent = keyObj.expires_at ? formatDate(keyObj.expires_at) : 'No expiry';
+      tdExpires.textContent = keyObj.expires_at ? formatDate(keyObj.expires_at) : t('admin_no_expiry');
       tr.appendChild(tdExpires);
 
       const tdStatus = document.createElement('td');
-      tdStatus.textContent = keyObj.is_active === false ? 'Inactive' : 'Active';
+      tdStatus.textContent = keyObj.is_active === false ? t('admin_key_state_inactive') : t('admin_state_active');
       tr.appendChild(tdStatus);
 
       myKeysBody.appendChild(tr);
@@ -494,10 +700,52 @@
     });
   }
 
+  if (adminRefreshBtn) {
+    adminRefreshBtn.addEventListener('click', async function () {
+      msg(adminAccountsMsg, t('admin_refreshing'));
+      await refreshAdminPanels();
+      msg(adminAccountsMsg, '', '');
+    });
+  }
+
+  if (adminAccountSearch) {
+    adminAccountSearch.addEventListener('input', function () {
+      adminState.search = adminAccountSearch.value.trim();
+      clearTimeout(adminState.searchTimer);
+      adminState.searchTimer = setTimeout(function () {
+        loadAdminAccounts();
+      }, 250);
+    });
+  }
+
+  if (adminAccountFilter) {
+    adminAccountFilter.addEventListener('change', function () {
+      adminState.filter = adminAccountFilter.value || 'all';
+      loadAdminAccounts();
+    });
+  }
+
+  if (adminAccountsBody) {
+    adminAccountsBody.addEventListener('click', async function (event) {
+      const prefillBtn = event.target.closest('[data-prefill-email]');
+      if (prefillBtn) {
+        prefillCreateKeyForm(prefillBtn.getAttribute('data-prefill-email') || '');
+        return;
+      }
+
+      const copyBtn = event.target.closest('[data-copy-email]');
+      if (copyBtn) {
+        const email = copyBtn.getAttribute('data-copy-email') || '';
+        const copied = await copyToClipboard(email);
+        msg(adminAccountsMsg, copied ? t('admin_email_copied') : t('admin_email_copy_failed'), copied ? 'ok' : 'error');
+      }
+    });
+  }
+
   if (adminCreateForm) {
     adminCreateForm.addEventListener('submit', async function (e) {
       e.preventDefault();
-      msg(adminCreateMsg, 'Creating key...');
+      msg(adminCreateMsg, t('admin_creating_key'));
       if (adminKeyOutput) {
         adminKeyOutput.style.display = 'none';
         adminKeyOutput.textContent = '';
@@ -505,42 +753,64 @@
 
       const fd = new FormData(adminCreateForm);
       const maxUses = Number(fd.get('max_uses') || 1);
-      const validDays = Number(fd.get('valid_days') || 30);
-      const grantDaysRaw = (fd.get('grant_days') || '').toString().trim();
-      const grantDays = grantDaysRaw ? Number(grantDaysRaw) : null;
+      const validMonths = Number(fd.get('valid_months') || 1);
+      const grantMonthsRaw = (fd.get('grant_months') || '').toString().trim();
+      const grantMonths = grantMonthsRaw ? Number(grantMonthsRaw) : null;
       const forEmail = ((fd.get('for_email') || '').toString().trim()) || null;
       const note = ((fd.get('note') || '').toString().trim()) || null;
+      const autoAttach = !!adminCreateForm.querySelector('[name="auto_attach"]').checked;
 
-      const payload = {
+      const { data, error } = await supabaseClient.rpc('create_activation_key', {
         p_for_email: forEmail,
         p_note: note,
         p_max_uses: maxUses,
-        p_valid_days: validDays,
-        p_grant_days: grantDays
-      };
+        p_valid_months: validMonths,
+        p_grant_months: grantMonths
+      });
 
-      const { data, error } = await supabaseClient.rpc('create_activation_key', payload);
       if (error) {
-        msg(adminCreateMsg, error.message || 'Could not create key.', 'error');
+        msg(adminCreateMsg, error.message || t('admin_key_create_failed'), 'error');
         return;
       }
 
       const row = safeArray(data)[0] || {};
       const code = row.code || '';
       if (!code) {
-        msg(adminCreateMsg, 'Key created but no code returned.', 'error');
+        msg(adminCreateMsg, t('admin_key_create_failed'), 'error');
         return;
       }
 
-      msg(adminCreateMsg, 'Key created successfully.', 'ok');
+      let createdMessage = t('admin_key_created_ok');
+      if (autoAttach && forEmail) {
+        const attachResult = await supabaseClient.rpc('attach_activation_key_to_user', {
+          p_code: code,
+          p_user_email: forEmail
+        });
+        if (attachResult.error) {
+          msg(adminCreateMsg, attachResult.error.message || t('admin_attach_failed'), 'error');
+          return;
+        }
+        const attachRow = safeArray(attachResult.data)[0] || {};
+        if (!attachRow.success) {
+          msg(adminCreateMsg, decodeActivationMessage(attachRow.message || '') || t('admin_attach_failed'), 'error');
+          return;
+        }
+        createdMessage = t('admin_key_created_attached_ok');
+      }
+
+      msg(adminCreateMsg, createdMessage, 'ok');
       if (adminKeyOutput) {
-        adminKeyOutput.textContent = code + (row.expires_at ? (' - key expires: ' + formatDate(row.expires_at)) : '');
+        const outputParts = [code, t('admin_key_expires') + ' ' + (row.expires_at ? formatDate(row.expires_at) : t('admin_no_expiry'))];
+        if (grantMonths) outputParts.push(t('admin_access_duration_label') + ' ' + formatMonths(grantMonths));
+        adminKeyOutput.textContent = outputParts.join(' | ');
         adminKeyOutput.style.display = 'block';
       }
 
       adminCreateForm.reset();
       adminCreateForm.querySelector('[name="max_uses"]').value = '1';
-      adminCreateForm.querySelector('[name="valid_days"]').value = '30';
+      adminCreateForm.querySelector('[name="valid_months"]').value = '1';
+      await loadAdminSummary();
+      await loadAdminAccounts();
       await loadAdminKeys();
     });
   }
@@ -548,14 +818,14 @@
   if (adminAttachForm) {
     adminAttachForm.addEventListener('submit', async function (e) {
       e.preventDefault();
-      msg(adminAttachMsg, 'Attaching key...');
+      msg(adminAttachMsg, t('admin_attaching_key'));
 
       const fd = new FormData(adminAttachForm);
       const userEmail = ((fd.get('user_email') || '').toString().trim()) || '';
       const keyCode = ((fd.get('key_code') || '').toString().trim()) || '';
 
       if (!userEmail || !keyCode) {
-        msg(adminAttachMsg, 'User email and key code are required.', 'error');
+        msg(adminAttachMsg, t('admin_attach_fields_required'), 'error');
         return;
       }
 
@@ -564,19 +834,21 @@
         p_user_email: userEmail
       });
       if (error) {
-        msg(adminAttachMsg, error.message || 'Could not attach key.', 'error');
+        msg(adminAttachMsg, error.message || t('admin_attach_failed'), 'error');
         return;
       }
 
       const row = safeArray(data)[0] || {};
       const text = decodeActivationMessage(row.message || '');
       if (!row.success) {
-        msg(adminAttachMsg, text || 'Could not attach key.', 'error');
+        msg(adminAttachMsg, text || t('admin_attach_failed'), 'error');
         return;
       }
 
-      msg(adminAttachMsg, text || 'Key attached successfully.', 'ok');
+      msg(adminAttachMsg, text || t('admin_attach_success'), 'ok');
       adminAttachForm.reset();
+      await loadAdminSummary();
+      await loadAdminAccounts();
       await loadAdminKeys();
     });
   }
@@ -584,7 +856,7 @@
   if (adminUpdateForm) {
     adminUpdateForm.addEventListener('submit', async function (e) {
       e.preventDefault();
-      msg(adminUpdateMsg, 'Publishing update notice...');
+      msg(adminUpdateMsg, t('admin_publishing_update'));
 
       const fd = new FormData(adminUpdateForm);
       const enabled = adminUpdateForm.querySelector('[name="enabled"]').checked;
@@ -603,17 +875,17 @@
       });
 
       if (error) {
-        msg(adminUpdateMsg, error.message || 'Could not publish update notice.', 'error');
+        msg(adminUpdateMsg, error.message || t('admin_update_publish_failed'), 'error');
         return;
       }
 
       const row = safeArray(data)[0] || {};
       if (!row.success) {
-        msg(adminUpdateMsg, decodeUpdateAdminMessage(row.message || '') || 'Could not publish update notice.', 'error');
+        msg(adminUpdateMsg, decodeUpdateAdminMessage(row.message || '') || t('admin_update_publish_failed'), 'error');
         return;
       }
 
-      msg(adminUpdateMsg, decodeUpdateAdminMessage(row.message || '') || 'Update notice published.', 'ok');
+      msg(adminUpdateMsg, decodeUpdateAdminMessage(row.message || '') || t('admin_msg_update_published'), 'ok');
       await loadAdminUpdateNotice();
     });
   }

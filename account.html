@@ -105,78 +105,163 @@
         <div class="msg" data-session-msg></div>
       </article>
 
-      <article class="panel" data-admin-only style="display:none; margin-top: 12px;">
-        <h3>Admin - Activation key generator</h3>
-        <p class="subtle">Create private keys for friends/testers. They can redeem on this page after login.</p>
-
-        <form data-admin-create-key>
-          <div class="field-row">
-            <input type="email" name="for_email" placeholder="Optional email target" />
-            <input type="text" name="note" placeholder="Optional note (friend name, group, etc.)" />
+      <article class="panel admin-console" data-admin-only style="display:none; margin-top: 12px;">
+        <div class="admin-console-head">
+          <div>
+            <h3 data-i18n="admin_console_title">Admin console</h3>
+            <p class="subtle" data-i18n="admin_console_intro">Monitor accounts, active access, expiration risk, and activation keys from one place.</p>
           </div>
-          <div class="field-row">
-            <input type="number" name="max_uses" min="1" max="500" step="1" value="1" placeholder="Max uses" required />
-            <input type="number" name="valid_days" min="1" max="3650" step="1" value="30" placeholder="Key validity in days" required />
-          </div>
-          <div class="field-row">
-            <input type="number" name="grant_days" min="1" max="3650" step="1" placeholder="Access duration in days (empty = no expiry)" />
-            <button class="btn btn-primary" type="submit">Generate key</button>
-          </div>
-          <div class="msg" data-admin-create-msg></div>
-          <div class="key-box" data-admin-key-output style="display:none;"></div>
-        </form>
-
-        <h3 style="margin-top:16px;">Attach key to existing account</h3>
-        <p class="subtle">Assign a generated key directly to a user account email.</p>
-        <form data-admin-attach-key>
-          <div class="field-row">
-            <input type="email" name="user_email" placeholder="Target account email" required />
-            <input type="text" name="key_code" placeholder="Activation key code" required />
-            <button class="btn btn-primary" type="submit">Attach key</button>
-          </div>
-          <div class="msg" data-admin-attach-msg></div>
-        </form>
-
-        <h3 style="margin-top:16px;">Recent keys</h3>
-        <div class="keys-table-wrap">
-          <table class="keys-table" data-admin-keys-table>
-            <thead>
-              <tr>
-                <th>Code</th>
-                <th>Uses</th>
-                <th>Expires key</th>
-                <th>Access duration</th>
-                <th>Target</th>
-              </tr>
-            </thead>
-            <tbody data-admin-keys-body></tbody>
-          </table>
+          <button class="btn btn-ghost" type="button" data-admin-refresh data-i18n="admin_console_refresh">Refresh</button>
         </div>
-        <div class="msg" data-admin-list-msg></div>
 
-        <h3 style="margin-top:16px;" data-i18n="account_admin_update_title">Admin - App update notice</h3>
-        <p class="subtle" data-i18n="account_admin_update_intro">Publish a visible update notice to RiftSkin clients without changing the technical update feed.</p>
-        <form data-admin-update-notice>
-          <div class="field-row">
-            <input type="text" name="latest_version" placeholder="Latest version (example: 0.1.3)" data-i18n-placeholder="account_admin_update_latest_ph" required />
-            <input type="text" name="minimum_version" placeholder="Minimum required version (optional)" data-i18n-placeholder="account_admin_update_minimum_ph" />
+        <div class="admin-stats-grid">
+          <div class="stat-card">
+            <span class="stat-label" data-i18n="admin_stat_total_accounts">Accounts</span>
+            <strong class="stat-value" data-admin-kpi="total_accounts">-</strong>
+            <span class="stat-subtle" data-admin-kpi-sub="confirmed_accounts">-</span>
           </div>
-          <div class="field-row">
-            <input type="text" name="message" placeholder="Message shown in the app" data-i18n-placeholder="account_admin_update_message_ph" />
+          <div class="stat-card">
+            <span class="stat-label" data-i18n="admin_stat_active_access">Active access</span>
+            <strong class="stat-value" data-admin-kpi="active_accounts">-</strong>
+            <span class="stat-subtle" data-admin-kpi-sub="expired_accounts">-</span>
           </div>
-          <div class="field-row">
-            <label><input type="checkbox" name="mandatory" /> <span data-i18n="account_admin_update_mandatory">Mark as mandatory</span></label>
-            <label><input type="checkbox" name="enabled" checked /> <span data-i18n="account_admin_update_enabled">Notice enabled</span></label>
+          <div class="stat-card">
+            <span class="stat-label" data-i18n="admin_stat_no_access">No access</span>
+            <strong class="stat-value" data-admin-kpi="no_access_accounts">-</strong>
+            <span class="stat-subtle" data-admin-kpi-sub="admin_accounts">-</span>
           </div>
-          <div class="field-row">
-            <button class="btn btn-primary" type="submit" data-i18n="account_admin_update_publish">Publish notice</button>
+          <div class="stat-card">
+            <span class="stat-label" data-i18n="admin_stat_total_keys">Activation keys</span>
+            <strong class="stat-value" data-admin-kpi="total_keys">-</strong>
+            <span class="stat-subtle" data-admin-kpi-sub="active_keys">-</span>
           </div>
-          <div class="msg" data-admin-update-msg></div>
-        </form>
-        <div class="panel" style="margin-top:12px;">
-          <h3 data-i18n="account_admin_update_live_title">Current live notice</h3>
-          <div class="subtle" data-admin-update-live>Loading...</div>
         </div>
+
+        <div class="admin-grid">
+          <section class="panel admin-panel-block">
+            <h3 data-i18n="admin_key_create_title">Create activation key</h3>
+            <p class="subtle" data-i18n="admin_key_create_intro">Reserve a key for a specific account, choose validity in months, and optionally attach it immediately.</p>
+            <form data-admin-create-key>
+              <div class="field-row">
+                <input type="email" name="for_email" placeholder="Target account email" data-i18n-placeholder="admin_target_email_ph" />
+                <input type="text" name="note" placeholder="Internal note" data-i18n-placeholder="admin_note_ph" />
+              </div>
+              <div class="field-row field-row-3">
+                <input type="number" name="max_uses" min="1" max="500" step="1" value="1" placeholder="Max uses" data-i18n-placeholder="admin_max_uses_ph" required />
+                <input type="number" name="valid_months" min="1" max="120" step="1" value="1" placeholder="Key validity (months)" data-i18n-placeholder="admin_valid_months_ph" required />
+                <input type="number" name="grant_months" min="1" max="120" step="1" placeholder="Access duration (months)" data-i18n-placeholder="admin_grant_months_ph" />
+              </div>
+              <label class="checkbox-row"><input type="checkbox" name="auto_attach" /> <span data-i18n="admin_auto_attach">Attach directly if target email exists</span></label>
+              <div class="field-row">
+                <button class="btn btn-primary" type="submit" data-i18n="admin_generate_key_btn">Generate key</button>
+              </div>
+              <div class="msg" data-admin-create-msg></div>
+              <div class="key-box" data-admin-key-output style="display:none;"></div>
+            </form>
+          </section>
+
+          <section class="panel admin-panel-block">
+            <h3 data-i18n="admin_attach_title">Attach an existing key</h3>
+            <p class="subtle" data-i18n="admin_attach_intro">Use this when you already generated a key and want to bind it to a user account immediately.</p>
+            <form data-admin-attach-key>
+              <div class="field-row">
+                <input type="email" name="user_email" placeholder="Target account email" data-i18n-placeholder="admin_target_email_ph" required />
+                <input type="text" name="key_code" placeholder="Activation key code" data-i18n-placeholder="admin_attach_key_code_ph" required />
+              </div>
+              <div class="field-row">
+                <button class="btn btn-primary" type="submit" data-i18n="admin_attach_btn">Attach key</button>
+              </div>
+              <div class="msg" data-admin-attach-msg></div>
+            </form>
+          </section>
+        </div>
+
+        <section class="panel admin-panel-block">
+          <div class="section-head">
+            <div>
+              <h3 data-i18n="admin_accounts_title">Accounts</h3>
+              <p class="subtle" data-i18n="admin_accounts_intro">Search every registered account and filter by access state.</p>
+            </div>
+          </div>
+          <div class="toolbar-row">
+            <input type="search" data-admin-account-search placeholder="Search by email or username" data-i18n-placeholder="admin_search_accounts_ph" />
+            <select data-admin-account-filter>
+              <option value="all" data-i18n="admin_filter_all">All accounts</option>
+              <option value="active" data-i18n="admin_filter_active">Active access</option>
+              <option value="expired" data-i18n="admin_filter_expired">Expired</option>
+              <option value="no_access" data-i18n="admin_filter_no_access">No access</option>
+              <option value="admin" data-i18n="admin_filter_admin">Admins</option>
+            </select>
+          </div>
+          <div class="keys-table-wrap">
+            <table class="keys-table">
+              <thead>
+                <tr>
+                  <th data-i18n="admin_col_email">Email</th>
+                  <th data-i18n="admin_col_username">Username</th>
+                  <th data-i18n="admin_col_created">Created</th>
+                  <th data-i18n="admin_col_last_seen">Last sign in</th>
+                  <th data-i18n="admin_col_access">Access</th>
+                  <th data-i18n="admin_col_expires">Expires</th>
+                  <th data-i18n="admin_col_key">Latest key</th>
+                  <th data-i18n="admin_col_actions">Actions</th>
+                </tr>
+              </thead>
+              <tbody data-admin-accounts-body></tbody>
+            </table>
+          </div>
+          <div class="msg" data-admin-accounts-msg></div>
+        </section>
+
+        <section class="panel admin-panel-block">
+          <div class="section-head">
+            <div>
+              <h3 data-i18n="admin_keys_title">Recent keys</h3>
+              <p class="subtle" data-i18n="admin_keys_intro">Track generated keys, remaining uses, and expiration status.</p>
+            </div>
+          </div>
+          <div class="keys-table-wrap">
+            <table class="keys-table" data-admin-keys-table>
+              <thead>
+                <tr>
+                  <th data-i18n="admin_col_code">Code</th>
+                  <th data-i18n="admin_col_uses">Uses</th>
+                  <th data-i18n="admin_col_key_expiry">Key expiry</th>
+                  <th data-i18n="admin_col_access_duration">Access duration</th>
+                  <th data-i18n="admin_col_target">Target</th>
+                </tr>
+              </thead>
+              <tbody data-admin-keys-body></tbody>
+            </table>
+          </div>
+          <div class="msg" data-admin-list-msg></div>
+        </section>
+
+        <section class="panel admin-panel-block">
+          <h3 data-i18n="account_admin_update_title">Admin - App update notice</h3>
+          <p class="subtle" data-i18n="account_admin_update_intro">Publish a visible update notice to RiftSkin clients without changing the technical update feed.</p>
+          <form data-admin-update-notice>
+            <div class="field-row">
+              <input type="text" name="latest_version" placeholder="Latest version (example: 0.1.3)" data-i18n-placeholder="account_admin_update_latest_ph" required />
+              <input type="text" name="minimum_version" placeholder="Minimum required version (optional)" data-i18n-placeholder="account_admin_update_minimum_ph" />
+            </div>
+            <div class="field-row">
+              <input type="text" name="message" placeholder="Message shown in the app" data-i18n-placeholder="account_admin_update_message_ph" />
+            </div>
+            <div class="field-row">
+              <label class="checkbox-row"><input type="checkbox" name="mandatory" /> <span data-i18n="account_admin_update_mandatory">Mark as mandatory</span></label>
+              <label class="checkbox-row"><input type="checkbox" name="enabled" checked /> <span data-i18n="account_admin_update_enabled">Notice enabled</span></label>
+            </div>
+            <div class="field-row">
+              <button class="btn btn-primary" type="submit" data-i18n="account_admin_update_publish">Publish notice</button>
+            </div>
+            <div class="msg" data-admin-update-msg></div>
+          </form>
+          <div class="panel" style="margin-top:12px;">
+            <h3 data-i18n="account_admin_update_live_title">Current live notice</h3>
+            <div class="subtle" data-admin-update-live>Loading...</div>
+          </div>
+        </section>
       </article>
 
       <div class="notice" style="margin-top:10px;" data-i18n="account_callback_notice">
