@@ -65,13 +65,15 @@ stable
 security definer
 set search_path = public
 as $$
-  select exists(
-    select 1
-    from public.user_access ua
-    where ua.user_id = p_user
-      and ua.is_active = true
-      and (ua.expires_at is null or ua.expires_at > now())
-  );
+  select
+    public.is_app_admin(p_user)
+    or exists(
+      select 1
+      from public.user_access ua
+      where ua.user_id = p_user
+        and ua.is_active = true
+        and (ua.expires_at is null or ua.expires_at > now())
+    );
 $$;
 
 create or replace function public.create_activation_key(
@@ -146,10 +148,11 @@ create or replace function public.redeem_activation_key(p_code text)
 returns table(success boolean, message text, access_expires_at timestamptz)
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, auth
 as $$
 declare
   v_user uuid := auth.uid();
+  v_user_email text;
   v_key public.activation_keys%rowtype;
   v_access_exp timestamptz;
 begin
@@ -171,6 +174,16 @@ begin
 
   if not v_key.is_active then
     return query select false, 'inactive_key', null::timestamptz;
+    return;
+  end if;
+
+  select u.email into v_user_email
+  from auth.users u
+  where u.id = v_user;
+
+  if v_key.created_for_email is not null
+     and coalesce(lower(trim(v_user_email)), '') <> lower(trim(v_key.created_for_email)) then
+    return query select false, 'key_reserved_for_other_email', null::timestamptz;
     return;
   end if;
 
@@ -222,6 +235,119 @@ begin
 end;
 $$;
 
+create or replace function public.attach_activation_key_to_user(
+  p_code text,
+  p_user_email text
+)
+returns table(success boolean, message text, access_expires_at timestamptz)
+language plpgsql
+security definer
+set search_path = public, auth
+as $$
+declare
+  v_admin uuid := auth.uid();
+  v_target_user uuid;
+  v_target_email text;
+  v_key public.activation_keys%rowtype;
+  v_access_exp timestamptz;
+begin
+  if v_admin is null then
+    return query select false, 'not_authenticated', null::timestamptz;
+    return;
+  end if;
+
+  if not public.is_app_admin(v_admin) then
+    return query select false, 'not_admin', null::timestamptz;
+    return;
+  end if;
+
+  v_target_email := lower(trim(coalesce(p_user_email, '')));
+  if v_target_email = '' then
+    return query select false, 'user_not_found', null::timestamptz;
+    return;
+  end if;
+
+  select u.id
+    into v_target_user
+  from auth.users u
+  where lower(u.email) = v_target_email
+  limit 1;
+
+  if v_target_user is null then
+    return query select false, 'user_not_found', null::timestamptz;
+    return;
+  end if;
+
+  select *
+    into v_key
+  from public.activation_keys
+  where code = upper(trim(coalesce(p_code, '')))
+  for update;
+
+  if not found then
+    return query select false, 'invalid_key', null::timestamptz;
+    return;
+  end if;
+
+  if not v_key.is_active then
+    return query select false, 'inactive_key', null::timestamptz;
+    return;
+  end if;
+
+  if v_key.expires_at is not null and v_key.expires_at <= now() then
+    return query select false, 'expired_key', null::timestamptz;
+    return;
+  end if;
+
+  if v_key.created_for_email is not null
+     and lower(trim(v_key.created_for_email)) <> v_target_email then
+    return query select false, 'email_mismatch', null::timestamptz;
+    return;
+  end if;
+
+  if exists(select 1 from public.key_redemptions kr where kr.key_id = v_key.id and kr.user_id = v_target_user) then
+    return query select true, 'already_redeemed', (
+      select ua.expires_at from public.user_access ua where ua.user_id = v_target_user
+    );
+    return;
+  end if;
+
+  if v_key.used_count >= v_key.max_uses then
+    return query select false, 'key_limit_reached', null::timestamptz;
+    return;
+  end if;
+
+  if v_key.grant_days is null then
+    v_access_exp := null;
+  else
+    v_access_exp := now() + make_interval(days => v_key.grant_days);
+  end if;
+
+  insert into public.key_redemptions (key_id, user_id)
+  values (v_key.id, v_target_user);
+
+  update public.activation_keys
+  set used_count = used_count + 1
+  where id = v_key.id;
+
+  insert into public.user_access (user_id, source, granted_by_key_id, granted_at, expires_at, is_active)
+  values (v_target_user, 'activation_key', v_key.id, now(), v_access_exp, true)
+  on conflict (user_id)
+  do update
+    set source = 'activation_key',
+        granted_by_key_id = excluded.granted_by_key_id,
+        granted_at = now(),
+        expires_at = case
+          when public.user_access.expires_at is null then null
+          when excluded.expires_at is null then null
+          else greatest(public.user_access.expires_at, excluded.expires_at)
+        end,
+        is_active = true;
+
+  return query select true, 'attached', v_access_exp;
+end;
+$$;
+
 -- Drop and recreate policies safely
 
 do $$
@@ -244,9 +370,21 @@ begin
   if exists (select 1 from pg_policies where schemaname='public' and tablename='activation_keys' and policyname='activation_keys_admin_all') then
     drop policy activation_keys_admin_all on public.activation_keys;
   end if;
+  if exists (select 1 from pg_policies where schemaname='public' and tablename='activation_keys' and policyname='activation_keys_select_redeemer') then
+    drop policy activation_keys_select_redeemer on public.activation_keys;
+  end if;
 
   create policy activation_keys_admin_all on public.activation_keys
     for all using (public.is_app_admin(auth.uid())) with check (public.is_app_admin(auth.uid()));
+
+  create policy activation_keys_select_redeemer on public.activation_keys
+    for select using (
+      public.is_app_admin(auth.uid())
+      or exists (
+        select 1 from public.key_redemptions kr
+        where kr.key_id = activation_keys.id and kr.user_id = auth.uid()
+      )
+    );
 
   -- key_redemptions
   if exists (select 1 from pg_policies where schemaname='public' and tablename='key_redemptions' and policyname='key_redemptions_select_own') then
@@ -281,6 +419,140 @@ grant execute on function public.is_app_admin(uuid) to authenticated, anon;
 grant execute on function public.has_active_access(uuid) to authenticated, anon;
 grant execute on function public.create_activation_key(text, text, integer, integer, integer) to authenticated;
 grant execute on function public.redeem_activation_key(text) to authenticated;
+grant execute on function public.attach_activation_key_to_user(text, text) to authenticated;
+
+create table if not exists public.app_update_notices (
+  channel text primary key,
+  latest_version text not null,
+  minimum_version text,
+  message text,
+  mandatory boolean not null default false,
+  enabled boolean not null default true,
+  published_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  updated_by uuid references auth.users(id) on delete set null
+);
+
+alter table public.app_update_notices enable row level security;
+
+do $$
+begin
+  if exists (
+    select 1 from pg_policies
+    where schemaname = 'public'
+      and tablename = 'app_update_notices'
+      and policyname = 'app_update_notices_admin_all'
+  ) then
+    drop policy app_update_notices_admin_all on public.app_update_notices;
+  end if;
+
+  create policy app_update_notices_admin_all on public.app_update_notices
+    for all using (public.is_app_admin(auth.uid()))
+    with check (public.is_app_admin(auth.uid()));
+end $$;
+
+create or replace function public.get_public_update_notice(p_channel text default 'stable')
+returns table(
+  channel text,
+  latest_version text,
+  minimum_version text,
+  message text,
+  mandatory boolean,
+  enabled boolean,
+  published_at timestamptz
+)
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select
+    n.channel,
+    n.latest_version,
+    n.minimum_version,
+    n.message,
+    n.mandatory,
+    n.enabled,
+    n.published_at
+  from public.app_update_notices n
+  where n.channel = coalesce(nullif(trim(p_channel), ''), 'stable')
+    and n.enabled = true
+  limit 1;
+$$;
+
+create or replace function public.set_app_update_notice(
+  p_channel text default 'stable',
+  p_latest_version text default null,
+  p_minimum_version text default null,
+  p_message text default null,
+  p_mandatory boolean default false,
+  p_enabled boolean default true
+)
+returns table(success boolean, message text)
+language plpgsql
+security definer
+set search_path = public, auth
+as $$
+declare
+  v_admin uuid := auth.uid();
+  v_channel text := coalesce(nullif(trim(p_channel), ''), 'stable');
+  v_latest text := nullif(trim(coalesce(p_latest_version, '')), '');
+  v_minimum text := nullif(trim(coalesce(p_minimum_version, '')), '');
+  v_message text := nullif(trim(coalesce(p_message, '')), '');
+begin
+  if v_admin is null then
+    return query select false, 'not_authenticated';
+    return;
+  end if;
+
+  if not public.is_app_admin(v_admin) then
+    return query select false, 'not_admin';
+    return;
+  end if;
+
+  if p_enabled and v_latest is null then
+    return query select false, 'latest_version_required';
+    return;
+  end if;
+
+  insert into public.app_update_notices (
+    channel,
+    latest_version,
+    minimum_version,
+    message,
+    mandatory,
+    enabled,
+    published_at,
+    updated_at,
+    updated_by
+  ) values (
+    v_channel,
+    coalesce(v_latest, '0.0.0'),
+    v_minimum,
+    v_message,
+    coalesce(p_mandatory, false),
+    coalesce(p_enabled, true),
+    now(),
+    now(),
+    v_admin
+  )
+  on conflict (channel)
+  do update set
+    latest_version = excluded.latest_version,
+    minimum_version = excluded.minimum_version,
+    message = excluded.message,
+    mandatory = excluded.mandatory,
+    enabled = excluded.enabled,
+    published_at = now(),
+    updated_at = now(),
+    updated_by = v_admin;
+
+  return query select true, case when coalesce(p_enabled, true) then 'published' else 'disabled' end;
+end;
+$$;
+
+grant execute on function public.get_public_update_notice(text) to authenticated, anon;
+grant execute on function public.set_app_update_notice(text, text, text, text, boolean, boolean) to authenticated;
 
 grant select on public.user_access to authenticated;
 grant select on public.activation_keys to authenticated;
@@ -288,4 +560,9 @@ grant select on public.activation_keys to authenticated;
 -- Bootstrap: set your own account as admin (replace EMAIL then run once)
 -- insert into public.app_admins(user_id)
 -- select id from auth.users where email = 'YOUR_EMAIL_HERE'
+-- on conflict do nothing;
+
+-- Example for your project:
+-- insert into public.app_admins(user_id)
+-- select id from auth.users where lower(email) = lower('tdaval@icloud.com')
 -- on conflict do nothing;
