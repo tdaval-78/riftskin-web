@@ -224,26 +224,15 @@
       }
 
       if (row.is_admin) {
-        setAccessBadge(t('admin_access_active_admin'), 'ok');
-        if (accessMeta) accessMeta.textContent = t('admin_access_admin_meta');
-        return;
-      }
-
-      if (row.access_source === 'trial' && row.access_granted) {
-        setAccessBadge(t('account_access_trial_active'), 'ok');
-        if (accessMeta) {
-          accessMeta.textContent = fillTemplate(t('account_access_trial_meta'), {
-            days: row.trial_days_left || 0,
-            date: formatDate(row.trial_expires_at)
-          });
-        }
+        setAccessBadge('Admin permanent access', 'ok');
+        if (accessMeta) accessMeta.textContent = 'This account has permanent premium access.';
         return;
       }
 
       if (row.access_granted && (row.access_source === 'activation_key' || row.access_source === 'admin_grant')) {
-        setAccessBadge(t('account_access_key_active'), 'ok');
+        setAccessBadge('Premium active', 'ok');
         if (accessMeta) {
-          accessMeta.textContent = fillTemplate(t('account_access_key_meta'), {
+          accessMeta.textContent = fillTemplate('Premium remains active until {date}.', {
             date: formatDate(row.access_expires_at || '')
           });
         }
@@ -251,13 +240,13 @@
       }
 
       if (row.access_source === 'expired') {
-        setAccessBadge(t('admin_state_expired'), 'error');
-        if (accessMeta) accessMeta.textContent = t('account_access_expired');
+        setAccessBadge('Premium inactive', 'error');
+        if (accessMeta) accessMeta.textContent = 'Your premium code is no longer active. The desktop app free mode stays available.';
         return;
       }
 
-      setAccessBadge(t('admin_state_no_access'), 'error');
-      if (accessMeta) accessMeta.textContent = t('account_access_no_access');
+      setAccessBadge('Free mode only', '');
+      if (accessMeta) accessMeta.textContent = 'No active premium subscription is attached right now. The desktop app still remains usable for free.';
     } catch (err) {
       setAccessBadge(t('admin_unavailable'), 'error');
       if (accessMeta) accessMeta.textContent = (err && err.message) ? err.message : t('admin_unexpected_error');

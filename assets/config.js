@@ -1,7 +1,7 @@
 window.RiftSkinConfig = {
   brand: "RiftSkin",
-  trialDays: 7,
-  monthlyPriceEUR: 20,
+  trialDays: 0,
+  monthlyPriceEUR: 15,
   supportEmail: "support@riftskin.com",
   supabaseUrl: "https://bvajoufrxxntivxghdgs.supabase.co",
   supabaseAnonKey: "sb_publishable_rY0OywIhbXTT8cYXJUZBZA_6URk4FUe",

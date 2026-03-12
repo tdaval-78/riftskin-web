@@ -46,6 +46,7 @@ Edit `/assets/config.js`:
 ## Activation key flow
 
 - Admin creates keys from `/account.html` (admin panel)
+- Admin can directly attach a key to an existing account email from `/account.html`
 - User logs in and redeems key from `/account.html`
 - Access state is stored in `user_access`
 - App-side enforcement should call Supabase RPC `has_active_access()` at login/startup

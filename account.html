@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex,nofollow" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self' mailto:; img-src 'self' data: https://bvajoufrxxntivxghdgs.supabase.co; style-src 'self' 'unsafe-inline'; script-src 'self' https://cdn.jsdelivr.net https://cdn.paddle.com; connect-src 'self' https://bvajoufrxxntivxghdgs.supabase.co https://api.paddle.com https://sandbox-api.paddle.com https://checkout.paddle.com https://sandbox-checkout.paddle.com; frame-src https://checkout.paddle.com https://sandbox-checkout.paddle.com;" />
-  <title data-i18n="account_title">RiftSkin Account</title>
-  <meta name="description" data-i18n-content="account_meta_desc" content="Sign in to RiftSkin, create your account, and manage subscription access." />
+  <title>RiftSkin Account</title>
+  <meta name="description" content="Create a RiftSkin web account to manage your premium subscription, billing, and license code. The desktop app itself remains usable for free." />
   <link rel="stylesheet" href="/assets/styles.css" />
 </head>
 <body data-page="account">
@@ -16,6 +16,7 @@
       <button class="btn btn-ghost burger" data-burger type="button" data-i18n="nav_menu">Menu</button>
       <nav class="nav" data-nav>
         <a data-link="home" href="/" data-i18n="nav_home">Home</a>
+        <a data-link="download" href="/download.html" data-i18n="nav_download">Download</a>
         <a data-link="pricing" href="/pricing.html" data-i18n="nav_pricing">Pricing</a>
         <a data-link="faq" href="/faq.html" data-i18n="nav_faq">FAQ</a>
         <a data-link="support" href="/support.html" data-i18n="nav_support">Support</a>
@@ -28,13 +29,13 @@
     </header>
 
     <section class="section">
-      <h2 data-i18n="account_h2">Account access</h2>
-      <p class="subtle" data-i18n="account_intro">Create your account, confirm your email, then sign in. Your subscription unlocks software access while active.</p>
+      <h2>Web account and subscription</h2>
+      <p class="subtle">The desktop app works for free without a software login. Use this page only to manage your premium subscription, billing, and premium code.</p>
       <div class="notice"><span data-i18n="account_status_label">Session status</span>: <span class="status-badge" data-account-status data-i18n="account_checking">Checking...</span></div>
 
       <div class="grid-2" data-logged-out style="margin-top: 12px;">
         <article class="panel">
-          <h3 data-i18n="account_signin_title">Sign in</h3>
+          <h3>Sign in</h3>
           <form data-signin-form>
             <input type="email" name="email" data-i18n-placeholder="account_email_ph" placeholder="Email" autocomplete="email" data-account-email required />
             <input type="password" name="password" data-i18n-placeholder="account_password_ph" placeholder="Password" autocomplete="current-password" required />
@@ -48,7 +49,7 @@
         </article>
 
         <article class="panel">
-          <h3 data-i18n="account_signup_title">Create account</h3>
+          <h3>Create web account</h3>
           <form data-signup-form>
             <input type="text" name="username" data-i18n-placeholder="account_username_ph" placeholder="Username" minlength="3" maxlength="24" required />
             <input type="email" name="email" data-i18n-placeholder="account_signup_email_ph" placeholder="Email" autocomplete="email" required />
@@ -61,27 +62,27 @@
       </div>
 
       <article class="panel" data-logged-in style="display:none; margin-top: 12px;">
-        <h3 data-i18n="account_connected_title">Connected account</h3>
+        <h3>Connected web account</h3>
         <p class="subtle"><span data-i18n="account_connected_as">Signed in as</span> <strong data-session-email>-</strong></p>
 
         <div class="panel" style="margin-top:12px;">
-          <h3 data-i18n="account_access_title">Software access</h3>
-          <p class="subtle" data-i18n="account_access_intro">Every account starts with a 7-day free trial. After that, an active key is required unless your account is admin.</p>
+          <h3>Premium status</h3>
+          <p class="subtle">Free mode is always available in the desktop app. Premium unlocks favorites and automatic champion recognition while your subscription stays active.</p>
           <div class="notice"><span data-i18n="account_access_status_label">Status</span>: <span class="status-badge" data-access-status data-i18n="account_checking">Checking...</span></div>
           <div class="subtle" data-access-meta style="margin-top:6px;"></div>
 
           <form data-redeem-form style="margin-top:12px;">
             <div class="field-row">
-              <input type="text" name="key" data-i18n-placeholder="account_activation_key_ph" placeholder="Activation key (example: ABCD-EFGH-IJKL-MNOP)" required />
-              <button class="btn btn-primary" type="submit" data-i18n="account_activate_key_btn">Activate key</button>
+              <input type="text" name="key" data-i18n-placeholder="account_activation_key_ph" placeholder="Premium code (example: ABCD-EFGH-IJKL-MNOP)" required />
+              <button class="btn btn-primary" type="submit">Attach premium code</button>
             </div>
             <div class="msg" data-redeem-msg></div>
           </form>
         </div>
 
         <div class="panel" style="margin-top:12px;">
-          <h3 data-i18n="account_my_key_title">My key</h3>
-          <p class="subtle" data-i18n="account_my_key_intro">If a key was attached to your account by admin, you will see it here.</p>
+          <h3>My premium codes</h3>
+          <p class="subtle">Use one active premium code inside the desktop app to unlock premium features on a machine.</p>
           <div class="keys-table-wrap">
             <table class="keys-table">
               <thead>
@@ -291,6 +292,7 @@
       <div><span data-i18n="footer_rights">Copyright</span> © <span data-year></span> RiftSkin</div>
       <div class="links">
         <a href="/" data-i18n="nav_home">Home</a>
+        <a href="/download.html" data-i18n="nav_download">Download</a>
         <a href="/pricing.html" data-i18n="nav_pricing">Pricing</a>
         <a href="/faq.html" data-i18n="nav_faq">FAQ</a>
         <a href="/support.html" data-i18n="nav_support">Support</a>
