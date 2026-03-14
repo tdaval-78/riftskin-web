@@ -157,6 +157,46 @@
     };
   }
 
+  function bindKeyKindToggle(form) {
+    if (!form) return;
+    const kindSelect = form.querySelector('[name="key_kind"]');
+    const durationSelect = form.querySelector('[name="duration_months"]');
+    if (!kindSelect || !durationSelect) return;
+
+    function sync() {
+      const isPermanent = (kindSelect.value || 'monthly') === 'permanent';
+      durationSelect.disabled = isPermanent;
+      durationSelect.style.display = isPermanent ? 'none' : '';
+      if (!durationSelect.value) durationSelect.value = '1';
+    }
+
+    kindSelect.addEventListener('change', sync);
+    sync();
+  }
+
+  async function createActivationKeyRpc(params) {
+    if (!params.p_is_permanent) {
+      return supabaseClient.rpc('create_activation_key', {
+        p_for_email: params.p_for_email,
+        p_note: params.p_note,
+        p_max_uses: params.p_max_uses,
+        p_valid_months: params.p_valid_months,
+        p_grant_months: params.p_grant_months
+      });
+    }
+
+    const result = await supabaseClient.rpc('create_activation_key', params);
+    if (result.error && /create_activation_key\(.*boolean/i.test(result.error.message || '')) {
+      return {
+        data: null,
+        error: {
+          message: 'Permanent key backend is not deployed yet. Apply the latest Supabase activation_keys.sql migration first.'
+        }
+      };
+    }
+    return result;
+  }
+
   function renderAdminKeyOutput(target, code, row, config) {
     if (!target) return;
     const outputParts = [
@@ -773,6 +813,8 @@
   }
 
   if (adminCreateForm) {
+    bindKeyKindToggle(adminCreateForm);
+
     adminCreateForm.addEventListener('submit', async function (e) {
       e.preventDefault();
       msg(adminCreateMsg, t('admin_creating_key'));
@@ -783,13 +825,14 @@
 
       const fd = new FormData(adminCreateForm);
       const config = adminKeyConfig(fd.get('key_kind'));
+      const durationMonths = Number(fd.get('duration_months') || 1);
 
-      const { data, error } = await supabaseClient.rpc('create_activation_key', {
+      const { data, error } = await createActivationKeyRpc({
         p_for_email: null,
         p_note: null,
         p_max_uses: 1,
-        p_valid_months: config.validMonths,
-        p_grant_months: config.grantMonths,
+        p_valid_months: config.isPermanent ? null : durationMonths,
+        p_grant_months: config.isPermanent ? null : durationMonths,
         p_is_permanent: config.isPermanent
       });
 
@@ -814,6 +857,8 @@
   }
 
   if (adminBoundForm) {
+    bindKeyKindToggle(adminBoundForm);
+
     adminBoundForm.addEventListener('submit', async function (e) {
       e.preventDefault();
       msg(adminBoundMsg, t('admin_creating_key'));
@@ -825,18 +870,19 @@
       const fd = new FormData(adminBoundForm);
       const userEmail = ((fd.get('user_email') || '').toString().trim()) || '';
       const config = adminKeyConfig(fd.get('key_kind'));
+      const durationMonths = Number(fd.get('duration_months') || 1);
 
       if (!userEmail) {
         msg(adminBoundMsg, t('admin_attach_fields_required'), 'error');
         return;
       }
 
-      const createResult = await supabaseClient.rpc('create_activation_key', {
+      const createResult = await createActivationKeyRpc({
         p_for_email: userEmail,
         p_note: null,
         p_max_uses: 1,
-        p_valid_months: config.validMonths,
-        p_grant_months: config.grantMonths,
+        p_valid_months: config.isPermanent ? null : durationMonths,
+        p_grant_months: config.isPermanent ? null : durationMonths,
         p_is_permanent: config.isPermanent
       });
       if (createResult.error) {
