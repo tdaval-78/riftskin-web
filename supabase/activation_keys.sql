@@ -417,7 +417,7 @@ end $$;
 
 grant execute on function public.is_app_admin(uuid) to authenticated, anon;
 grant execute on function public.has_active_access(uuid) to authenticated, anon;
-grant execute on function public.create_activation_key(text, text, integer, integer, integer) to authenticated;
+grant execute on function public.create_activation_key(text, text, integer, integer, integer, boolean) to authenticated;
 grant execute on function public.redeem_activation_key(text) to authenticated;
 grant execute on function public.attach_activation_key_to_user(text, text) to authenticated;
 
@@ -606,13 +606,15 @@ where grant_months is null
   and grant_days is not null;
 
 drop function if exists public.create_activation_key(text, text, integer, integer, integer);
+drop function if exists public.create_activation_key(text, text, integer, integer, integer, boolean);
 
 create function public.create_activation_key(
   p_for_email text default null,
   p_note text default null,
   p_max_uses integer default 1,
   p_valid_months integer default 1,
-  p_grant_months integer default null
+  p_grant_months integer default null,
+  p_is_permanent boolean default false
 )
 returns table(code text, expires_at timestamptz)
 language plpgsql
@@ -637,11 +639,14 @@ begin
     raise exception 'Invalid max uses (1-500)';
   end if;
 
-  if p_valid_months is null or p_valid_months < 1 or p_valid_months > 120 then
+  if not coalesce(p_is_permanent, false)
+     and (p_valid_months is null or p_valid_months < 1 or p_valid_months > 120) then
     raise exception 'Invalid key validity months (1-120)';
   end if;
 
-  if p_grant_months is not null and (p_grant_months < 1 or p_grant_months > 120) then
+  if not coalesce(p_is_permanent, false)
+     and p_grant_months is not null
+     and (p_grant_months < 1 or p_grant_months > 120) then
     raise exception 'Invalid grant months (1-120)';
   end if;
 
@@ -651,7 +656,11 @@ begin
     exit when not exists (select 1 from public.activation_keys where code = v_code);
   end loop;
 
-  v_key_exp := now() + make_interval(months => p_valid_months);
+  if coalesce(p_is_permanent, false) then
+    v_key_exp := null;
+  else
+    v_key_exp := now() + make_interval(months => p_valid_months);
+  end if;
 
   insert into public.activation_keys (
     code,
@@ -669,9 +678,13 @@ begin
     nullif(trim(p_for_email), ''),
     nullif(trim(p_note), ''),
     p_max_uses,
-    case when p_grant_months is null then null else p_grant_months * 30 end,
-    p_grant_months,
-    p_valid_months,
+    case
+      when coalesce(p_is_permanent, false) then null
+      when p_grant_months is null then null
+      else p_grant_months * 30
+    end,
+    case when coalesce(p_is_permanent, false) then null else p_grant_months end,
+    case when coalesce(p_is_permanent, false) then null else p_valid_months end,
     v_key_exp
   );
 
@@ -1163,7 +1176,7 @@ begin
 end;
 $$;
 
-grant execute on function public.create_activation_key(text, text, integer, integer, integer) to authenticated;
+grant execute on function public.create_activation_key(text, text, integer, integer, integer, boolean) to authenticated;
 grant execute on function public.admin_dashboard_summary() to authenticated;
 grant execute on function public.admin_list_accounts(text, text) to authenticated;
 grant execute on function public.admin_list_activation_keys(text, text) to authenticated;

@@ -18,27 +18,11 @@
   const adminCreateForm = document.querySelector('[data-admin-create-key]');
   const adminCreateMsg = document.querySelector('[data-admin-create-msg]');
   const adminKeyOutput = document.querySelector('[data-admin-key-output]');
-  const adminAttachForm = document.querySelector('[data-admin-attach-key]');
-  const adminAttachMsg = document.querySelector('[data-admin-attach-msg]');
-  const adminPermanentForm = document.querySelector('[data-admin-permanent-form]');
-  const adminPermanentMsg = document.querySelector('[data-admin-permanent-msg]');
+  const adminBoundForm = document.querySelector('[data-admin-bound-key]');
+  const adminBoundMsg = document.querySelector('[data-admin-bound-msg]');
+  const adminBoundOutput = document.querySelector('[data-admin-bound-output]');
   const adminKeysBody = document.querySelector('[data-admin-keys-body]');
   const adminListMsg = document.querySelector('[data-admin-list-msg]');
-  const adminUpdateForm = document.querySelector('[data-admin-update-notice]');
-  const adminUpdateMsg = document.querySelector('[data-admin-update-msg]');
-  const adminUpdateLive = document.querySelector('[data-admin-update-live]');
-  const adminAccountsBody = document.querySelector('[data-admin-accounts-body]');
-  const adminAccountsMsg = document.querySelector('[data-admin-accounts-msg]');
-  const adminAccountSearch = document.querySelector('[data-admin-account-search]');
-  const adminAccountFilter = document.querySelector('[data-admin-account-filter]');
-  const adminKpis = Array.from(document.querySelectorAll('[data-admin-kpi]'));
-  const adminKpiSubs = Array.from(document.querySelectorAll('[data-admin-kpi-sub]'));
-
-  const adminState = {
-    search: '',
-    filter: 'all',
-    searchTimer: null
-  };
 
   function t(key) {
     return window.RiftSkinI18n ? window.RiftSkinI18n.t(key) : key;
@@ -155,6 +139,34 @@
     if (code === 'not_authenticated') return t('admin_msg_not_authenticated');
     if (code === 'not_admin') return t('admin_msg_not_admin');
     return code;
+  }
+
+  function adminKeyConfig(kind) {
+    const normalized = (kind || 'monthly').toString().trim().toLowerCase();
+    if (normalized === 'permanent') {
+      return {
+        isPermanent: true,
+        validMonths: null,
+        grantMonths: null
+      };
+    }
+    return {
+      isPermanent: false,
+      validMonths: 1,
+      grantMonths: 1
+    };
+  }
+
+  function renderAdminKeyOutput(target, code, row, config) {
+    if (!target) return;
+    const outputParts = [
+      code,
+      t('admin_key_expires') + ' ' + (row.expires_at ? formatDate(row.expires_at) : t('admin_no_expiry'))
+    ];
+    if (config.isPermanent) outputParts.push(t('admin_key_mode_permanent'));
+    else outputParts.push(t('admin_access_duration_label') + ' ' + formatMonths(config.grantMonths));
+    target.textContent = outputParts.join(' | ');
+    target.style.display = 'block';
   }
 
   function setSessionUi(session) {
@@ -541,10 +553,7 @@
     const isAdmin = await checkIsAdmin();
     adminPanel.style.display = isAdmin ? 'block' : 'none';
     if (!isAdmin) return;
-    await loadAdminSummary();
-    await loadAdminAccounts();
     await loadAdminKeys();
-    await loadAdminUpdateNotice();
   }
 
   async function loadMyKeys(userId) {
@@ -757,51 +766,9 @@
 
   if (adminRefreshBtn) {
     adminRefreshBtn.addEventListener('click', async function () {
-      msg(adminAccountsMsg, t('admin_refreshing'));
+      msg(adminListMsg, t('admin_refreshing'));
       await refreshAdminPanels();
-      msg(adminAccountsMsg, '', '');
-    });
-  }
-
-  if (adminAccountSearch) {
-    adminAccountSearch.addEventListener('input', function () {
-      adminState.search = adminAccountSearch.value.trim();
-      clearTimeout(adminState.searchTimer);
-      adminState.searchTimer = setTimeout(function () {
-        loadAdminAccounts();
-      }, 250);
-    });
-  }
-
-  if (adminAccountFilter) {
-    adminAccountFilter.addEventListener('change', function () {
-      adminState.filter = adminAccountFilter.value || 'all';
-      loadAdminAccounts();
-    });
-  }
-
-  if (adminAccountsBody) {
-    adminAccountsBody.addEventListener('click', async function (event) {
-      const prefillBtn = event.target.closest('[data-prefill-email]');
-      if (prefillBtn) {
-        prefillCreateKeyForm(prefillBtn.getAttribute('data-prefill-email') || '');
-        return;
-      }
-
-      const copyBtn = event.target.closest('[data-copy-email]');
-      if (copyBtn) {
-        const email = copyBtn.getAttribute('data-copy-email') || '';
-        const copied = await copyToClipboard(email);
-        msg(adminAccountsMsg, copied ? t('admin_email_copied') : t('admin_email_copy_failed'), copied ? 'ok' : 'error');
-        return;
-      }
-
-      const permanentBtn = event.target.closest('[data-permanent-email]');
-      if (permanentBtn) {
-        const email = permanentBtn.getAttribute('data-permanent-email') || '';
-        const mode = permanentBtn.getAttribute('data-permanent-mode') || 'enable';
-        prefillPermanentForm(email, mode);
-      }
+      msg(adminListMsg, '', '');
     });
   }
 
@@ -815,20 +782,15 @@
       }
 
       const fd = new FormData(adminCreateForm);
-      const maxUses = Number(fd.get('max_uses') || 1);
-      const validMonths = Number(fd.get('valid_months') || 1);
-      const grantMonthsRaw = (fd.get('grant_months') || '').toString().trim();
-      const grantMonths = grantMonthsRaw ? Number(grantMonthsRaw) : null;
-      const forEmail = ((fd.get('for_email') || '').toString().trim()) || null;
-      const note = ((fd.get('note') || '').toString().trim()) || null;
-      const autoAttach = !!adminCreateForm.querySelector('[name="auto_attach"]').checked;
+      const config = adminKeyConfig(fd.get('key_kind'));
 
       const { data, error } = await supabaseClient.rpc('create_activation_key', {
-        p_for_email: forEmail,
-        p_note: note,
-        p_max_uses: maxUses,
-        p_valid_months: validMonths,
-        p_grant_months: grantMonths
+        p_for_email: null,
+        p_note: null,
+        p_max_uses: 1,
+        p_valid_months: config.validMonths,
+        p_grant_months: config.grantMonths,
+        p_is_permanent: config.isPermanent
       });
 
       if (error) {
@@ -843,52 +805,49 @@
         return;
       }
 
-      let createdMessage = t('admin_key_created_ok');
-      if (autoAttach && forEmail) {
-        const attachResult = await supabaseClient.rpc('attach_activation_key_to_user', {
-          p_code: code,
-          p_user_email: forEmail
-        });
-        if (attachResult.error) {
-          msg(adminCreateMsg, attachResult.error.message || t('admin_attach_failed'), 'error');
-          return;
-        }
-        const attachRow = safeArray(attachResult.data)[0] || {};
-        if (!attachRow.success) {
-          msg(adminCreateMsg, decodeActivationMessage(attachRow.message || '') || t('admin_attach_failed'), 'error');
-          return;
-        }
-        createdMessage = t('admin_key_created_attached_ok');
-      }
-
-      msg(adminCreateMsg, createdMessage, 'ok');
-      if (adminKeyOutput) {
-        const outputParts = [code, t('admin_key_expires') + ' ' + (row.expires_at ? formatDate(row.expires_at) : t('admin_no_expiry'))];
-        if (grantMonths) outputParts.push(t('admin_access_duration_label') + ' ' + formatMonths(grantMonths));
-        adminKeyOutput.textContent = outputParts.join(' | ');
-        adminKeyOutput.style.display = 'block';
-      }
+      msg(adminCreateMsg, t('admin_key_created_ok'), 'ok');
+      renderAdminKeyOutput(adminKeyOutput, code, row, config);
 
       adminCreateForm.reset();
-      adminCreateForm.querySelector('[name="max_uses"]').value = '1';
-      adminCreateForm.querySelector('[name="valid_months"]').value = '1';
-      await loadAdminSummary();
-      await loadAdminAccounts();
       await loadAdminKeys();
     });
   }
 
-  if (adminAttachForm) {
-    adminAttachForm.addEventListener('submit', async function (e) {
+  if (adminBoundForm) {
+    adminBoundForm.addEventListener('submit', async function (e) {
       e.preventDefault();
-      msg(adminAttachMsg, t('admin_attaching_key'));
+      msg(adminBoundMsg, t('admin_creating_key'));
+      if (adminBoundOutput) {
+        adminBoundOutput.style.display = 'none';
+        adminBoundOutput.textContent = '';
+      }
 
-      const fd = new FormData(adminAttachForm);
+      const fd = new FormData(adminBoundForm);
       const userEmail = ((fd.get('user_email') || '').toString().trim()) || '';
-      const keyCode = ((fd.get('key_code') || '').toString().trim()) || '';
+      const config = adminKeyConfig(fd.get('key_kind'));
 
-      if (!userEmail || !keyCode) {
-        msg(adminAttachMsg, t('admin_attach_fields_required'), 'error');
+      if (!userEmail) {
+        msg(adminBoundMsg, t('admin_attach_fields_required'), 'error');
+        return;
+      }
+
+      const createResult = await supabaseClient.rpc('create_activation_key', {
+        p_for_email: userEmail,
+        p_note: null,
+        p_max_uses: 1,
+        p_valid_months: config.validMonths,
+        p_grant_months: config.grantMonths,
+        p_is_permanent: config.isPermanent
+      });
+      if (createResult.error) {
+        msg(adminBoundMsg, createResult.error.message || t('admin_key_create_failed'), 'error');
+        return;
+      }
+
+      const createdRow = safeArray(createResult.data)[0] || {};
+      const keyCode = createdRow.code || '';
+      if (!keyCode) {
+        msg(adminBoundMsg, t('admin_key_create_failed'), 'error');
         return;
       }
 
@@ -897,93 +856,21 @@
         p_user_email: userEmail
       });
       if (error) {
-        msg(adminAttachMsg, error.message || t('admin_attach_failed'), 'error');
+        msg(adminBoundMsg, error.message || t('admin_attach_failed'), 'error');
         return;
       }
 
       const row = safeArray(data)[0] || {};
       const text = decodeActivationMessage(row.message || '');
       if (!row.success) {
-        msg(adminAttachMsg, text || t('admin_attach_failed'), 'error');
+        msg(adminBoundMsg, text || t('admin_attach_failed'), 'error');
         return;
       }
 
-      msg(adminAttachMsg, text || t('admin_attach_success'), 'ok');
-      adminAttachForm.reset();
-      await loadAdminSummary();
-      await loadAdminAccounts();
+      msg(adminBoundMsg, t('admin_key_created_attached_ok'), 'ok');
+      renderAdminKeyOutput(adminBoundOutput, keyCode, createdRow, config);
+      adminBoundForm.reset();
       await loadAdminKeys();
-    });
-  }
-
-  if (adminPermanentForm) {
-    adminPermanentForm.addEventListener('submit', async function (e) {
-      e.preventDefault();
-      const fd = new FormData(adminPermanentForm);
-      const userEmail = ((fd.get('user_email') || '').toString().trim()) || '';
-      const mode = ((fd.get('mode') || 'enable').toString().trim()) || 'enable';
-
-      if (!userEmail) {
-        msg(adminPermanentMsg, t('admin_permanent_fields_required'), 'error');
-        return;
-      }
-
-      msg(adminPermanentMsg, mode === 'disable' ? t('admin_permanent_disabling') : t('admin_permanent_enabling'));
-      const { data, error } = await supabaseClient.rpc('set_user_permanent_access', {
-        p_user_email: userEmail,
-        p_enabled: mode !== 'disable'
-      });
-      if (error) {
-        msg(adminPermanentMsg, error.message || t('admin_permanent_failed'), 'error');
-        return;
-      }
-
-      const row = safeArray(data)[0] || {};
-      if (!row.success) {
-        msg(adminPermanentMsg, decodePermanentMessage(row.message || '') || t('admin_permanent_failed'), 'error');
-        return;
-      }
-
-      msg(adminPermanentMsg, decodePermanentMessage(row.message || '') || t('admin_permanent_success'), 'ok');
-      await loadAdminSummary();
-      await loadAdminAccounts();
-    });
-  }
-
-  if (adminUpdateForm) {
-    adminUpdateForm.addEventListener('submit', async function (e) {
-      e.preventDefault();
-      msg(adminUpdateMsg, t('admin_publishing_update'));
-
-      const fd = new FormData(adminUpdateForm);
-      const enabled = adminUpdateForm.querySelector('[name="enabled"]').checked;
-      const latestVersion = ((fd.get('latest_version') || '').toString().trim()) || null;
-      const minimumVersion = ((fd.get('minimum_version') || '').toString().trim()) || null;
-      const noticeMessage = ((fd.get('message') || '').toString().trim()) || null;
-      const mandatory = adminUpdateForm.querySelector('[name="mandatory"]').checked;
-
-      const { data, error } = await supabaseClient.rpc('set_app_update_notice', {
-        p_channel: 'stable',
-        p_latest_version: latestVersion,
-        p_minimum_version: minimumVersion,
-        p_message: noticeMessage,
-        p_mandatory: mandatory,
-        p_enabled: enabled
-      });
-
-      if (error) {
-        msg(adminUpdateMsg, error.message || t('admin_update_publish_failed'), 'error');
-        return;
-      }
-
-      const row = safeArray(data)[0] || {};
-      if (!row.success) {
-        msg(adminUpdateMsg, decodeUpdateAdminMessage(row.message || '') || t('admin_update_publish_failed'), 'error');
-        return;
-      }
-
-      msg(adminUpdateMsg, decodeUpdateAdminMessage(row.message || '') || t('admin_msg_update_published'), 'ok');
-      await loadAdminUpdateNotice();
     });
   }
 
