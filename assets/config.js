@@ -13,7 +13,7 @@ window.RiftSkinConfig = {
   paddleCheckoutUrl: "",
   paddleCustomerPortalUrl: "",
 
-  downloadInstallerUrl: "https://github.com/tdaval-78/riftskin-updates/releases/latest/download/RIFTSKIN-macos.dmg",
-  downloadDirectAppUrl: "https://github.com/tdaval-78/riftskin-updates/releases/latest/download/RIFTSKIN-macos.dmg",
+  downloadInstallerUrl: "https://github.com/tdaval-78/riftskin-updates/releases/latest/download/RiftSkin-0.1.0.pkg",
+  downloadDirectAppUrl: "https://github.com/tdaval-78/riftskin-updates/releases/latest/download/RiftSkin-0.1.0.pkg",
   publicReleasesUrl: "https://github.com/tdaval-78/riftskin-updates/releases"
 };
