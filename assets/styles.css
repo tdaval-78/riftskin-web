@@ -430,6 +430,12 @@ p.lead {
   z-index: 1;
 }
 
+.hero-card-topline .kicker {
+  white-space: nowrap;
+  font-size: 0.72rem;
+  padding-inline: 14px;
+}
+
 .hero-price {
   font-size: clamp(2rem, 3.8vw, 2.75rem);
   font-weight: 800;
@@ -1293,6 +1299,10 @@ textarea {
   .hero-proof-row {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .hero-card-topline .kicker {
+    white-space: normal;
   }
 
   .champion-carousel-shell {

@@ -1863,7 +1863,7 @@ Object.assign(window.RiftSkinTranslations.fr, {
   site_home_premium_li_3: "Le premium debloque la reconnaissance automatique des champions pendant la selection",
   site_home_premium_li_4: "Le premium inclut des injections de skins custom illimitees tant que l'abonnement est actif",
   site_home_manage_cta: "Gerer l'abonnement",
-  site_home_snapshot_kicker: "Gratuit d'abord, premium si vous en voulez plus",
+  site_home_snapshot_kicker: "Commencez gratuitement, premium pour debloquer l'ensemble des fonctionnalites",
   site_home_side_1_label: "Mode gratuit",
   site_home_side_1_title: "Commencez avec l'essentiel",
   site_home_side_1_desc: "Importez des skins custom compatibles, parcourez les champions, injectez dans League of Legends et gardez un vrai usage du logiciel, avec jusqu'a 10 injections par jour.",
