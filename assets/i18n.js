@@ -95,7 +95,9 @@
     const topbar = document.querySelector('.topbar');
     if (!topbar) return;
 
-    const cta = topbar.querySelector('.cta-row') || topbar;
+    const nav = topbar.querySelector('.nav');
+    const anchor = nav ? nav.querySelector('[data-link="legal"]') : null;
+    const host = nav || topbar.querySelector('.cta-row') || topbar;
     const wrapper = document.createElement('div');
     wrapper.className = 'lang-picker';
 
@@ -111,7 +113,11 @@
     });
 
     wrapper.appendChild(select);
-    cta.insertBefore(wrapper, cta.firstChild || null);
+    if (anchor && anchor.parentNode === nav) {
+      nav.insertBefore(wrapper, anchor.nextSibling);
+      return;
+    }
+    host.insertBefore(wrapper, host.firstChild || null);
   }
 
   function applyTranslations(root) {

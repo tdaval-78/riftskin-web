@@ -109,7 +109,7 @@ textarea:focus-visible,
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   padding: 10px 16px;
   border: 1px solid var(--stroke);
   border-radius: 18px;
@@ -142,16 +142,16 @@ textarea:focus-visible,
 }
 
 .brand-wordmark {
-  font-size: 1.08rem;
+  font-size: 1.02rem;
   font-weight: 800;
   letter-spacing: 0.02em;
 }
 
 .brand-subtitle {
   color: rgba(232, 219, 176, 0.82);
-  font-size: 0.56rem;
+  font-size: 0.52rem;
   font-weight: 600;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
 }
 
@@ -159,7 +159,7 @@ textarea:focus-visible,
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
   flex-wrap: wrap;
   min-width: 0;
   overflow: visible;
@@ -167,9 +167,9 @@ textarea:focus-visible,
 
 .nav a {
   color: var(--text-secondary);
-  padding: 7px 9px;
+  padding: 8px 10px;
   border-radius: 999px;
-  font-size: 0.84rem;
+  font-size: 0.92rem;
   transition: color 160ms ease, background 160ms ease, transform 160ms ease;
 }
 
@@ -190,27 +190,28 @@ textarea:focus-visible,
   gap: 6px;
   justify-items: stretch;
   align-content: center;
-  width: 176px;
+  width: 154px;
 }
 
 .lang-picker {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   align-items: center;
+  margin-inline: 4px;
 }
 
 .lang-select {
-  min-height: var(--control-h);
+  min-height: 34px;
   border-radius: 999px;
   border: 1px solid var(--stroke);
   background: rgba(255, 255, 255, 0.04);
   color: var(--text-primary);
-  padding: 0 10px;
+  padding: 0 8px;
   font: inherit;
-  font-size: 1rem;
+  font-size: 0.92rem;
   line-height: 1;
-  min-width: 54px;
-  width: 54px;
+  min-width: 42px;
+  width: 42px;
   text-align: center;
   text-align-last: center;
   appearance: none;
@@ -309,10 +310,10 @@ textarea:focus-visible,
 
 h1 {
   margin: 16px 0 14px;
-  font-size: clamp(1.86rem, 3.7vw, 2.9rem);
+  font-size: clamp(1.72rem, 3.2vw, 2.46rem);
   line-height: 0.98;
   letter-spacing: -0.04em;
-  max-width: 13ch;
+  max-width: 15ch;
 }
 
 h2 {
