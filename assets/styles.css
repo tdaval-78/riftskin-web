@@ -722,6 +722,20 @@ p.lead {
     rgba(12, 17, 24, 0.86);
 }
 
+.download-platform-macos .download-primary-card {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(56, 122, 205, 0.18), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
+    rgba(12, 17, 24, 0.86);
+}
+
+.download-platform-windows .download-primary-card {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(114, 196, 255, 0.18), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
+    rgba(12, 17, 24, 0.86);
+}
+
 .download-flow-card {
   display: grid;
   align-content: start;
@@ -750,6 +764,50 @@ p.lead {
   top: auto;
   left: auto;
   min-width: 48px;
+}
+
+.download-platform-macos .download-step .step-index,
+.download-platform-macos .download-primary-card .notice,
+.download-platform-macos .capability-tags span {
+  border-color: rgba(70, 138, 214, 0.26);
+}
+
+.download-platform-macos .download-step .step-index {
+  background: rgba(78, 150, 231, 0.1);
+  color: #d9ebff;
+}
+
+.download-platform-macos .download-primary-card .notice {
+  background: rgba(78, 150, 231, 0.08);
+}
+
+.download-platform-macos .capability-tags span {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02)),
+    rgba(19, 23, 31, 0.76);
+  box-shadow: 0 0 0 1px rgba(78, 150, 231, 0.06);
+}
+
+.download-platform-windows .download-step .step-index,
+.download-platform-windows .download-primary-card .notice,
+.download-platform-windows .capability-tags span {
+  border-color: rgba(118, 196, 255, 0.28);
+}
+
+.download-platform-windows .download-step .step-index {
+  background: rgba(157, 220, 255, 0.11);
+  color: #ebf8ff;
+}
+
+.download-platform-windows .download-primary-card .notice {
+  background: rgba(157, 220, 255, 0.08);
+}
+
+.download-platform-windows .capability-tags span {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02)),
+    rgba(19, 23, 31, 0.76);
+  box-shadow: 0 0 0 1px rgba(157, 220, 255, 0.07);
 }
 
 .download-step strong {
