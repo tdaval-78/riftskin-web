@@ -413,7 +413,7 @@ p.lead {
 .hero-proof-pill:first-child {
   border-color: rgba(98, 180, 255, 0.52);
   background: rgba(62, 162, 255, 0.12);
-  color: #dceeff;
+  color: #f4f8ff;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.05),
     0 0 0 1px rgba(98, 180, 255, 0.08),
@@ -423,7 +423,7 @@ p.lead {
 .hero-proof-pill:last-child {
   border-color: rgba(98, 180, 255, 0.52);
   background: rgba(62, 162, 255, 0.12);
-  color: #dceeff;
+  color: #f4f8ff;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.05),
     0 0 0 1px rgba(98, 180, 255, 0.08),
