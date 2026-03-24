@@ -1674,8 +1674,8 @@ Object.assign(window.RiftSkinTranslations.en, {
   site_home_fit_1_desc: "The main value lives in the macOS app: import workflow, library organisation, launch flow, and premium features where they actually matter.",
   site_home_fit_2_title: "Web account only where needed",
   site_home_fit_2_desc: "The site handles subscription management, billing, and premium codes. It does not pretend the app requires a permanent web session for core usage.",
-  site_home_champion_h2: "Built around the full champion roster",
-  site_home_champion_intro: "RiftSkin is not limited to a small hand-picked list. Browse the roster, pick your champion, and keep the same desktop workflow across the game.",
+  site_home_champion_h2: "Import skins for every League of Legends champion",
+  site_home_champion_intro: "RiftSkin is designed for the full League roster. Whatever champion you play, you can import compatible skins and keep the same workflow across the entire game.",
 
   site_pricing_title: "RiftSkin Pricing",
   site_pricing_meta_desc: "RiftSkin free mode is fully usable for the core skin workflow. Premium is 15 EUR per month and unlocks favorites plus automatic champion recognition.",
@@ -1870,8 +1870,8 @@ Object.assign(window.RiftSkinTranslations.fr, {
   site_home_fit_1_desc: "La valeur principale vit dans l'application macOS : workflow d'import, organisation de la bibliotheque, lancement, et fonctions premium la ou elles comptent vraiment.",
   site_home_fit_2_title: "Le compte web seulement quand il sert",
   site_home_fit_2_desc: "Le site gere l'abonnement, la facturation et les codes premium. Il ne pretend pas que l'application ait besoin d'une session web permanente pour l'usage principal.",
-  site_home_champion_h2: "Construit autour de tout le roster de champions",
-  site_home_champion_intro: "RiftSkin n'est pas limite a une petite selection. Parcourez le roster, choisissez votre champion, et gardez le meme workflow desktop sur l'ensemble du jeu.",
+  site_home_champion_h2: "Importez des skins pour l'ensemble des champions de League of Legends",
+  site_home_champion_intro: "RiftSkin est pense pour tout le roster de League of Legends. Quel que soit le champion que vous jouez, vous pouvez importer des skins compatibles et garder le meme workflow sur l'ensemble du jeu.",
 
   site_pricing_title: "RiftSkin - Tarifs",
   site_pricing_meta_desc: "Le mode gratuit de RiftSkin reste pleinement utilisable pour le workflow principal. Le premium coute 15 EUR par mois et debloque les favoris ainsi que la reconnaissance automatique.",

@@ -11,8 +11,8 @@
 
   const loops = 3;
   const tileWidth = 154;
-  const baseSpeed = 0.02;
-  const maxBoost = 0.16;
+  const baseSpeed = 0.055;
+  const maxBoost = 0.34;
   const cycleWidth = champions.length * tileWidth;
   const items = [];
   const shell = track.parentElement;
@@ -100,7 +100,7 @@
   function frame(now) {
     const dt = Math.min(now - last, 32);
     last = now;
-    currentVelocity += (targetVelocity - currentVelocity) * 0.055;
+    currentVelocity += (targetVelocity - currentVelocity) * 0.085;
     offset += dt * currentVelocity;
     while (offset < cycleWidth) {
       offset += cycleWidth;
