@@ -345,6 +345,10 @@ h2 {
   line-height: 1.82;
 }
 
+.steps-section .section-intro {
+  max-width: 110ch;
+}
+
 @media (min-width: 861px) {
   .champion-showcase .section-intro {
     max-width: none;
