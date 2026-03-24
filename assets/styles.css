@@ -337,10 +337,12 @@ h2 {
 .champion-showcase h2 {
   font-size: clamp(1.5rem, 2.1vw, 2rem);
   white-space: nowrap;
+  margin-bottom: 10px;
 }
 
 .champion-showcase .section-intro {
-  max-width: 78ch;
+  max-width: 110ch;
+  line-height: 1.82;
 }
 
 h3 {
