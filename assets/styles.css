@@ -43,10 +43,15 @@ body {
   font-family: "Avenir Next", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: var(--text-primary);
   background:
-    radial-gradient(circle at 15% -10%, rgba(211, 176, 75, 0.18), transparent 24%),
-    radial-gradient(circle at 82% 0%, rgba(138, 149, 168, 0.1), transparent 22%),
-    radial-gradient(circle at 50% 100%, rgba(255, 255, 255, 0.05), transparent 35%),
-    linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
+    linear-gradient(180deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.48)),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.14), rgba(0, 0, 0, 0.03) 22%, rgba(0, 0, 0, 0.01) 55%, rgba(0, 0, 0, 0.03) 82%, rgba(0, 0, 0, 0.14)),
+    radial-gradient(circle at 15% -10%, rgba(211, 176, 75, 0.12), transparent 24%),
+    radial-gradient(circle at 82% 0%, rgba(138, 149, 168, 0.06), transparent 22%),
+    url("/assets/desktop_backdrop.jpg");
+  background-color: #06070a;
+  background-size: auto, auto, auto, auto, cover;
+  background-position: center, center, 15% -10%, 82% 0%, center;
+  background-repeat: no-repeat;
 }
 
 body.motion-ready [data-reveal] {
