@@ -287,8 +287,8 @@ textarea:focus-visible,
 
 .hero-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.14fr) minmax(360px, 0.86fr);
-  gap: 22px;
+  grid-template-columns: minmax(0, 1.24fr) minmax(340px, 0.76fr);
+  gap: 24px;
   align-items: stretch;
 }
 
@@ -310,10 +310,10 @@ textarea:focus-visible,
 
 h1 {
   margin: 16px 0 14px;
-  font-size: clamp(1.72rem, 3.2vw, 2.46rem);
-  line-height: 0.98;
+  font-size: clamp(1.56rem, 2.85vw, 2.18rem);
+  line-height: 1.01;
   letter-spacing: -0.04em;
-  max-width: 15ch;
+  max-width: 18ch;
 }
 
 h2 {
@@ -332,9 +332,9 @@ h3 {
 p.lead {
   margin: 0;
   color: var(--text-secondary);
-  line-height: 1.62;
-  font-size: 0.96rem;
-  max-width: 60ch;
+  line-height: 1.7;
+  font-size: 1rem;
+  max-width: 56ch;
 }
 
 .hero-actions,
