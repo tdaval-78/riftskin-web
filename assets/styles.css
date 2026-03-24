@@ -148,9 +148,10 @@ textarea:focus-visible,
 }
 
 .brand-subtitle {
-  color: var(--text-tertiary);
-  font-size: 0.62rem;
-  letter-spacing: 0.14em;
+  color: rgba(232, 219, 176, 0.82);
+  font-size: 0.56rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
 }
 

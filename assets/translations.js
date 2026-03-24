@@ -1611,7 +1611,7 @@ window.RiftSkinTranslations = {
 };
 
 Object.assign(window.RiftSkinTranslations.en, {
-  site_brand_tagline: "macOS League skin injector",
+  site_brand_tagline: "CUSTOM SKIN INJECTOR FOR LOL",
   site_home_title: "RIFTSKIN - Custom LoL skins for Mac",
   site_home_meta_desc: "RIFTSKIN is a macOS app that lets you import and inject custom skins on League of Legends, organise your library, and unlock premium features with one subscription.",
   site_home_kicker: "League of Legends skins on macOS",
@@ -1807,7 +1807,7 @@ Object.assign(window.RiftSkinTranslations.en, {
 });
 
 Object.assign(window.RiftSkinTranslations.fr, {
-  site_brand_tagline: "INJECTEUR DE CUSTOMS SKINS SUR LOL",
+  site_brand_tagline: "INJECTEUR DE SKINS CUSTOM POUR LOL",
   site_home_title: "RIFTSKIN - Skins LoL personnalises sur Mac",
   site_home_meta_desc: "RIFTSKIN permet d'importer et d'injecter des skins custom sur League of Legends avec un mode gratuit vraiment utile et un premium pense pour les joueurs reguliers.",
   site_home_kicker: "Skins custom League of Legends",
