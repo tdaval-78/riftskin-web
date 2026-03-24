@@ -1,5 +1,5 @@
 window.RiftSkinConfig = {
-  brand: "RiftSkin",
+  brand: "RIFTSKIN",
   trialDays: 0,
   monthlyPriceEUR: 15,
   supportEmail: "support@riftskin.com",

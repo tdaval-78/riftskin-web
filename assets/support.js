@@ -15,7 +15,7 @@
     const topic = (data.get('topic') || '').toString().trim();
     const message = (data.get('message') || '').toString().trim();
     const to = cfg.supportEmail || 'support@riftskin.com';
-    const subject = encodeURIComponent('[RiftSkin Support] ' + topic);
+    const subject = encodeURIComponent('[RIFTSKIN Support] ' + topic);
     const body = encodeURIComponent(
       'Name: ' + name + '\n' +
       'Email: ' + email + '\n' +
