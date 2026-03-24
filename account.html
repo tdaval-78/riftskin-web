@@ -42,10 +42,22 @@
           <p class="section-intro" data-i18n="site_account_intro">The desktop app works for free without a software login. Use this page to manage premium subscription, billing, and premium code details.</p>
         </div>
       </div>
+      <div class="account-hero-grid">
+        <article class="panel account-hero-panel">
+          <div class="kicker" data-i18n="site_account_panel_1_kicker">Subscription</div>
+          <h3 data-i18n="site_account_panel_1_title">Everything billing-related lives here.</h3>
+          <p class="subtle" data-i18n="site_account_panel_1_desc">Use the web account to subscribe, retrieve your premium code, manage billing, and keep premium active without turning the desktop app into a login wall.</p>
+        </article>
+        <article class="panel account-hero-panel">
+          <div class="kicker" data-i18n="site_account_panel_2_kicker">Desktop app</div>
+          <h3 data-i18n="site_account_panel_2_title">The product itself stays in RIFTSKIN.</h3>
+          <p class="subtle" data-i18n="site_account_panel_2_desc">Importing, injecting, organising, and launching custom skins still happens in the app. This page only handles the account side of premium.</p>
+        </article>
+      </div>
       <div class="notice"><span data-i18n="account_status_label">Session status</span>: <span class="status-badge" data-account-status data-i18n="account_checking">Checking...</span></div>
 
-      <div class="grid-2" data-logged-out style="margin-top: 12px;">
-        <article class="panel">
+      <div class="grid-2 account-auth-grid" data-logged-out style="margin-top: 12px;">
+        <article class="panel account-auth-card">
           <h3 data-i18n="account_signin_title">Sign in</h3>
           <form data-signin-form>
             <input type="email" name="email" data-i18n-placeholder="account_email_ph" placeholder="Email" autocomplete="email" data-account-email required />
@@ -59,7 +71,7 @@
           </form>
         </article>
 
-        <article class="panel">
+        <article class="panel account-auth-card">
           <h3 data-i18n="site_account_signup_title">Create web account</h3>
           <form data-signup-form>
             <input type="text" name="username" data-i18n-placeholder="account_username_ph" placeholder="Username" minlength="3" maxlength="24" required />

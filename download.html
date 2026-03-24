@@ -34,7 +34,7 @@
       </div>
     </header>
 
-    <section class="section">
+    <section class="section download-hero-section">
       <div class="section-head">
         <div>
           <h2 data-i18n="site_download_h2">Download RIFTSKIN for macOS</h2>
@@ -42,33 +42,53 @@
         </div>
       </div>
 
-      <div class="download-grid">
-        <div class="panel">
+      <div class="download-grid download-grid-hero">
+        <div class="panel download-primary-card">
           <h3 data-i18n="site_download_card_1_title">Download and install on macOS</h3>
           <p class="subtle" data-i18n="site_download_card_1_desc">Use the macOS installer package for the cleanest setup. Open the package, allow it in macOS security settings if it is blocked, then complete the installer.</p>
           <div class="hero-actions">
             <a class="btn btn-primary" data-download-installer href="https://github.com/tdaval-78/riftskin-updates/releases/latest/download/RiftSkin-macos-installer.pkg" data-i18n="site_download_cta">Download for macOS</a>
             <a class="btn btn-ghost" data-public-releases href="https://github.com/tdaval-78/riftskin-updates/releases" data-i18n="site_download_release_cta">Open public releases</a>
           </div>
+          <div class="capability-tags">
+            <span data-i18n="site_download_tag_1">macOS installer</span>
+            <span data-i18n="site_download_tag_2">Free mode available immediately</span>
+            <span data-i18n="site_download_tag_3">Premium activated later in the app</span>
+          </div>
           <div class="notice" data-i18n="site_download_notice">If macOS blocks the installer or the app on first open, that is expected for the current distribution flow. The security approval steps below are part of the normal setup.</div>
         </div>
 
-        <div class="panel">
+        <div class="panel download-flow-card">
           <h3 data-i18n="site_download_card_2_title">Install flow</h3>
-          <ul class="list">
-            <li data-i18n="site_download_step_1">Download and open <code>RiftSkin-macos-installer.pkg</code></li>
-            <li data-i18n="site_download_step_2">If macOS blocks the installer, close the alert and open <code>System Settings &gt; Privacy &amp; Security</code></li>
-            <li data-i18n="site_download_step_3">In the Security section, find the message saying RIFTSKIN was blocked and click <code>Open Anyway</code></li>
-            <li data-i18n="site_download_step_4">Confirm <code>Open Anyway</code> one more time if macOS asks again, then reopen the installer package</li>
-            <li data-i18n="site_download_step_5">Follow the installer until RIFTSKIN is installed in <code>Applications</code></li>
-            <li data-i18n="site_download_step_6">Open <code>Applications</code>, launch <code>RIFTSKIN</code>, and finish the in-app setup</li>
-          </ul>
+          <div class="download-step-stack">
+            <div class="download-step">
+              <div class="step-index">01</div>
+              <div>
+                <strong data-i18n="site_download_flow_1_title">Download the installer</strong>
+                <p class="subtle" data-i18n="site_download_flow_1_desc">Open <code>RiftSkin-macos-installer.pkg</code> and start the installation normally.</p>
+              </div>
+            </div>
+            <div class="download-step">
+              <div class="step-index">02</div>
+              <div>
+                <strong data-i18n="site_download_flow_2_title">Approve it in macOS if needed</strong>
+                <p class="subtle" data-i18n="site_download_flow_2_desc">If macOS blocks the installer, use <code>System Settings &gt; Privacy &amp; Security</code> then click <code>Open Anyway</code>.</p>
+              </div>
+            </div>
+            <div class="download-step">
+              <div class="step-index">03</div>
+              <div>
+                <strong data-i18n="site_download_flow_3_title">Launch RIFTSKIN and finish setup</strong>
+                <p class="subtle" data-i18n="site_download_flow_3_desc">Open the app from <code>Applications</code>, complete the first setup, then continue in free mode or activate premium later.</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
     <section class="section">
-      <div class="grid-2">
+      <div class="grid-2 download-support-grid">
         <article class="panel">
           <h3 data-i18n="site_download_panel_1_title">Before you launch</h3>
           <p class="subtle" data-i18n="site_download_panel_1_desc">RIFTSKIN is currently focused on macOS distribution. Once installed, you can stay in free mode or attach a premium code later from the desktop app.</p>
