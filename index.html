@@ -4,15 +4,21 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex,nofollow" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self' mailto:; img-src 'self' data: https://bvajoufrxxntivxghdgs.supabase.co; style-src 'self' 'unsafe-inline'; script-src 'self' https://cdn.jsdelivr.net https://cdn.paddle.com; connect-src 'self' https://bvajoufrxxntivxghdgs.supabase.co https://api.paddle.com https://sandbox-api.paddle.com https://checkout.paddle.com https://sandbox-checkout.paddle.com; frame-src https://checkout.paddle.com https://sandbox-checkout.paddle.com;" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self' mailto:; img-src 'self' data: https://bvajoufrxxntivxghdgs.supabase.co https://ddragon.leagueoflegends.com; style-src 'self' 'unsafe-inline'; script-src 'self' https://cdn.jsdelivr.net https://cdn.paddle.com; connect-src 'self' https://bvajoufrxxntivxghdgs.supabase.co https://api.paddle.com https://sandbox-api.paddle.com https://checkout.paddle.com https://sandbox-checkout.paddle.com; frame-src https://checkout.paddle.com https://sandbox-checkout.paddle.com;" />
   <title data-i18n="site_home_title">RiftSkin - Custom LoL skins for Mac</title>
-  <meta name="description" data-i18n-content="site_home_meta_desc" content="RiftSkin lets you import and run custom League of Legends skins on macOS for free, with a premium subscription for favorites and automatic champion recognition." />
+  <meta name="description" data-i18n-content="site_home_meta_desc" content="RiftSkin lets you import, organise, and run custom League of Legends skins on macOS with a free core workflow and premium extras." />
   <link rel="stylesheet" href="/assets/styles.css" />
 </head>
 <body data-page="home">
   <div class="site-wrap">
     <header class="topbar">
-      <a href="/" class="brand"><img src="/assets/logo.png" alt="RiftSkin logo" />RiftSkin</a>
+      <a href="/" class="brand">
+        <img class="brand-mark" src="/assets/logo.png" alt="RiftSkin logo" />
+        <span class="brand-copy">
+          <span class="brand-wordmark">RiftSkin</span>
+          <span class="brand-subtitle" data-i18n="site_brand_tagline">macOS LoL skin manager</span>
+        </span>
+      </a>
       <button class="btn btn-ghost burger" data-burger type="button" data-i18n="nav_menu">Menu</button>
       <nav class="nav" data-nav>
         <a data-link="home" href="/" data-i18n="nav_home">Home</a>
@@ -24,72 +30,163 @@
         <a data-link="account" href="/account.html" data-i18n="nav_account">My account</a>
       </nav>
       <div class="cta-row">
-        <a class="btn btn-primary" href="/account.html" data-i18n="nav_account">My account</a>
+        <a class="btn btn-primary" href="/download.html" data-i18n="site_home_cta_download">Download for Mac</a>
+        <a class="btn btn-ghost" href="/account.html" data-i18n="nav_account">My account</a>
       </div>
     </header>
 
-    <section class="hero">
+    <section class="hero" data-reveal="hero">
       <div class="hero-grid">
         <div>
-          <span class="kicker" data-i18n="site_home_kicker">macOS skin manager</span>
-          <h1 data-i18n="site_home_h1">Import, organize, and run custom LoL skins on Mac with a cleaner workflow.</h1>
-          <p class="lead" data-i18n="site_home_lead">RiftSkin now starts in a fully usable free mode. Import skins, build your library, and launch the game without signing in inside the app. Premium adds automatic champion recognition and favorites, with one monthly subscription and one premium code for your machine.</p>
-          <div class="cta-row" style="margin-top:16px">
-            <a class="btn btn-primary" href="/download.html" data-i18n="site_home_cta_download">Download for Mac</a>
-            <a class="btn btn-ghost" href="/pricing.html" data-i18n="site_home_cta_compare">See free vs premium</a>
+          <span class="eyebrow" data-i18n="site_home_kicker">macOS skin manager</span>
+          <h1 data-i18n="site_home_h1">A cleaner Mac workflow for importing, organising, and running custom LoL skins.</h1>
+          <p class="lead" data-i18n="site_home_lead">RiftSkin focuses on the actual desktop workflow: import compatible skins, build your library, launch the game, and keep premium optional. Free mode covers the core app. Premium adds faster champion recognition and favourites.</p>
+          <div class="hero-proof-row" data-reveal="card">
+            <span class="hero-proof-pill" data-i18n="site_home_proof_1">First real macOS workflow</span>
+            <span class="hero-proof-pill" data-i18n="site_home_proof_2">Desktop app first</span>
+            <span class="hero-proof-pill" data-i18n="site_home_proof_3">Premium stays optional</span>
           </div>
-          <div class="notice" data-i18n="site_home_notice">Use the champion default skin in-game for replacement to apply correctly. RiftSkin handles the setup flow inside the app.</div>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="/download.html" data-i18n="site_home_cta_download">Download for Mac</a>
+            <a class="btn btn-ghost" href="/pricing.html" data-i18n="site_home_cta_compare">Compare free and premium</a>
+          </div>
+          <div class="hero-meta">
+            <span class="mini-note" data-i18n="site_home_notice">Use the champion default skin in game for the replacement to apply correctly. RiftSkin handles the setup flow inside the app.</span>
+          </div>
+
+          <div class="stats-grid">
+            <article class="stat-card" data-reveal="card">
+              <div class="stat-value" data-i18n="site_home_stat_1_value">Free core workflow</div>
+              <div class="stat-label" data-i18n="site_home_stat_1_label">Import, library browsing, and launch remain usable without a software login.</div>
+            </article>
+            <article class="stat-card" data-reveal="card">
+              <div class="stat-value" data-i18n="site_home_stat_2_value">Built for macOS</div>
+              <div class="stat-label" data-i18n="site_home_stat_2_label">Desktop-first flow, Apple Silicon friendly packaging, and a distribution path tailored to current macOS constraints.</div>
+            </article>
+            <article class="stat-card" data-reveal="card">
+              <div class="stat-value" data-i18n="site_home_stat_3_value">Premium by code</div>
+              <div class="stat-label" data-i18n="site_home_stat_3_label">Billing is managed on the web, while the desktop app unlocks premium features with your active premium code.</div>
+            </article>
+          </div>
         </div>
 
-        <aside class="hero-card">
+        <aside class="hero-card" data-reveal="hero-card">
           <div class="subtle" data-i18n="site_home_premium_label">Premium</div>
           <div class="hero-price" data-i18n="site_home_premium_price">15 EUR / month</div>
-          <div class="subtle" data-i18n="site_home_premium_caption">Free mode is available immediately. Cancel premium any time.</div>
+          <p class="subtle" data-i18n="site_home_premium_caption">Free mode is available immediately. Cancel premium any time.</p>
           <ul class="list" style="margin-top:12px">
             <li data-i18n="site_home_premium_li_1">Free mode keeps imports, library browsing, and Run available</li>
-            <li data-i18n="site_home_premium_li_2">Premium unlocks champion favorites and skin favorites</li>
+            <li data-i18n="site_home_premium_li_2">Premium unlocks champion favourites and skin favourites</li>
             <li data-i18n="site_home_premium_li_3">Premium unlocks automatic champion recognition during pick phase</li>
             <li data-i18n="site_home_premium_li_4">Premium remains active while your subscription is active</li>
           </ul>
-          <a class="btn btn-primary" style="margin-top:14px;width:100%" href="/account.html" data-i18n="site_home_manage_cta">Manage subscription</a>
+          <a class="btn btn-primary" style="margin-top:16px;width:100%" href="/account.html" data-i18n="site_home_manage_cta">Manage subscription</a>
+          <div class="hero-side-grid">
+            <article class="hero-side-card">
+              <div class="hero-side-label" data-i18n="site_home_side_1_label">On the site</div>
+              <div class="hero-side-title" data-i18n="site_home_side_1_title">Download, billing, support</div>
+              <p data-i18n="site_home_side_1_desc">Everything account-related lives on the web so the app can stay focused on skins and champion flow.</p>
+            </article>
+            <article class="hero-side-card">
+              <div class="hero-side-label" data-i18n="site_home_side_2_label">In the app</div>
+              <div class="hero-side-title" data-i18n="site_home_side_2_title">Import, organise, launch</div>
+              <p data-i18n="site_home_side_2_desc">The real product value lives in the desktop experience, not in a generic account gate.</p>
+            </article>
+          </div>
         </aside>
       </div>
 
-      <div class="features">
-        <article class="feature">
-          <h3 data-i18n="site_home_feat_1_title">Designed for macOS</h3>
-          <p data-i18n="site_home_feat_1_desc">Dark glass UI, native desktop workflow, and Apple Silicon friendly packaging.</p>
+      <section class="capabilities-grid">
+        <article class="capability capability-featured" data-reveal="card">
+          <div class="capability-kicker" data-i18n="site_home_cap_1_kicker">Desktop workflow</div>
+          <h3 data-i18n="site_home_cap_1_title">A site that explains the app without overselling it</h3>
+          <p data-i18n="site_home_cap_1_desc">RiftSkin now presents the real product clearly: download on macOS, launch the desktop app, import compatible skins, then manage premium only if you want the extra speed features.</p>
+          <div class="capability-tags">
+            <span data-i18n="site_home_cap_1_tag_1">macOS install</span>
+            <span data-i18n="site_home_cap_1_tag_2">real app flow</span>
+            <span data-i18n="site_home_cap_1_tag_3">clear positioning</span>
+          </div>
         </article>
-        <article class="feature">
-          <h3 data-i18n="site_home_feat_2_title">Free first</h3>
-          <p data-i18n="site_home_feat_2_desc">The app no longer blocks the core workflow behind software login. Start free, upgrade only for premium features.</p>
+
+        <article class="capability" data-reveal="card">
+          <div class="capability-kicker" data-i18n="site_home_cap_2_kicker">Site account</div>
+          <h3 data-i18n="site_home_cap_2_title">Billing, support, and premium codes live in the right place</h3>
+          <p data-i18n="site_home_cap_2_desc">The website handles account, subscription, support, and activation code flows so the app can stay focused on skins, champions, and launch.</p>
         </article>
-        <article class="feature">
-          <h3 data-i18n="site_home_feat_3_title">Subscription code flow</h3>
-          <p data-i18n="site_home_feat_3_desc">Manage billing on the web, receive your premium code, and activate it directly inside the desktop app.</p>
+
+        <article class="capability" data-reveal="card">
+          <div class="capability-kicker" data-i18n="site_home_cap_3_kicker">Free and premium</div>
+          <h3 data-i18n="site_home_cap_3_title">Free mode stays useful, premium stays focused</h3>
+          <p data-i18n="site_home_cap_3_desc">The site now makes the split understandable at a glance: free covers the core workflow, premium adds favourites and automatic champion recognition.</p>
         </article>
+
+        <article class="capability" data-reveal="card">
+          <div class="capability-kicker" data-i18n="site_home_cap_4_kicker">Product clarity</div>
+          <h3 data-i18n="site_home_cap_4_title">Modern presentation, same RiftSkin DNA</h3>
+          <p data-i18n="site_home_cap_4_desc">The visual language stays dark, glassy, and desktop-first, but the content is cleaner, more precise, and much more aligned with what the software actually does.</p>
+        </article>
+      </section>
+    </section>
+
+    <section class="section champion-showcase" data-reveal="section">
+      <div class="section-head">
+        <div>
+          <h2 data-i18n="site_home_champion_h2">Built around the full champion roster</h2>
+          <p class="section-intro" data-i18n="site_home_champion_intro">RiftSkin is not limited to a small hand-picked list. Browse the roster, pick your champion, and keep the same desktop workflow across the game.</p>
+        </div>
+      </div>
+      <div class="champion-carousel-shell">
+        <div class="champion-carousel-track" data-champion-carousel aria-label="League of Legends champions carousel"></div>
       </div>
     </section>
 
-    <section class="section">
-      <h2 data-i18n="site_home_steps_h2">How it works</h2>
-      <div class="grid-2">
-        <div class="panel">
+    <section class="section steps-section" data-reveal="section">
+      <div class="section-head">
+        <div>
+          <h2 data-i18n="site_home_steps_h2">How it works</h2>
+          <p class="section-intro" data-i18n="site_home_steps_intro">RiftSkin is built around a simple loop: install once, choose free or premium, import compatible content, then launch cleanly from the desktop app.</p>
+        </div>
+      </div>
+      <div class="grid-2 steps-grid">
+        <div class="panel step-panel" data-reveal="card">
+          <div class="step-index">01</div>
           <h3 data-i18n="site_home_step_1_title">1. Download the app</h3>
-          <p class="subtle" data-i18n="site_home_step_1_desc">Install RiftSkin on macOS and choose your language on first launch.</p>
+          <p class="subtle" data-i18n="site_home_step_1_desc">Install RiftSkin on macOS and finish the first setup flow inside the app.</p>
         </div>
-        <div class="panel">
+        <div class="panel step-panel" data-reveal="card">
+          <div class="step-index">02</div>
           <h3 data-i18n="site_home_step_2_title">2. Continue free or activate premium</h3>
-          <p class="subtle" data-i18n="site_home_step_2_desc">Free mode unlocks the core app. Premium adds automatic recognition and favorites.</p>
+          <p class="subtle" data-i18n="site_home_step_2_desc">Free mode unlocks the core app. Premium adds automatic recognition and favourites.</p>
         </div>
-        <div class="panel">
+        <div class="panel step-panel" data-reveal="card">
+          <div class="step-index">03</div>
           <h3 data-i18n="site_home_step_3_title">3. Import compatible skins</h3>
-          <p class="subtle" data-i18n="site_home_step_3_desc">Use supported packages, browse champions, and activate the skins you want to run.</p>
+          <p class="subtle" data-i18n="site_home_step_3_desc">Use supported packages, browse champions, and enable the skins you want to run.</p>
         </div>
-        <div class="panel">
+        <div class="panel step-panel" data-reveal="card">
+          <div class="step-index">04</div>
           <h3 data-i18n="site_home_step_4_title">4. Launch and play</h3>
-          <p class="subtle" data-i18n="site_home_step_4_desc">Run from RiftSkin, then pick the default/base skin in champion select for the replacement to apply.</p>
+          <p class="subtle" data-i18n="site_home_step_4_desc">Run from RiftSkin, then pick the default or base skin in champion select for the replacement to apply.</p>
         </div>
+      </div>
+    </section>
+
+    <section class="section fit-section" data-reveal="section">
+      <div class="section-head">
+        <div>
+          <h2 data-i18n="site_home_fit_h2">What the site now makes clear</h2>
+          <p class="section-intro" data-i18n="site_home_fit_intro">The product is not just a landing page with a download button. It is a complete flow with app distribution, premium code activation, support, and account-based billing management.</p>
+        </div>
+      </div>
+      <div class="fit-grid">
+        <article class="panel fit-panel-primary" data-reveal="card">
+          <h3 data-i18n="site_home_fit_1_title">Desktop app first</h3>
+          <p class="subtle" data-i18n="site_home_fit_1_desc">The main value lives in the macOS app: import workflow, library organisation, launch flow, and premium features where they actually matter.</p>
+        </article>
+        <article class="panel fit-panel-secondary" data-reveal="card">
+          <h3 data-i18n="site_home_fit_2_title">Web account only where needed</h3>
+          <p class="subtle" data-i18n="site_home_fit_2_desc">The site handles subscription management, billing, and premium codes. It does not pretend the app requires a permanent web session for core usage.</p>
+        </article>
       </div>
     </section>
 
@@ -107,8 +204,10 @@
   </div>
 
   <script src="/assets/config.js"></script>
+  <script src="/assets/champions.js"></script>
   <script src="/assets/translations.js"></script>
   <script src="/assets/i18n.js"></script>
   <script src="/assets/site.js"></script>
+  <script src="/assets/champion-carousel.js"></script>
 </body>
 </html>

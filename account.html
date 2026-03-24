@@ -12,7 +12,13 @@
 <body data-page="account">
   <div class="site-wrap">
     <header class="topbar">
-      <a href="/" class="brand"><img src="/assets/logo.png" alt="RiftSkin logo" />RiftSkin</a>
+      <a href="/" class="brand">
+        <img class="brand-mark" src="/assets/logo.png" alt="RiftSkin logo" />
+        <span class="brand-copy">
+          <span class="brand-wordmark">RiftSkin</span>
+          <span class="brand-subtitle" data-i18n="site_brand_tagline">macOS LoL skin manager</span>
+        </span>
+      </a>
       <button class="btn btn-ghost burger" data-burger type="button" data-i18n="nav_menu">Menu</button>
       <nav class="nav" data-nav>
         <a data-link="home" href="/" data-i18n="nav_home">Home</a>
@@ -29,8 +35,12 @@
     </header>
 
     <section class="section">
-      <h2 data-i18n="site_account_h2">Web account and subscription</h2>
-      <p class="subtle" data-i18n="site_account_intro">The desktop app works for free without a software login. Use this page only to manage your premium subscription, billing, and premium code.</p>
+      <div class="section-head">
+        <div>
+          <h2 data-i18n="site_account_h2">Web account and subscription</h2>
+          <p class="section-intro" data-i18n="site_account_intro">The desktop app works for free without a software login. Use this page to manage premium subscription, billing, and premium code details.</p>
+        </div>
+      </div>
       <div class="notice"><span data-i18n="account_status_label">Session status</span>: <span class="status-badge" data-account-status data-i18n="account_checking">Checking...</span></div>
 
       <div class="grid-2" data-logged-out style="margin-top: 12px;">

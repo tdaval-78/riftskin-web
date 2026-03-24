@@ -11,7 +11,13 @@
 <body data-page="faq">
   <div class="site-wrap">
     <header class="topbar">
-      <a href="/" class="brand"><img src="/assets/logo.png" alt="RiftSkin logo" />RiftSkin</a>
+      <a href="/" class="brand">
+        <img class="brand-mark" src="/assets/logo.png" alt="RiftSkin logo" />
+        <span class="brand-copy">
+          <span class="brand-wordmark">RiftSkin</span>
+          <span class="brand-subtitle" data-i18n="site_brand_tagline">macOS LoL skin manager</span>
+        </span>
+      </a>
       <button class="btn btn-ghost burger" data-burger type="button" data-i18n="nav_menu">Menu</button>
       <nav class="nav" data-nav>
         <a data-link="home" href="/" data-i18n="nav_home">Home</a>
@@ -23,12 +29,17 @@
         <a data-link="account" href="/account.html" data-i18n="nav_account">My account</a>
       </nav>
       <div class="cta-row">
-        <a class="btn btn-primary" href="/account.html" data-i18n="nav_account">My account</a>
+        <a class="btn btn-primary" href="/download.html" data-i18n="site_download_cta">Download for macOS</a>
       </div>
     </header>
 
     <section class="section">
-      <h2 data-i18n="site_faq_h2">Frequently asked questions</h2>
+      <div class="section-head">
+        <div>
+          <h2 data-i18n="site_faq_h2">Frequently asked questions</h2>
+          <p class="section-intro" data-i18n="site_faq_intro">The questions below now reflect the real current positioning of RiftSkin: macOS desktop app first, free core workflow, premium extras, and account use only where it makes sense.</p>
+        </div>
+      </div>
       <div class="grid-2">
         <article class="faq-item">
           <h3 data-i18n="site_faq_q1_t">Is the app usable for free?</h3>
@@ -36,7 +47,7 @@
         </article>
         <article class="faq-item">
           <h3 data-i18n="site_faq_q2_t">What does premium unlock?</h3>
-          <p data-i18n="site_faq_q2_d">Premium unlocks favorite champions, favorite skins, and automatic champion recognition during pick phase.</p>
+          <p data-i18n="site_faq_q2_d">Premium unlocks favourite champions, favourite skins, and automatic champion recognition during pick phase.</p>
         </article>
         <article class="faq-item">
           <h3 data-i18n="site_faq_q3_t">Do I need to sign in inside the desktop app?</h3>
@@ -44,15 +55,23 @@
         </article>
         <article class="faq-item">
           <h3 data-i18n="site_faq_q4_t">Do I still need the default skin in game?</h3>
-          <p data-i18n="site_faq_q4_d">Yes. For replacement to apply correctly, select the champion default/base skin in game.</p>
+          <p data-i18n="site_faq_q4_d">Yes. For the replacement to apply correctly, select the champion default or base skin in game.</p>
         </article>
         <article class="faq-item">
           <h3 data-i18n="site_faq_q5_t">How do I get premium?</h3>
-          <p data-i18n="site_faq_q5_d">Subscribe from the web account page. Your subscription stays monthly at 15 EUR, and you use the premium code in the app while the subscription is active.</p>
+          <p data-i18n="site_faq_q5_d">Subscribe from the web account page. Your subscription stays monthly at 15 EUR and you use the premium code in the app while the subscription is active.</p>
         </article>
         <article class="faq-item">
           <h3 data-i18n="site_faq_q6_t">Does RiftSkin support Windows?</h3>
           <p data-i18n="site_faq_q6_d">Not in the current public distribution. The current supported workflow is focused on macOS.</p>
+        </article>
+        <article class="faq-item">
+          <h3 data-i18n="site_faq_q7_t">Where do billing and account management happen?</h3>
+          <p data-i18n="site_faq_q7_d">Billing is managed on the website through your account flow. The desktop app remains focused on installation, imports, launch, and premium activation.</p>
+        </article>
+        <article class="faq-item">
+          <h3 data-i18n="site_faq_q8_t">What should I send to support if something breaks?</h3>
+          <p data-i18n="site_faq_q8_d">Send your account email if relevant, your app version, the exact error message, and a screenshot if you have one. That shortens support time considerably.</p>
         </article>
       </div>
     </section>
@@ -70,6 +89,7 @@
     </footer>
   </div>
 
+  <script src="/assets/config.js"></script>
   <script src="/assets/translations.js"></script>
   <script src="/assets/i18n.js"></script>
   <script src="/assets/site.js"></script>

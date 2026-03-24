@@ -11,7 +11,13 @@
 <body data-page="legal">
   <div class="site-wrap">
     <header class="topbar">
-      <a href="/" class="brand"><img src="/assets/logo.png" alt="RiftSkin logo" />RiftSkin</a>
+      <a href="/" class="brand">
+        <img class="brand-mark" src="/assets/logo.png" alt="RiftSkin logo" />
+        <span class="brand-copy">
+          <span class="brand-wordmark">RiftSkin</span>
+          <span class="brand-subtitle" data-i18n="site_brand_tagline">macOS LoL skin manager</span>
+        </span>
+      </a>
       <button class="btn btn-ghost burger" data-burger type="button" data-i18n="nav_menu">Menu</button>
       <nav class="nav" data-nav>
         <a data-link="home" href="/" data-i18n="nav_home">Home</a>
@@ -28,15 +34,20 @@
     </header>
 
     <section class="section">
-      <h2 data-i18n="site_legal_h2">Legal information</h2>
+      <div class="section-head">
+        <div>
+          <h2 data-i18n="site_legal_h2">Legal information</h2>
+          <p class="section-intro" data-i18n="site_legal_intro">This page is now written as a clear summary of the current public product. It is still not a replacement for your final company legal documents.</p>
+        </div>
+      </div>
       <div class="grid-2">
         <article class="panel">
           <h3 data-i18n="site_legal_terms_title">Terms summary</h3>
           <ul class="list">
-            <li data-i18n="site_legal_terms_li_1">RiftSkin includes a free desktop mode and an optional premium subscription at 15 EUR/month.</li>
-            <li data-i18n="site_legal_terms_li_2">Premium unlocks favorites and automatic champion recognition while the subscription remains active.</li>
+            <li data-i18n="site_legal_terms_li_1">RiftSkin includes a free desktop mode and an optional premium subscription at 15 EUR per month.</li>
+            <li data-i18n="site_legal_terms_li_2">Premium unlocks favourites and automatic champion recognition while the subscription remains active.</li>
             <li data-i18n="site_legal_terms_li_3">You are responsible for complying with game and platform terms of service.</li>
-            <li data-i18n="site_legal_terms_li_4">Service behavior can evolve as game patches or compatibility requirements change.</li>
+            <li data-i18n="site_legal_terms_li_4">Service behaviour can evolve as game patches or compatibility requirements change.</li>
           </ul>
         </article>
 
@@ -44,7 +55,7 @@
           <h3 data-i18n="site_legal_privacy_title">Privacy summary</h3>
           <ul class="list">
             <li data-i18n="site_legal_privacy_li_1">Web account authentication is handled by Supabase infrastructure.</li>
-            <li data-i18n="site_legal_privacy_li_2">We process account email, billing metadata, and license-related data needed to manage premium access.</li>
+            <li data-i18n="site_legal_privacy_li_2">We process account email, billing metadata, and licence-related data needed to manage premium access.</li>
             <li data-i18n="site_legal_privacy_li_3">Contact support to request account data review or deletion where applicable by law.</li>
           </ul>
         </article>
@@ -83,6 +94,7 @@
     </footer>
   </div>
 
+  <script src="/assets/config.js"></script>
   <script src="/assets/translations.js"></script>
   <script src="/assets/i18n.js"></script>
   <script src="/assets/site.js"></script>
