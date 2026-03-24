@@ -45,12 +45,13 @@ body {
   background:
     linear-gradient(180deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.48)),
     linear-gradient(90deg, rgba(0, 0, 0, 0.14), rgba(0, 0, 0, 0.03) 22%, rgba(0, 0, 0, 0.01) 55%, rgba(0, 0, 0, 0.03) 82%, rgba(0, 0, 0, 0.14)),
-    radial-gradient(circle at 15% -10%, rgba(211, 176, 75, 0.12), transparent 24%),
-    radial-gradient(circle at 82% 0%, rgba(138, 149, 168, 0.06), transparent 22%),
-    url("/assets/desktop_backdrop.jpg");
+    radial-gradient(circle at 18% 8%, rgba(211, 176, 75, 0.1), transparent 22%),
+    radial-gradient(circle at 84% 14%, rgba(131, 140, 154, 0.08), transparent 20%),
+    radial-gradient(circle at 52% 100%, rgba(255, 255, 255, 0.035), transparent 28%),
+    linear-gradient(180deg, #090c11 0%, #0b0f15 24%, #0c1118 62%, #090c12 100%);
   background-color: #06070a;
-  background-size: auto, auto, auto, auto, cover;
-  background-position: center, center, 15% -10%, 82% 0%, center;
+  background-size: auto, auto, auto, auto, auto, auto;
+  background-position: center, center, center, center, center, center;
   background-repeat: no-repeat;
 }
 
