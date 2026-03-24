@@ -106,7 +106,8 @@ textarea:focus-visible,
   position: sticky;
   top: 10px;
   z-index: 100;
-  display: flex;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 14px;
   padding: 10px 16px;
@@ -154,28 +155,20 @@ textarea:focus-visible,
 }
 
 .nav {
-  display: inline-flex;
-  justify-content: flex-start;
+  display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 2px;
-  flex-wrap: nowrap;
-  white-space: nowrap;
-  flex: 1 1 auto;
+  gap: 4px;
+  flex-wrap: wrap;
   min-width: 0;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scrollbar-width: none;
-}
-
-.nav::-webkit-scrollbar {
-  display: none;
+  overflow: visible;
 }
 
 .nav a {
   color: var(--text-secondary);
-  padding: 8px 10px;
+  padding: 7px 9px;
   border-radius: 999px;
-  font-size: 0.9rem;
+  font-size: 0.84rem;
   transition: color 160ms ease, background 160ms ease, transform 160ms ease;
 }
 
@@ -191,15 +184,17 @@ textarea:focus-visible,
 }
 
 .cta-row {
-  display: inline-flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
-  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+  justify-items: stretch;
+  align-content: center;
+  width: 176px;
 }
 
 .lang-picker {
-  display: inline-flex;
+  display: flex;
+  justify-content: flex-end;
   align-items: center;
 }
 
@@ -209,10 +204,16 @@ textarea:focus-visible,
   border: 1px solid var(--stroke);
   background: rgba(255, 255, 255, 0.04);
   color: var(--text-primary);
-  padding: 0 12px;
+  padding: 0 10px;
   font: inherit;
-  font-size: 0.86rem;
-  min-width: 120px;
+  font-size: 1rem;
+  line-height: 1;
+  min-width: 54px;
+  width: 54px;
+  text-align: center;
+  text-align-last: center;
+  appearance: none;
+  -webkit-appearance: none;
 }
 
 .btn {
@@ -234,6 +235,10 @@ textarea:focus-visible,
     0 10px 22px rgba(0, 0, 0, 0.18);
   cursor: pointer;
   transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
+.cta-row .btn {
+  width: 100%;
 }
 
 .btn:hover {
@@ -976,23 +981,12 @@ textarea {
 }
 
 @media (max-width: 1120px) {
-  .topbar {
-    flex-wrap: wrap;
-  }
-
   .brand-subtitle {
     display: none;
   }
 
   .nav {
     justify-content: flex-start;
-    order: 3;
-    width: 100%;
-  }
-
-  .cta-row {
-    justify-content: flex-end;
-    margin-left: auto;
   }
 
   .hero-grid {
@@ -1016,12 +1010,6 @@ textarea {
   }
 }
 
-@media (max-width: 1320px) {
-  .nav a[data-link="legal"] {
-    display: none;
-  }
-}
-
 @media (max-width: 860px) {
   .site-wrap {
     padding-inline: 14px;
@@ -1042,7 +1030,6 @@ textarea {
   .cta-row {
     grid-column: 1 / -1;
     width: 100%;
-    justify-content: space-between;
   }
 
   .nav {
@@ -1118,8 +1105,7 @@ textarea {
   }
 
   .cta-row {
-    flex-direction: column;
-    align-items: stretch;
+    width: 100%;
   }
 
   .btn,

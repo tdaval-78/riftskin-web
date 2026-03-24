@@ -149,6 +149,13 @@
     if (select) {
       select.value = getLanguage();
       const labels = {
+        en: '🇺🇸',
+        fr: '🇫🇷',
+        es: '🇪🇸',
+        pt: '🇵🇹',
+        zh: '🇨🇳'
+      };
+      const titles = {
         en: translate('lang_en'),
         fr: translate('lang_fr'),
         es: translate('lang_es'),
@@ -158,7 +165,7 @@
       Array.from(select.options).forEach(function (opt) {
         opt.textContent = labels[opt.value] || opt.value;
       });
-      select.setAttribute('title', translate('language_label'));
+      select.setAttribute('title', titles[getLanguage()] || translate('language_label'));
       select.setAttribute('aria-label', translate('language_label'));
     }
 
