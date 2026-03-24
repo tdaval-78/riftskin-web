@@ -1876,7 +1876,7 @@ Object.assign(window.RiftSkinTranslations.fr, {
   site_home_snapshot_card_2_label: "Roster complet",
   site_home_snapshot_card_2_title: "Concu pour tous les champions",
   site_home_snapshot_card_2_desc: "RIFTSKIN conserve le meme flux d'import et d'injection sur l'ensemble des champions de League of Legends.",
-  site_home_cap_1_kicker: "Le logiciel",
+  site_home_cap_1_kicker: "Stable",
   site_home_cap_1_title: "Le 1er injecteur de skin custom stable fonctionnant sur mac et PC",
   site_home_cap_1_desc: "RIFTSKIN a ete concu comme une bibliotheque centralisant l'ensemble de vos skins customs par champions. L'import de skin et l'injection dans le jeu est stable et rapide.",
   site_home_cap_1_tag_1: "installation macOS",
