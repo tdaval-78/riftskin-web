@@ -4,25 +4,39 @@
     return;
   }
 
+  const reducedMotion = typeof window.matchMedia === 'function'
+    && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   const champions = window.champions.slice();
   if (!champions.length) {
     return;
   }
 
-  const loops = 3;
-  const tileWidth = 154;
-  const baseSpeed = 0.055;
-  const maxBoost = 0.34;
+  const loops = reducedMotion ? 1 : 2;
+  const tileWidth = 164;
+  const chipWidth = 132;
+  const baseSpeed = reducedMotion ? 0 : 0.07;
+  const maxBoost = reducedMotion ? 0 : 0.42;
   const cycleWidth = champions.length * tileWidth;
   const items = [];
   const shell = track.parentElement;
+  let shellWidth = 0;
+  let shellCenter = 0;
+  let visible = reducedMotion;
+  let rafId = 0;
 
   function iconUrl(championId) {
     return 'https://ddragon.leagueoflegends.com/cdn/' + window.iconVersion + '/img/champion/' + championId + '.png';
   }
 
+  function measure() {
+    shellWidth = shell ? shell.clientWidth : 0;
+    shellCenter = shellWidth / 2;
+  }
+
   function build() {
     track.textContent = '';
+    items.length = 0;
     for (let loop = 0; loop < loops; loop += 1) {
       champions.forEach(function (champion, index) {
         const card = document.createElement('article');
@@ -51,32 +65,38 @@
   }
 
   function layout(offset) {
-    const width = shell ? shell.clientWidth : 0;
-    const center = width / 2;
-    const depth = 190;
+    const width = shellWidth;
+    const center = shellCenter;
+    const depth = 110;
 
     items.forEach(function (item) {
       let x = item.baseX - offset;
       while (x < -tileWidth) x += loops * cycleWidth;
       while (x > width + tileWidth) x -= loops * cycleWidth;
 
-      const chipCenter = x + (item.el.offsetWidth || tileWidth) / 2;
+      if (x < -tileWidth * 1.2 || x > width + tileWidth * 0.6) {
+        item.el.style.opacity = '0';
+        item.el.style.zIndex = '0';
+        item.el.style.transform =
+          'translate3d(' + x.toFixed(2) + 'px, -50%, -40px) scale(0.84)';
+        return;
+      }
+
+      const chipCenter = x + chipWidth / 2;
       const normalized = width > 0 ? (chipCenter - center) / Math.max(center, 1) : 0;
       const clamped = Math.max(-1, Math.min(1, normalized));
-      const arcY = Math.pow(Math.abs(clamped), 1.7) * 74;
-      const direction = clamped < 0 ? -1 : 1;
-      const rotateY = clamped * 54;
-      const rotateX = direction * Math.pow(Math.abs(clamped), 1.3) * 10;
-      const scale = 1.12 - Math.min(Math.abs(clamped), 1) * 0.32;
-      const opacity = 1 - Math.min(Math.abs(clamped), 1) * 0.44;
-      const z = Math.cos(clamped * Math.PI * 0.5) * depth - 70;
+      const distance = Math.abs(clamped);
+      const arcY = Math.pow(distance, 1.45) * 48;
+      const rotateY = clamped * 28;
+      const scale = 1.08 - distance * 0.2;
+      const opacity = 1 - distance * 0.32;
+      const z = Math.cos(clamped * Math.PI * 0.5) * depth - 48;
 
       item.el.style.opacity = String(opacity);
       item.el.style.zIndex = String(Math.round((scale + 1) * 100));
       item.el.style.transform =
         'translate3d(' + x.toFixed(2) + 'px, calc(-50% + ' + arcY.toFixed(2) + 'px), ' + z.toFixed(2) + 'px) ' +
-        'rotateY(' + rotateY.toFixed(2) + 'deg) rotateX(' + rotateX.toFixed(2) + 'deg) scale(' + scale.toFixed(3) + ')';
-      item.el.style.filter = 'saturate(' + (0.88 + scale * 0.26).toFixed(2) + ')';
+        'rotateY(' + rotateY.toFixed(2) + 'deg) scale(' + scale.toFixed(3) + ')';
     });
   }
 
@@ -98,6 +118,10 @@
   }
 
   function frame(now) {
+    if (!visible) {
+      rafId = 0;
+      return;
+    }
     const dt = Math.min(now - last, 32);
     last = now;
     currentVelocity += (targetVelocity - currentVelocity) * 0.085;
@@ -109,21 +133,62 @@
       offset -= cycleWidth;
     }
     layout(offset);
-    requestAnimationFrame(frame);
+    rafId = requestAnimationFrame(frame);
+  }
+
+  function start() {
+    if (reducedMotion) return;
+    visible = true;
+    if (rafId) return;
+    last = performance.now();
+    rafId = requestAnimationFrame(frame);
+  }
+
+  function stop() {
+    visible = false;
   }
 
   build();
+  measure();
   layout(offset);
-  requestAnimationFrame(frame);
+  start();
   if (shell) {
     shell.addEventListener('pointermove', function (event) {
       updateTargetVelocity(event.clientX);
-    });
+    }, { passive: true });
     shell.addEventListener('pointerleave', function () {
       targetVelocity = baseSpeed;
     });
   }
   window.addEventListener('resize', function () {
+    measure();
     layout(offset);
+  });
+
+  if (!reducedMotion && 'IntersectionObserver' in window && shell) {
+    const observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.target !== shell) return;
+        if (entry.isIntersecting) {
+          start();
+        } else {
+          stop();
+        }
+      });
+    }, {
+      threshold: 0.05
+    });
+
+    observer.observe(shell);
+  }
+
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) {
+      stop();
+      return;
+    }
+    if (shell && shell.getBoundingClientRect().bottom > 0) {
+      start();
+    }
   });
 })();

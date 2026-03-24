@@ -116,7 +116,8 @@ textarea:focus-visible,
     linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.02)),
     linear-gradient(135deg, rgba(18, 23, 32, 0.96), rgba(10, 13, 19, 0.94));
   box-shadow: var(--shadow-md);
-  backdrop-filter: blur(18px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .brand {
@@ -270,6 +271,8 @@ textarea:focus-visible,
 .hero {
   margin-top: 22px;
   padding: 30px;
+  content-visibility: auto;
+  contain-intrinsic-size: 960px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01)),
     linear-gradient(135deg, rgba(18, 25, 35, 0.98), rgba(10, 13, 19, 0.96));
@@ -646,7 +649,7 @@ p.lead {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.04),
     0 16px 36px rgba(0, 0, 0, 0.18);
-  perspective: 1300px;
+  perspective: 980px;
   overflow: hidden;
   cursor: ew-resize;
   user-select: none;
@@ -675,6 +678,7 @@ p.lead {
   position: absolute;
   inset: 16px 0;
   transform-style: preserve-3d;
+  contain: layout paint style;
 }
 
 .champion-chip {
@@ -694,7 +698,7 @@ p.lead {
   transform-origin: center center;
   will-change: transform, opacity;
   backface-visibility: hidden;
-  transition: filter 140ms linear;
+  contain: layout paint style;
 }
 
 .champion-chip img {
@@ -722,6 +726,8 @@ p.lead {
   margin-top: 22px;
   background: var(--panel-strong);
   padding: 24px;
+  content-visibility: auto;
+  contain-intrinsic-size: 680px;
 }
 
 .section-head {
