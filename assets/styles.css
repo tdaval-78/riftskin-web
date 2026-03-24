@@ -432,6 +432,10 @@ p.lead {
 }
 
 .hero-card-topline .kicker {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  box-sizing: border-box;
   white-space: nowrap;
   font-size: 0.72rem;
   padding-inline: 14px;
