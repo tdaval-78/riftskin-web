@@ -267,14 +267,6 @@ textarea:focus-visible,
   color: #fff6dd;
 }
 
-.hero .hero-actions .btn-primary {
-  border-color: rgba(98, 180, 255, 0.42);
-  background:
-    linear-gradient(180deg, rgba(132, 194, 255, 0.26), rgba(132, 194, 255, 0.1)),
-    linear-gradient(180deg, #274969, #16273c);
-  color: #eef6ff;
-}
-
 .btn-ghost {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02)),
