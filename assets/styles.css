@@ -930,6 +930,11 @@ p.lead {
   line-height: 1.72;
 }
 
+.hero-summary-card .list {
+  list-style: none;
+  padding-left: 0;
+}
+
 .list strong {
   color: var(--text-primary);
 }
