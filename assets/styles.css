@@ -345,6 +345,13 @@ h2 {
   line-height: 1.82;
 }
 
+@media (min-width: 861px) {
+  .champion-showcase .section-intro {
+    max-width: none;
+    white-space: nowrap;
+  }
+}
+
 h3 {
   margin: 0 0 10px;
   font-size: 1.02rem;
