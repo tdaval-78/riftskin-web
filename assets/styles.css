@@ -318,7 +318,7 @@ h1 {
   font-size: clamp(1.72rem, 3.15vw, 2.52rem);
   line-height: 0.98;
   letter-spacing: -0.04em;
-  max-width: 14ch;
+  max-width: 18ch;
 }
 
 h2 {
