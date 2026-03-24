@@ -1898,7 +1898,7 @@ Object.assign(window.RiftSkinTranslations.fr, {
   site_home_step_2_title: "Continuez en gratuit ou activez le premium",
   site_home_step_2_desc: "Le mode gratuit donne déjà accès à l'essentiel avec jusqu'à 10 injections par jour. Le premium supprime cette limite et ajoute les favoris ainsi que la reconnaissance automatique.",
   site_home_step_3_title: "Importez des skins custom compatibles",
-  site_home_step_3_desc: "Ajoutez vos packs compatibles, parcourez tous les champions et preparez les skins que vous voulez utiliser.",
+  site_home_step_3_desc: "Ajoutez vos skins compatibles, parcourez tous les champions et préparez les skins que vous voulez utiliser en partie à la place du skin de base du champion.",
   site_home_step_4_title: "Lancez et jouez",
   site_home_step_4_desc: "Lancez depuis RIFTSKIN, puis choisissez le skin de base du champion en jeu pour appliquer correctement le remplacement.",
   site_home_fit_h2: "Ce que le site clarifie maintenant",
