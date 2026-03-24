@@ -23,6 +23,9 @@
   document.querySelectorAll('[data-download-installer]').forEach(function (el) {
     el.setAttribute('href', cfg.downloadInstallerUrl || 'https://github.com/tdaval-78/riftskin-updates/releases/latest');
   });
+  document.querySelectorAll('[data-download-windows]').forEach(function (el) {
+    el.setAttribute('href', cfg.downloadWindowsUrl || cfg.publicReleasesUrl || 'https://github.com/tdaval-78/riftskin-updates/releases/latest');
+  });
   document.querySelectorAll('[data-download-direct]').forEach(function (el) {
     el.setAttribute('href', cfg.downloadDirectAppUrl || 'https://github.com/tdaval-78/riftskin-updates/releases/latest');
   });
