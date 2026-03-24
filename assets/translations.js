@@ -1857,7 +1857,7 @@ Object.assign(window.RiftSkinTranslations.fr, {
   site_home_stat_3_label: "Passez au premium pour supprimer cette limite et profiter des favoris ainsi que de la reconnaissance automatique.",
   site_home_premium_label: "Premium",
   site_home_premium_price: "15 EUR / mois",
-  site_home_premium_caption: "Commencez gratuitement, puis passez au premium seulement si vous voulez des injections illimitees et un usage plus rapide.",
+  site_home_premium_caption: "Avantage du mode premium :",
   site_home_premium_li_1: "Le mode gratuit inclut l'import, la bibliotheque, le lancement et jusqu'a 10 injections de skins custom par jour",
   site_home_premium_li_2: "Le premium debloque les champions favoris et les skins favoris",
   site_home_premium_li_3: "Le premium debloque la reconnaissance automatique des champions pendant la selection",
