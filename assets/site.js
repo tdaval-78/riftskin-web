@@ -39,6 +39,49 @@
     });
   }
 
+  const premiumCta = document.querySelector('[data-home-premium-cta]');
+
+  function setPremiumCtaState(isPremium) {
+    if (!premiumCta) return;
+    const key = isPremium ? 'site_home_manage_cta' : 'site_pricing_premium_cta';
+    if (window.RiftSkinI18n && typeof window.RiftSkinI18n.t === 'function') {
+      premiumCta.textContent = window.RiftSkinI18n.t(key);
+    }
+    premiumCta.setAttribute('data-i18n', key);
+  }
+
+  async function syncHomePremiumCta() {
+    if (!premiumCta || !window.supabase || !cfg.supabaseUrl || !cfg.supabaseAnonKey) {
+      setPremiumCtaState(false);
+      return;
+    }
+
+    try {
+      const supabaseClient = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+      const sessionResult = await supabaseClient.auth.getSession();
+      const session = sessionResult && sessionResult.data ? sessionResult.data.session : null;
+
+      if (!session || !session.user) {
+        setPremiumCtaState(false);
+        return;
+      }
+
+      const accessResult = await supabaseClient.rpc('get_client_access_state', {
+        p_trial_days: cfg.trialDays || 7
+      });
+
+      const rows = accessResult && accessResult.data;
+      const row = Array.isArray(rows) ? rows[0] : null;
+      const hasPremium = !!(row && (row.is_admin || (row.access_granted && (row.access_source === 'activation_key' || row.access_source === 'admin_grant'))));
+      setPremiumCtaState(hasPremium);
+    } catch (_err) {
+      setPremiumCtaState(false);
+    }
+  }
+
+  setPremiumCtaState(false);
+  syncHomePremiumCta();
+
   if (!reducedMotion && 'IntersectionObserver' in window) {
     const revealed = document.querySelectorAll('[data-reveal]');
     const observer = new IntersectionObserver(function (entries) {
