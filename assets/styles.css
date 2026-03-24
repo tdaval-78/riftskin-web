@@ -267,6 +267,31 @@ textarea:focus-visible,
   color: #fff6dd;
 }
 
+.download-hero-section [data-download-installer],
+[data-download-windows] {
+  color: #f4f8ff;
+}
+
+.download-hero-section [data-download-installer] {
+  border-color: rgba(70, 138, 214, 0.44);
+  background:
+    linear-gradient(180deg, rgba(78, 150, 231, 0.22), rgba(78, 150, 231, 0.08)),
+    linear-gradient(180deg, #113864, #0a1d36);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 16px 32px rgba(8, 28, 52, 0.34);
+}
+
+[data-download-windows] {
+  border-color: rgba(118, 196, 255, 0.5);
+  background:
+    linear-gradient(180deg, rgba(157, 220, 255, 0.28), rgba(157, 220, 255, 0.12)),
+    linear-gradient(180deg, #2d7ec7, #15508f);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 16px 32px rgba(24, 93, 158, 0.28);
+}
+
 .btn-ghost {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02)),
