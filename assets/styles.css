@@ -1022,8 +1022,9 @@ p.lead {
 }
 
 .download-hero-section .section-intro {
-  max-width: 70ch;
+  max-width: none;
   line-height: 1.9;
+  white-space: nowrap;
 }
 
 .grid-2,
