@@ -142,16 +142,16 @@ textarea:focus-visible,
 }
 
 .brand-wordmark {
-  font-size: 1.24rem;
+  font-size: 1.34rem;
   font-weight: 800;
   letter-spacing: 0.02em;
 }
 
 .brand-subtitle {
   color: rgba(232, 219, 176, 0.82);
-  font-size: 0.66rem;
+  font-size: 0.72rem;
   font-weight: 600;
-  letter-spacing: 0.13em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
@@ -167,9 +167,9 @@ textarea:focus-visible,
 
 .nav a {
   color: var(--text-secondary);
-  padding: 9px 11px;
+  padding: 10px 12px;
   border-radius: 999px;
-  font-size: 0.98rem;
+  font-size: 1.04rem;
   transition: color 160ms ease, background 160ms ease, transform 160ms ease;
 }
 
