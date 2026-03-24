@@ -334,6 +334,15 @@ h2 {
   letter-spacing: -0.03em;
 }
 
+.champion-showcase h2 {
+  font-size: clamp(1.5rem, 2.1vw, 2rem);
+  white-space: nowrap;
+}
+
+.champion-showcase .section-intro {
+  max-width: 78ch;
+}
+
 h3 {
   margin: 0 0 10px;
   font-size: 1.02rem;
