@@ -13,7 +13,7 @@ window.RiftSkinTranslations = {
     nav_faq: "FAQ",
     nav_support: "Support",
     nav_menu: "Menu",
-    nav_legal: "Mentions legales",
+    nav_legal: "Legal",
     nav_account: "My account",
 
     footer_rights: "Copyright",
