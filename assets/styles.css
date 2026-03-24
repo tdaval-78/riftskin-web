@@ -680,12 +680,19 @@ p.lead {
   gap: 14px;
 }
 
+.pricing-hero-section {
+  background:
+    radial-gradient(circle at 100% 0%, rgba(83, 126, 183, 0.08), transparent 28%),
+    radial-gradient(circle at 0% 0%, rgba(211, 176, 75, 0.1), transparent 24%),
+    var(--panel-strong);
+}
+
 .pricing-summary-copy h3 {
   margin: 0;
-  font-size: 1.42rem;
-  line-height: 1.08;
+  font-size: 1.6rem;
+  line-height: 1.04;
   letter-spacing: -0.03em;
-  max-width: 18ch;
+  max-width: 16ch;
 }
 
 .pricing-featured-card,
@@ -703,6 +710,90 @@ p.lead {
 
 .pricing-tier-card {
   min-height: 100%;
+}
+
+.pricing-featured-card {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+}
+
+.pricing-featured-list {
+  margin-top: 4px;
+}
+
+.pricing-compare-grid {
+  margin-top: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.pricing-tier-card {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  padding: 20px;
+}
+
+.pricing-tier-card-free {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(78, 150, 231, 0.12), transparent 28%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
+    rgba(12, 17, 24, 0.86);
+  border-color: rgba(86, 126, 186, 0.22);
+}
+
+.pricing-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.pricing-tier-card .hero-price {
+  margin: 0;
+}
+
+.pricing-tier-card .list {
+  display: grid;
+  gap: 8px;
+}
+
+.pricing-reassurance-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.pricing-reassurance-card {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  min-height: 100%;
+}
+
+.pricing-reassurance-card-accent {
+  background:
+    radial-gradient(circle at 100% 0%, rgba(211, 176, 75, 0.14), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
+    rgba(14, 19, 27, 0.88);
+}
+
+.pricing-benefits-section {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(94, 154, 227, 0.06), transparent 24%),
+    var(--panel-strong);
+}
+
+.pricing-benefit-card {
+  min-height: 100%;
+}
+
+.pricing-benefit-card-accent {
+  background:
+    radial-gradient(circle at 100% 100%, rgba(211, 176, 75, 0.12), transparent 28%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01)),
+    rgba(12, 17, 24, 0.82);
 }
 
 .features-2x2 {
@@ -1392,7 +1483,8 @@ textarea {
 
   .pricing-summary-grid,
   .account-hero-grid,
-  .features-2x2 {
+  .features-2x2,
+  .pricing-reassurance-grid {
     grid-template-columns: 1fr;
   }
 
@@ -1476,6 +1568,7 @@ textarea {
   .grid-2,
   .price-table,
   .pricing-summary-grid,
+  .pricing-reassurance-grid,
   .download-grid,
   .capabilities-grid,
   .fit-grid,
@@ -1489,6 +1582,10 @@ textarea {
 
   .hero-side-grid-compact {
     grid-template-columns: 1fr;
+  }
+
+  .pricing-summary-copy h3 {
+    max-width: none;
   }
 
   .steps-grid::before {

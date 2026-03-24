@@ -42,19 +42,23 @@
     });
   }
 
-  const premiumCta = document.querySelector('[data-home-premium-cta]');
+  const premiumCtas = Array.from(document.querySelectorAll('[data-home-premium-cta], [data-premium-cta]'));
 
   function setPremiumCtaState(isPremium) {
-    if (!premiumCta) return;
-    const key = isPremium ? 'site_home_manage_cta' : 'site_pricing_premium_cta';
-    if (window.RiftSkinI18n && typeof window.RiftSkinI18n.t === 'function') {
-      premiumCta.textContent = window.RiftSkinI18n.t(key);
-    }
-    premiumCta.setAttribute('data-i18n', key);
+    if (!premiumCtas.length) return;
+    premiumCtas.forEach(function (premiumCta) {
+      const key = premiumCta.hasAttribute('data-home-premium-cta')
+        ? (isPremium ? 'site_home_manage_cta' : 'site_pricing_premium_cta')
+        : (isPremium ? 'site_pricing_manage_cta' : 'site_pricing_premium_cta');
+      if (window.RiftSkinI18n && typeof window.RiftSkinI18n.t === 'function') {
+        premiumCta.textContent = window.RiftSkinI18n.t(key);
+      }
+      premiumCta.setAttribute('data-i18n', key);
+    });
   }
 
   async function syncHomePremiumCta() {
-    if (!premiumCta || !window.supabase || !cfg.supabaseUrl || !cfg.supabaseAnonKey) {
+    if (!premiumCtas.length || !window.supabase || !cfg.supabaseUrl || !cfg.supabaseAnonKey) {
       setPremiumCtaState(false);
       return;
     }

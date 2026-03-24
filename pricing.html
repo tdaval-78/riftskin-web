@@ -59,14 +59,21 @@
           <div class="hero-price" data-i18n="site_pricing_premium_price">15 EUR</div>
           <div class="subtle" data-i18n="site_pricing_premium_sub">per month</div>
           <p class="subtle" data-i18n="site_pricing_featured_desc">Best for regular players who import and inject custom skins often and want the full experience without the daily cap.</p>
-          <a class="btn btn-primary" style="margin-top:16px;width:100%" href="/account.html" data-i18n="site_pricing_premium_cta">Subscribe now</a>
+          <ul class="list pricing-featured-list">
+            <li data-i18n="site_pricing_premium_li_2">Champion favourites and skin favourites</li>
+            <li data-i18n="site_pricing_premium_li_3">Automatic champion recognition during pick phase</li>
+            <li data-i18n="site_pricing_premium_li_4">Premium code valid while your subscription is active</li>
+          </ul>
+          <a class="btn btn-primary" style="margin-top:16px;width:100%" href="/account.html" data-premium-cta data-i18n="site_pricing_premium_cta">Subscribe now</a>
         </article>
       </div>
 
-      <div class="price-table">
-        <article class="panel pricing-tier-card">
+      <div class="price-table pricing-compare-grid">
+        <article class="panel pricing-tier-card pricing-tier-card-free">
           <div class="kicker" data-i18n="site_pricing_free_kicker">Free</div>
-          <div class="hero-price" data-i18n="site_pricing_free_price">0 EUR</div>
+          <div class="pricing-price-row">
+            <div class="hero-price" data-i18n="site_pricing_free_price">0 EUR</div>
+          </div>
           <ul class="list" style="margin-top:12px">
             <li data-i18n="site_pricing_free_li_1">Import and run compatible custom skins</li>
             <li data-i18n="site_pricing_free_li_2">Browse champions and manage your visible library</li>
@@ -79,42 +86,53 @@
 
         <article class="panel pricing-tier-card pricing-tier-card-premium">
           <div class="kicker" data-i18n="site_pricing_premium_kicker">Premium</div>
-          <div class="hero-price" data-i18n="site_pricing_premium_price">15 EUR</div>
-          <div class="subtle" data-i18n="site_pricing_premium_sub">per month</div>
+          <div class="pricing-price-row">
+            <div class="hero-price" data-i18n="site_pricing_premium_price">15 EUR</div>
+            <div class="subtle" data-i18n="site_pricing_premium_sub">per month</div>
+          </div>
           <ul class="list" style="margin-top:12px">
             <li data-i18n="site_pricing_premium_li_1">Everything from the free version</li>
             <li data-i18n="site_pricing_premium_li_2">Champion favourites and skin favourites</li>
             <li data-i18n="site_pricing_premium_li_3">Automatic champion recognition during pick phase</li>
             <li data-i18n="site_pricing_premium_li_4">Premium code valid while your subscription is active</li>
           </ul>
-          <a class="btn btn-primary" style="margin-top:16px;width:100%" href="/account.html" data-i18n="site_pricing_premium_cta">Subscribe now</a>
+          <a class="btn btn-primary" style="margin-top:16px;width:100%" href="/account.html" data-premium-cta data-i18n="site_pricing_premium_cta">Subscribe now</a>
         </article>
       </div>
 
-      <div class="notice" data-i18n="site_pricing_notice">Checkout uses Paddle. After purchase, manage your subscription from your web account and use your premium code inside the desktop app.</div>
+      <div class="pricing-reassurance-grid">
+        <article class="panel pricing-reassurance-card">
+          <div class="kicker" data-i18n="site_pricing_feat_3_title">No software login required</div>
+          <p class="subtle" data-i18n="site_pricing_feat_3_desc">The desktop app itself runs free without requiring a software account session. Premium is activated by code.</p>
+        </article>
+        <article class="panel pricing-reassurance-card pricing-reassurance-card-accent">
+          <div class="kicker" data-i18n="site_pricing_feat_4_title">Subscription management</div>
+          <p class="subtle" data-i18n="site_pricing_notice">Checkout uses Paddle. After purchase, manage your subscription from your web account and use your premium code inside the desktop app.</p>
+        </article>
+      </div>
     </section>
 
-    <section class="section">
+    <section class="section pricing-benefits-section">
       <div class="section-head">
         <div>
           <h2 data-i18n="site_pricing_benefits_h2">What premium changes in the app</h2>
           <p class="section-intro" data-i18n="site_pricing_benefits_intro">The distinction is simple: free mode covers the main workflow, while premium removes friction for repeated use and champion-select speed.</p>
         </div>
       </div>
-      <div class="features features-2x2">
-        <article class="feature">
+      <div class="features features-2x2 pricing-benefits-grid">
+        <article class="feature pricing-benefit-card">
           <h3 data-i18n="site_pricing_feat_1_title">Automatic recognition</h3>
           <p data-i18n="site_pricing_feat_1_desc">Premium users can open the automatic recognition view and react faster during champion select.</p>
         </article>
-        <article class="feature">
+        <article class="feature pricing-benefit-card">
           <h3 data-i18n="site_pricing_feat_2_title">Favourites</h3>
           <p data-i18n="site_pricing_feat_2_desc">Premium unlocks favourite champions and favourite skins for a faster repeat workflow.</p>
         </article>
-        <article class="feature">
+        <article class="feature pricing-benefit-card">
           <h3 data-i18n="site_pricing_feat_3_title">No software login required</h3>
           <p data-i18n="site_pricing_feat_3_desc">The desktop app itself runs free without requiring a software account session. Premium is activated by code.</p>
         </article>
-        <article class="feature">
+        <article class="feature pricing-benefit-card pricing-benefit-card-accent">
           <h3 data-i18n="site_pricing_feat_4_title">Subscription management</h3>
           <p data-i18n="site_pricing_feat_4_desc">Use the web account page to manage billing, retrieve your premium code, and keep your subscription active.</p>
         </article>
@@ -136,6 +154,7 @@
   </div>
 
   <script src="/assets/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/assets/translations.js"></script>
   <script src="/assets/i18n.js"></script>
   <script src="/assets/site.js"></script>
