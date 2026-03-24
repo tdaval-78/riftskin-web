@@ -1900,7 +1900,7 @@ Object.assign(window.RiftSkinTranslations.fr, {
   site_home_step_3_title: "Importez des skins custom compatibles",
   site_home_step_3_desc: "Ajoutez vos skins compatibles, parcourez tous les champions et préparez les skins que vous voulez utiliser en partie à la place du skin de base du champion.",
   site_home_step_4_title: "Lancez et jouez",
-  site_home_step_4_desc: "Lancez depuis RIFTSKIN, puis choisissez le skin de base du champion en jeu pour appliquer correctement le remplacement.",
+  site_home_step_4_desc: "Sélectionnez le skin que vous voulez utiliser. Appuyez sur \"Run\" avant que la partie démarre pour injecter le skin. Attention, dans le lobby, utilisez bien le skin de base du champion.",
   site_home_fit_h2: "Ce que le site clarifie maintenant",
   site_home_fit_intro: "Le produit n'est pas juste une landing page avec un bouton de telechargement. C'est un flux complet avec distribution de l'app, activation premium par code, support, et gestion de facturation via compte web.",
   site_home_fit_1_title: "L'app desktop d'abord",
