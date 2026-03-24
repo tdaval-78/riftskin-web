@@ -1807,7 +1807,7 @@ Object.assign(window.RiftSkinTranslations.en, {
 });
 
 Object.assign(window.RiftSkinTranslations.fr, {
-  site_brand_tagline: "injecteur de skins League sur macOS",
+  site_brand_tagline: "INJECTEUR DE CUSTOMS SKINS SUR LOL",
   site_home_title: "RIFTSKIN - Skins LoL personnalises sur Mac",
   site_home_meta_desc: "RIFTSKIN permet d'importer et d'injecter des skins custom sur League of Legends avec un mode gratuit vraiment utile et un premium pense pour les joueurs reguliers.",
   site_home_kicker: "Skins custom League of Legends",
