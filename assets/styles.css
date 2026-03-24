@@ -794,9 +794,9 @@ p.lead {
   min-height: 30px;
   padding: 0 10px;
   border-radius: 999px;
-  background: rgba(62, 162, 255, 0.1);
-  border: 1px solid rgba(98, 180, 255, 0.28);
-  color: #dceeff;
+  background: rgba(211, 176, 75, 0.11);
+  border: 1px solid rgba(241, 221, 145, 0.22);
+  color: #f3e4b0;
   font-size: 0.76rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
