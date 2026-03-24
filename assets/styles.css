@@ -461,9 +461,42 @@ p.lead {
 
 .hero-summary-card-accent {
   background:
-    linear-gradient(180deg, rgba(211, 176, 75, 0.14), rgba(211, 176, 75, 0.05)),
+    radial-gradient(circle at 100% 0%, rgba(255, 236, 168, 0.16), transparent 34%),
+    linear-gradient(180deg, rgba(211, 176, 75, 0.2), rgba(211, 176, 75, 0.07)),
     rgba(255, 255, 255, 0.03);
-  border-color: rgba(241, 221, 145, 0.2);
+  border-color: rgba(241, 221, 145, 0.34);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 18px 38px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(241, 221, 145, 0.06);
+}
+
+.hero-summary-card-accent > .subtle:first-child {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(241, 221, 145, 0.28);
+  background: rgba(33, 25, 8, 0.34);
+  color: #ffefb7;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.hero-summary-card-accent .hero-price {
+  margin-top: 12px;
+  color: #fff3cb;
+  text-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+}
+
+.hero-summary-card-accent .btn-primary {
+  min-height: 44px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 16px 32px rgba(69, 51, 11, 0.28);
 }
 
 .hero-side-grid {
