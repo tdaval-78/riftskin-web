@@ -1017,6 +1017,15 @@ p.lead {
   margin-bottom: 16px;
 }
 
+.download-hero-section .section-head h2 {
+  margin: 0 0 18px;
+}
+
+.download-hero-section .section-intro {
+  max-width: 70ch;
+  line-height: 1.9;
+}
+
 .grid-2,
 .price-table,
 .download-grid,
