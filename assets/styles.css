@@ -1224,26 +1224,6 @@ p.lead {
   min-height: calc(100vh - 208px);
 }
 
-.product-tour-progress-head {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-.product-tour-progress-value,
-.product-tour-window-time {
-  color: #f6ebc4;
-  font-size: 0.86rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.product-tour-progress {
-  margin-top: 14px;
-}
-
 .product-tour-progress-track {
   position: relative;
   height: 10px;
@@ -1312,8 +1292,8 @@ p.lead {
 }
 
 .product-tour-window-bar {
-  position: relative;
-  display: flex;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
   gap: 12px;
   min-height: 52px;
@@ -1349,15 +1329,9 @@ p.lead {
   background: #28c840;
 }
 
-.product-tour-window-label {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  color: #d7dfec;
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+.product-tour-window-progress {
+  width: min(100%, 360px);
+  justify-self: center;
 }
 
 .product-tour-video {
@@ -1822,10 +1796,6 @@ textarea {
 
   .hero-card-topline .kicker {
     white-space: normal;
-  }
-
-  .product-tour-window-time {
-    display: none;
   }
 
   .champion-carousel-shell {

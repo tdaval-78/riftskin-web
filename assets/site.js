@@ -92,7 +92,6 @@
   const productTour = document.querySelector('[data-product-tour]');
   const productVideo = document.querySelector('[data-product-video]');
   const productProgressFill = document.querySelector('[data-product-progress-fill]');
-  const productProgressValue = document.querySelector('[data-product-progress-value]');
   const productProgressTrack = document.querySelector('[data-product-progress-track]');
 
   if (productTour && productVideo && productProgressTrack) {
@@ -119,9 +118,6 @@
       const safeProgress = clamp(progress || 0, 0, 1);
       if (productProgressFill) {
         productProgressFill.style.transform = 'scaleX(' + safeProgress + ')';
-      }
-      if (productProgressValue) {
-        productProgressValue.textContent = Math.round(safeProgress * 100) + '%';
       }
       productProgressTrack.setAttribute('aria-valuenow', String(Math.round(safeProgress * 100)));
     }
