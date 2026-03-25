@@ -59,40 +59,58 @@
           <div class="hero-price" data-i18n="site_pricing_premium_price">15 EUR</div>
           <div class="subtle" data-i18n="site_pricing_premium_sub">per month</div>
           <p class="subtle" data-i18n="site_pricing_featured_desc">Best for regular players who import and inject custom skins often and want the full experience without the daily cap.</p>
+          <ul class="list pricing-featured-points">
+            <li data-i18n="site_pricing_premium_li_1">Everything from the free version, with unlimited custom skin injections</li>
+            <li data-i18n="site_pricing_premium_li_2">Champion favourites and skin favourites</li>
+            <li data-i18n="site_pricing_premium_li_3">Automatic champion recognition during pick phase</li>
+          </ul>
           <a class="btn btn-primary" style="margin-top:16px;width:100%" href="/account.html" data-premium-cta data-i18n="site_pricing_premium_cta">Subscribe now</a>
         </article>
       </div>
 
-      <div class="price-table pricing-compare-grid">
-        <article class="panel pricing-tier-card pricing-tier-card-free">
-          <div class="kicker" data-i18n="site_pricing_free_kicker">Free</div>
-          <div class="pricing-price-row">
+      <div class="panel pricing-matrix">
+        <div class="pricing-matrix-head">
+          <div class="pricing-matrix-spacer"></div>
+          <article class="pricing-matrix-plan pricing-matrix-plan-free">
+            <div class="kicker" data-i18n="site_pricing_free_kicker">Free</div>
             <div class="hero-price" data-i18n="site_pricing_free_price">0 EUR</div>
-          </div>
-          <ul class="list" style="margin-top:12px">
-            <li data-i18n="site_pricing_free_li_1">Import and run compatible custom skins</li>
-            <li data-i18n="site_pricing_free_li_2">Browse champions and manage your visible library</li>
-            <li data-i18n="site_pricing_free_li_3">No champion favourites and no skin favourites</li>
-            <li data-i18n="site_pricing_free_li_4">No automatic champion recognition</li>
-            <li data-i18n="site_pricing_free_li_5">A daily limit of 10 injections, resetting at local midnight</li>
-          </ul>
-          <a class="btn btn-primary" style="margin-top:16px;width:100%" href="/download.html" data-i18n="site_pricing_free_cta">Download free app</a>
-        </article>
+            <a class="btn btn-primary" href="/download.html" data-i18n="site_pricing_free_cta">Download free app</a>
+          </article>
+          <article class="pricing-matrix-plan pricing-matrix-plan-premium">
+            <div class="kicker" data-i18n="site_pricing_premium_kicker">Premium</div>
+            <div class="pricing-price-row">
+              <div class="hero-price" data-i18n="site_pricing_premium_price">15 EUR</div>
+              <div class="subtle" data-i18n="site_pricing_premium_sub">per month</div>
+            </div>
+            <a class="btn btn-primary" href="/account.html" data-premium-cta data-i18n="site_pricing_premium_cta">Subscribe now</a>
+          </article>
+        </div>
 
-        <article class="panel pricing-tier-card pricing-tier-card-premium">
-          <div class="kicker" data-i18n="site_pricing_premium_kicker">Premium</div>
-          <div class="pricing-price-row">
-            <div class="hero-price" data-i18n="site_pricing_premium_price">15 EUR</div>
-            <div class="subtle" data-i18n="site_pricing_premium_sub">per month</div>
-          </div>
-          <ul class="list" style="margin-top:12px">
-            <li data-i18n="site_pricing_premium_li_1">Everything from the free version</li>
-            <li data-i18n="site_pricing_premium_li_2">Champion favourites and skin favourites</li>
-            <li data-i18n="site_pricing_premium_li_3">Automatic champion recognition during pick phase</li>
-            <li data-i18n="site_pricing_premium_li_4">Premium code valid while your subscription is active</li>
-          </ul>
-          <a class="btn btn-primary" style="margin-top:16px;width:100%" href="/account.html" data-premium-cta data-i18n="site_pricing_premium_cta">Subscribe now</a>
-        </article>
+        <div class="pricing-matrix-row">
+          <div class="pricing-matrix-label" data-i18n="site_pricing_row_1_label">Custom skin injections</div>
+          <div class="pricing-matrix-value" data-i18n="site_pricing_row_1_free">Up to 10 per day</div>
+          <div class="pricing-matrix-value pricing-matrix-value-accent" data-i18n="site_pricing_row_1_premium">Unlimited</div>
+        </div>
+        <div class="pricing-matrix-row">
+          <div class="pricing-matrix-label" data-i18n="site_pricing_row_2_label">Champion favourites</div>
+          <div class="pricing-matrix-value" data-i18n="site_pricing_row_2_free">Not included</div>
+          <div class="pricing-matrix-value pricing-matrix-value-accent" data-i18n="site_pricing_row_2_premium">Included</div>
+        </div>
+        <div class="pricing-matrix-row">
+          <div class="pricing-matrix-label" data-i18n="site_pricing_row_3_label">Skin favourites</div>
+          <div class="pricing-matrix-value" data-i18n="site_pricing_row_3_free">Not included</div>
+          <div class="pricing-matrix-value pricing-matrix-value-accent" data-i18n="site_pricing_row_3_premium">Included</div>
+        </div>
+        <div class="pricing-matrix-row">
+          <div class="pricing-matrix-label" data-i18n="site_pricing_row_4_label">Automatic recognition</div>
+          <div class="pricing-matrix-value" data-i18n="site_pricing_row_4_free">Not included</div>
+          <div class="pricing-matrix-value pricing-matrix-value-accent" data-i18n="site_pricing_row_4_premium">Included during pick phase</div>
+        </div>
+        <div class="pricing-matrix-row">
+          <div class="pricing-matrix-label" data-i18n="site_pricing_row_5_label">Premium code</div>
+          <div class="pricing-matrix-value" data-i18n="site_pricing_row_5_free">No code needed</div>
+          <div class="pricing-matrix-value pricing-matrix-value-accent" data-i18n="site_pricing_row_5_premium">Valid while your subscription stays active</div>
+        </div>
       </div>
 
       <div class="notice pricing-page-notice" data-i18n="site_pricing_notice">Checkout uses Paddle. After purchase, manage your subscription from your web account and use your premium code inside the desktop app.</div>
