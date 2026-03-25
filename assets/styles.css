@@ -695,34 +695,19 @@ p.lead {
   line-height: 1.72;
 }
 
-.pricing-glance-grid {
+.pricing-tier-hero-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
   margin-bottom: 18px;
 }
 
-.pricing-glance-card {
-  display: grid;
-  gap: 10px;
-  padding: 16px 18px;
+.pricing-tier-card-free {
   background:
-    radial-gradient(circle at 100% 0%, rgba(83, 126, 183, 0.08), transparent 34%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.012)),
-    rgba(14, 19, 27, 0.84);
-}
-
-.pricing-glance-card h3 {
-  margin: 0;
-  font-size: 1.14rem;
-  line-height: 1.16;
-  letter-spacing: -0.03em;
-}
-
-.pricing-featured-wrap {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 18px;
+    radial-gradient(circle at 0% 0%, rgba(83, 126, 183, 0.12), transparent 32%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
+    rgba(12, 17, 24, 0.86);
+  border-color: rgba(86, 126, 186, 0.22);
 }
 
 .pricing-featured-card,
@@ -747,7 +732,6 @@ p.lead {
   align-content: start;
   gap: 16px;
   padding: 22px;
-  width: min(100%, 880px);
 }
 
 .pricing-featured-points {
@@ -796,32 +780,17 @@ p.lead {
   line-height: 1.75;
 }
 
-.pricing-matrix-plan {
-  padding: 16px;
-  border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015)),
-    rgba(12, 17, 24, 0.86);
+.pricing-matrix-colhead {
+  align-self: end;
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
-.pricing-matrix-plan-free {
-  background:
-    radial-gradient(circle at 0% 0%, rgba(78, 150, 231, 0.12), transparent 28%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
-    rgba(12, 17, 24, 0.86);
-  border-color: rgba(86, 126, 186, 0.22);
-}
-
-.pricing-matrix-plan-premium {
-  background:
-    radial-gradient(circle at 100% 0%, rgba(211, 176, 75, 0.16), transparent 34%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.012)),
-    rgba(14, 19, 27, 0.9);
-}
-
-.pricing-matrix-plan .hero-price {
-  margin: 8px 0 10px;
+.pricing-matrix-colhead-accent {
+  color: #fff5d5;
 }
 
 .pricing-matrix-row {
@@ -1718,10 +1687,6 @@ textarea {
     grid-template-columns: 1fr;
   }
 
-  .pricing-glance-grid {
-    grid-template-columns: 1fr;
-  }
-
   .stats-grid {
     grid-template-columns: 1fr;
   }
@@ -1801,6 +1766,7 @@ textarea {
   .hero-grid,
   .grid-2,
   .price-table,
+  .pricing-tier-hero-grid,
   .download-grid,
   .capabilities-grid,
   .fit-grid,
