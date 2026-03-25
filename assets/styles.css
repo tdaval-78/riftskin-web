@@ -675,10 +675,6 @@ p.lead {
 }
 
 .pricing-hero-section .section-head {
-  display: grid;
-  grid-template-columns: minmax(0, 1.08fr) minmax(340px, 0.92fr);
-  align-items: start;
-  gap: 24px;
   margin-bottom: 18px;
 }
 
@@ -690,13 +686,19 @@ p.lead {
   display: grid;
   align-content: start;
   gap: 18px;
-  padding-top: 6px;
+  max-width: 78rem;
 }
 
 .pricing-hero-section .section-intro,
 .pricing-benefits-section .section-intro {
-  max-width: 72ch;
+  max-width: 88ch;
   line-height: 1.78;
+}
+
+.pricing-featured-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 18px;
 }
 
 .pricing-featured-card,
@@ -721,6 +723,7 @@ p.lead {
   align-content: start;
   gap: 14px;
   padding: 20px;
+  width: min(100%, 920px);
 }
 
 .pricing-featured-points {
