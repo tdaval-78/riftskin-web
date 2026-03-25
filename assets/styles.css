@@ -1211,13 +1211,17 @@ p.lead {
 .product-tour-scroll {
   position: relative;
   margin-top: 6px;
+  min-height: 190vh;
 }
 
 .product-tour-stage {
+  position: sticky;
+  top: 92px;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   align-items: center;
   justify-items: center;
+  min-height: calc(100vh - 112px);
 }
 
 .product-tour-progress-head {
@@ -1247,6 +1251,7 @@ p.lead {
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.04);
   overflow: hidden;
+  cursor: pointer;
 }
 
 .product-tour-progress-fill {
@@ -1266,7 +1271,7 @@ p.lead {
   display: grid;
   align-items: center;
   width: 100%;
-  max-width: 980px;
+  max-width: 880px;
   margin: 0 auto;
 }
 
@@ -1293,10 +1298,6 @@ p.lead {
   background: radial-gradient(circle, rgba(70, 138, 214, 0.28), transparent 68%);
   filter: blur(28px);
   pointer-events: none;
-}
-
-.product-tour-window-shell[data-product-scrub] {
-  cursor: ns-resize;
 }
 
 .product-tour-window {
@@ -1750,6 +1751,16 @@ textarea {
     border-radius: 24px;
   }
 
+  .product-tour-scroll {
+    min-height: auto;
+  }
+
+  .product-tour-stage {
+    position: relative;
+    top: auto;
+    min-height: auto;
+  }
+
   .product-tour-visual {
     max-width: none;
   }
@@ -1860,5 +1871,15 @@ textarea {
   body.motion-ready [data-reveal] {
     opacity: 1;
     transform: none;
+  }
+
+  .product-tour-scroll {
+    min-height: auto;
+  }
+
+  .product-tour-stage {
+    position: relative;
+    top: auto;
+    min-height: auto;
   }
 }
