@@ -1208,62 +1208,22 @@ p.lead {
     rgba(11, 16, 24, 0.94);
 }
 
-.product-tour-head {
-  align-items: flex-end;
-  margin-bottom: 0;
-}
-
-.product-tour-head-copy {
-  display: grid;
-  gap: 14px;
-}
-
-.product-tour-head-copy .section-intro {
-  max-width: 66ch;
-}
-
-.product-tour-pill-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: flex-end;
-}
-
-.product-tour-pill-row .hero-proof-pill {
-  min-height: 36px;
-}
-
 .product-tour-scroll {
   position: relative;
-  min-height: 240vh;
-  margin-top: 24px;
+  margin-top: 6px;
 }
 
 .product-tour-stage {
-  position: sticky;
-  top: 96px;
-  min-height: calc(100vh - 118px);
   display: grid;
-  grid-template-columns: minmax(280px, 0.42fr) minmax(0, 0.58fr);
-  gap: 18px;
+  grid-template-columns: minmax(0, 1fr);
   align-items: center;
-}
-
-.product-tour-copy {
-  display: grid;
-  gap: 18px;
-  padding: 22px;
-  background:
-    radial-gradient(circle at 100% 0%, rgba(241, 221, 145, 0.12), transparent 30%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.012)),
-    rgba(12, 17, 24, 0.88);
 }
 
 .product-tour-progress-head {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  justify-content: flex-end;
+  gap: 10px;
 }
 
 .product-tour-progress-value,
@@ -1273,6 +1233,10 @@ p.lead {
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.product-tour-progress {
+  margin-top: 14px;
 }
 
 .product-tour-progress-track {
@@ -1296,46 +1260,16 @@ p.lead {
   will-change: transform;
 }
 
-.product-tour-stat-grid {
-  display: grid;
-  gap: 12px;
-}
-
-.product-tour-stat {
-  padding: 14px 16px;
-  border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.032), rgba(255, 255, 255, 0.012)),
-    rgba(255, 255, 255, 0.02);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.04),
-    0 12px 28px rgba(0, 0, 0, 0.14);
-}
-
-.product-tour-stat-value {
-  color: #f4f7fd;
-  font-size: 1rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-}
-
-.product-tour-stat-label {
-  margin-top: 6px;
-  color: var(--text-secondary);
-  line-height: 1.62;
-  font-size: 0.9rem;
-}
-
 .product-tour-visual {
   position: relative;
   display: grid;
   align-items: center;
+  width: 100%;
 }
 
 .product-tour-window-shell {
   position: relative;
-  padding: 16px;
+  padding: 14px;
   border-radius: 30px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background:
@@ -1356,6 +1290,10 @@ p.lead {
   background: radial-gradient(circle, rgba(70, 138, 214, 0.28), transparent 68%);
   filter: blur(28px);
   pointer-events: none;
+}
+
+.product-tour-window-shell[data-product-scrub] {
+  cursor: ns-resize;
 }
 
 .product-tour-window {
@@ -1413,6 +1351,7 @@ p.lead {
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  justify-self: center;
 }
 
 .product-tour-video {
@@ -1723,20 +1662,6 @@ textarea {
     grid-column: 1 / -1;
   }
 
-  .product-tour-stage {
-    grid-template-columns: 1fr;
-    min-height: auto;
-  }
-
-  .product-tour-scroll {
-    min-height: auto;
-  }
-
-  .product-tour-stage {
-    position: relative;
-    top: auto;
-  }
-
   .fit-grid {
     grid-template-columns: 1fr;
   }
@@ -1817,18 +1742,6 @@ textarea {
     grid-template-columns: 1fr;
   }
 
-  .product-tour-head {
-    align-items: flex-start;
-  }
-
-  .product-tour-pill-row {
-    justify-content: flex-start;
-  }
-
-  .product-tour-copy {
-    padding: 20px;
-  }
-
   .product-tour-window-shell {
     padding: 12px;
     border-radius: 24px;
@@ -1895,6 +1808,10 @@ textarea {
     grid-template-columns: auto 1fr;
   }
 
+  .product-tour-window-label {
+    justify-self: end;
+  }
+
   .product-tour-window-time {
     display: none;
   }
@@ -1936,15 +1853,5 @@ textarea {
   body.motion-ready [data-reveal] {
     opacity: 1;
     transform: none;
-  }
-
-  .product-tour-scroll {
-    min-height: auto;
-  }
-
-  .product-tour-stage {
-    position: relative;
-    top: auto;
-    min-height: auto;
   }
 }

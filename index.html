@@ -123,46 +123,10 @@
     </section>
 
     <section class="section product-tour-section" data-reveal="section">
-      <div class="section-head product-tour-head">
-        <div class="product-tour-head-copy">
-          <span class="eyebrow" data-i18n="site_home_demo_kicker">Real desktop app</span>
-          <h2 data-i18n="site_home_demo_h2">Scroll through the actual RiftSkin interface.</h2>
-          <p class="section-intro" data-i18n="site_home_demo_intro">This is a real capture of the desktop app. Scroll the page and the homepage scrubs the library view like a product demo instead of showing a static mockup.</p>
-        </div>
-        <div class="product-tour-pill-row">
-          <span class="hero-proof-pill" data-i18n="site_home_demo_pill_1">Real app capture</span>
-          <span class="hero-proof-pill" data-i18n="site_home_demo_pill_2">Scroll-driven preview</span>
-          <span class="hero-proof-pill" data-i18n="site_home_demo_pill_3">Champion library in motion</span>
-        </div>
-      </div>
       <div class="product-tour-scroll" data-product-tour>
         <div class="product-tour-stage">
-          <article class="panel product-tour-copy" data-reveal="card">
-            <div class="product-tour-progress-head">
-              <span class="status-badge ok" data-i18n="site_home_demo_progress_label">Scroll progress</span>
-              <span class="product-tour-progress-value" data-product-progress-value>0%</span>
-            </div>
-            <div class="product-tour-progress-track" aria-hidden="true">
-              <div class="product-tour-progress-fill" data-product-progress-fill></div>
-            </div>
-            <div class="product-tour-stat-grid">
-              <article class="product-tour-stat">
-                <div class="product-tour-stat-value" data-i18n="site_home_demo_stat_1_value">3500+ skins</div>
-                <div class="product-tour-stat-label" data-i18n="site_home_demo_stat_1_label">Large libraries still stay readable in the champion-first layout.</div>
-              </article>
-              <article class="product-tour-stat">
-                <div class="product-tour-stat-value" data-i18n="site_home_demo_stat_2_value">Champion-first workflow</div>
-                <div class="product-tour-stat-label" data-i18n="site_home_demo_stat_2_label">Pick a champion, browse skins, inject, then run without breaking the desktop flow.</div>
-              </article>
-              <article class="product-tour-stat">
-                <div class="product-tour-stat-value" data-i18n="site_home_demo_stat_3_value">Real app footage</div>
-                <div class="product-tour-stat-label" data-i18n="site_home_demo_stat_3_label">The homepage now shows the actual interface instead of a rebuilt marketing mockup.</div>
-              </article>
-            </div>
-          </article>
-
           <div class="product-tour-visual" data-reveal="card">
-            <div class="product-tour-window-shell">
+            <div class="product-tour-window-shell" data-product-scrub>
               <div class="product-tour-window">
                 <div class="product-tour-window-bar">
                   <div class="product-tour-window-dots" aria-hidden="true">
@@ -170,7 +134,7 @@
                     <span></span>
                     <span></span>
                   </div>
-                  <span class="product-tour-window-label" data-i18n="site_home_demo_window_label">Recorded inside RIFTSKIN</span>
+                  <span class="product-tour-window-label">RIFTSKIN</span>
                   <span class="product-tour-window-time" data-product-progress-time>00:00</span>
                 </div>
                 <video
@@ -182,6 +146,14 @@
                   poster="/assets/media/riftskin-home-tour-poster.jpg"
                   src="/assets/media/riftskin-home-tour.mp4"
                 ></video>
+              </div>
+            </div>
+            <div class="product-tour-progress" data-reveal="card">
+              <div class="product-tour-progress-head">
+                <span class="product-tour-progress-value" data-product-progress-value>0%</span>
+              </div>
+              <div class="product-tour-progress-track" data-product-progress-track aria-label="RIFTSKIN product tour progress" role="slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
+                <div class="product-tour-progress-fill" data-product-progress-fill></div>
               </div>
             </div>
           </div>

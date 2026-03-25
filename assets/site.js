@@ -91,12 +91,16 @@
 
   const productTour = document.querySelector('[data-product-tour]');
   const productVideo = document.querySelector('[data-product-video]');
+  const productScrub = document.querySelector('[data-product-scrub]');
   const productProgressFill = document.querySelector('[data-product-progress-fill]');
   const productProgressValue = document.querySelector('[data-product-progress-value]');
   const productProgressTime = document.querySelector('[data-product-progress-time]');
+  const productProgressTrack = document.querySelector('[data-product-progress-track]');
 
-  if (productTour && productVideo) {
-    let rafId = 0;
+  if (productTour && productVideo && productScrub && productProgressTrack) {
+    let isDraggingProgress = false;
+    let touchStartY = 0;
+    let touchStartProgress = 0;
 
     function clamp(value, min, max) {
       return Math.min(Math.max(value, min), max);
@@ -107,6 +111,11 @@
       const minutes = String(Math.floor(safeSeconds / 60)).padStart(2, '0');
       const remainder = String(safeSeconds % 60).padStart(2, '0');
       return minutes + ':' + remainder;
+    }
+
+    function getCurrentProgress() {
+      if (!productVideo.duration) return 0;
+      return clamp((productVideo.currentTime || 0) / productVideo.duration, 0, 1);
     }
 
     function setTourUi(progress) {
@@ -120,48 +129,50 @@
       if (productProgressTime) {
         productProgressTime.textContent = formatTime((productVideo.duration || 0) * safeProgress);
       }
+      productProgressTrack.setAttribute('aria-valuenow', String(Math.round(safeProgress * 100)));
     }
 
-    function isScrollScrubMode() {
+    function isInteractiveScrubMode() {
       return !reducedMotion && window.innerWidth > 860;
     }
 
-    function getTourProgressFromScroll() {
-      const rect = productTour.getBoundingClientRect();
-      const travel = Math.max(productTour.offsetHeight - window.innerHeight, 1);
-      return clamp(-rect.top / travel, 0, 1);
-    }
-
-    function syncTourFromScroll() {
-      if (!isScrollScrubMode() || !productVideo.duration) return;
-      const progress = getTourProgressFromScroll();
-      const targetTime = progress * productVideo.duration;
+    function setTourProgress(progress) {
+      const safeProgress = clamp(progress, 0, 1);
+      if (!productVideo.duration) {
+        setTourUi(safeProgress);
+        return;
+      }
+      const targetTime = safeProgress * productVideo.duration;
       if (Math.abs((productVideo.currentTime || 0) - targetTime) > 0.033) {
         try {
           productVideo.currentTime = targetTime;
         } catch (_err) {
-          return;
+          setTourUi(safeProgress);
+          return safeProgress;
         }
       }
-      setTourUi(progress);
+      setTourUi(safeProgress);
+      return safeProgress;
     }
 
-    function requestTourSync() {
-      if (rafId) return;
-      rafId = window.requestAnimationFrame(function () {
-        rafId = 0;
-        syncTourFromScroll();
-      });
+    function setTourProgressFromPointer(clientX) {
+      const rect = productProgressTrack.getBoundingClientRect();
+      if (!rect.width) return;
+      const progress = (clientX - rect.left) / rect.width;
+      setTourProgress(progress);
     }
 
     function applyProductTourMode() {
-      if (!productVideo.duration) return;
       productVideo.muted = true;
       productVideo.playsInline = true;
-      if (isScrollScrubMode()) {
+      if (!productVideo.duration) {
+        setTourUi(0);
+        return;
+      }
+      if (isInteractiveScrubMode()) {
         productVideo.loop = false;
         productVideo.pause();
-        requestTourSync();
+        setTourUi(getCurrentProgress());
         return;
       }
 
@@ -175,14 +186,75 @@
     });
 
     productVideo.addEventListener('timeupdate', function () {
-      if (isScrollScrubMode() || !productVideo.duration) return;
+      if (isInteractiveScrubMode() || !productVideo.duration) return;
       setTourUi((productVideo.currentTime || 0) / productVideo.duration);
     });
 
-    window.addEventListener('scroll', requestTourSync, { passive: true });
+    productScrub.addEventListener('wheel', function (event) {
+      if (!isInteractiveScrubMode() || !productVideo.duration) return;
+      event.preventDefault();
+      const delta = event.deltaY || event.deltaX || 0;
+      const nextProgress = getCurrentProgress() + (delta / 1600);
+      setTourProgress(nextProgress);
+    }, { passive: false });
+
+    productScrub.addEventListener('touchstart', function (event) {
+      if (!isInteractiveScrubMode() || !productVideo.duration || !event.touches.length) return;
+      touchStartY = event.touches[0].clientY;
+      touchStartProgress = getCurrentProgress();
+    }, { passive: true });
+
+    productScrub.addEventListener('touchmove', function (event) {
+      if (!isInteractiveScrubMode() || !productVideo.duration || !event.touches.length) return;
+      event.preventDefault();
+      const deltaY = touchStartY - event.touches[0].clientY;
+      setTourProgress(touchStartProgress + (deltaY / 900));
+    }, { passive: false });
+
+    productProgressTrack.addEventListener('pointerdown', function (event) {
+      isDraggingProgress = true;
+      productProgressTrack.setPointerCapture(event.pointerId);
+      setTourProgressFromPointer(event.clientX);
+    });
+
+    productProgressTrack.addEventListener('pointermove', function (event) {
+      if (!isDraggingProgress) return;
+      setTourProgressFromPointer(event.clientX);
+    });
+
+    productProgressTrack.addEventListener('pointerup', function (event) {
+      isDraggingProgress = false;
+      if (productProgressTrack.hasPointerCapture(event.pointerId)) {
+        productProgressTrack.releasePointerCapture(event.pointerId);
+      }
+    });
+
+    productProgressTrack.addEventListener('pointercancel', function (event) {
+      isDraggingProgress = false;
+      if (productProgressTrack.hasPointerCapture(event.pointerId)) {
+        productProgressTrack.releasePointerCapture(event.pointerId);
+      }
+    });
+
+    productProgressTrack.addEventListener('keydown', function (event) {
+      if (!productVideo.duration) return;
+      let handled = true;
+      if (event.key === 'ArrowRight' || event.key === 'ArrowUp') {
+        setTourProgress(getCurrentProgress() + 0.03);
+      } else if (event.key === 'ArrowLeft' || event.key === 'ArrowDown') {
+        setTourProgress(getCurrentProgress() - 0.03);
+      } else if (event.key === 'Home') {
+        setTourProgress(0);
+      } else if (event.key === 'End') {
+        setTourProgress(1);
+      } else {
+        handled = false;
+      }
+      if (handled) event.preventDefault();
+    });
+
     window.addEventListener('resize', function () {
       applyProductTourMode();
-      requestTourSync();
     });
 
     document.addEventListener('visibilitychange', function () {
