@@ -1312,8 +1312,8 @@ p.lead {
 }
 
 .product-tour-window-bar {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
+  position: relative;
+  display: flex;
   align-items: center;
   gap: 12px;
   min-height: 52px;
@@ -1350,12 +1350,14 @@ p.lead {
 }
 
 .product-tour-window-label {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   color: #d7dfec;
   font-size: 0.82rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  justify-self: center;
 }
 
 .product-tour-video {
@@ -1820,14 +1822,6 @@ textarea {
 
   .hero-card-topline .kicker {
     white-space: normal;
-  }
-
-  .product-tour-window-bar {
-    grid-template-columns: auto 1fr;
-  }
-
-  .product-tour-window-label {
-    justify-self: end;
   }
 
   .product-tour-window-time {
