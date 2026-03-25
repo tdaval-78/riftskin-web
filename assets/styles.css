@@ -1216,12 +1216,12 @@ p.lead {
 
 .product-tour-stage {
   position: sticky;
-  top: 144px;
+  top: 188px;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   align-items: center;
   justify-items: center;
-  min-height: calc(100vh - 164px);
+  min-height: calc(100vh - 208px);
 }
 
 .product-tour-progress-head {
