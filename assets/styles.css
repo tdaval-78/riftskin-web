@@ -761,8 +761,21 @@ p.lead {
   margin-bottom: 14px;
 }
 
-.pricing-matrix-spacer {
-  min-height: 1px;
+.pricing-matrix-intro {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding: 12px 2px 0 0;
+}
+
+.pricing-matrix-intro h3 {
+  margin: 0;
+  font-size: 1.12rem;
+  line-height: 1.18;
+}
+
+.pricing-matrix-intro .subtle {
+  line-height: 1.75;
 }
 
 .pricing-matrix-plan {
@@ -1814,8 +1827,8 @@ textarea {
     grid-template-columns: 1fr;
   }
 
-  .pricing-matrix-spacer {
-    display: none;
+  .pricing-matrix-intro {
+    padding: 0;
   }
 
   .steps-grid::before {
