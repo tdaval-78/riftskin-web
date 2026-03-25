@@ -667,25 +667,6 @@ p.lead {
   margin-top: 18px;
 }
 
-.pricing-summary-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
-  align-items: start;
-  gap: 18px;
-  margin-bottom: 18px;
-}
-
-.pricing-summary-copy {
-  display: grid;
-  align-content: start;
-  gap: 16px;
-  padding: 8px 4px 4px 0;
-}
-
-.pricing-summary-copy .capability-tags {
-  margin-top: 6px;
-}
-
 .pricing-hero-section {
   background:
     radial-gradient(circle at 100% 0%, rgba(83, 126, 183, 0.08), transparent 28%),
@@ -694,25 +675,28 @@ p.lead {
 }
 
 .pricing-hero-section .section-head {
-  margin-bottom: 22px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(340px, 0.92fr);
+  align-items: start;
+  gap: 24px;
+  margin-bottom: 18px;
 }
 
 .pricing-hero-section .section-head h2 {
   margin: 0 0 16px;
 }
 
-.pricing-hero-section .section-intro,
-.pricing-benefits-section .section-intro {
-  max-width: 88ch;
-  line-height: 1.85;
+.pricing-hero-copy {
+  display: grid;
+  align-content: start;
+  gap: 18px;
+  padding-top: 6px;
 }
 
-.pricing-summary-copy h3 {
-  margin: 0;
-  font-size: 1.38rem;
-  line-height: 1.14;
-  letter-spacing: -0.03em;
-  max-width: 30ch;
+.pricing-hero-section .section-intro,
+.pricing-benefits-section .section-intro {
+  max-width: 72ch;
+  line-height: 1.78;
 }
 
 .pricing-featured-card,
@@ -736,12 +720,13 @@ p.lead {
   display: grid;
   align-content: start;
   gap: 14px;
-  padding: 18px;
+  padding: 20px;
 }
 
 .pricing-featured-points {
   display: grid;
-  gap: 8px;
+  gap: 10px;
+  margin-top: 2px;
 }
 
 .pricing-price-row {
@@ -751,7 +736,7 @@ p.lead {
 }
 
 .pricing-matrix {
-  margin-top: 10px;
+  margin-top: 8px;
   padding: 18px;
 }
 
@@ -1699,7 +1684,7 @@ textarea {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .pricing-summary-grid,
+  .pricing-hero-section .section-head,
   .account-hero-grid,
   .features-2x2,
   .pricing-benefits-grid {
@@ -1785,7 +1770,6 @@ textarea {
   .hero-grid,
   .grid-2,
   .price-table,
-  .pricing-summary-grid,
   .download-grid,
   .capabilities-grid,
   .fit-grid,
@@ -1824,8 +1808,9 @@ textarea {
     grid-template-columns: 1fr;
   }
 
-  .pricing-summary-copy h3 {
-    max-width: none;
+  .pricing-hero-copy {
+    gap: 16px;
+    padding-top: 0;
   }
 
   .pricing-matrix-head,
