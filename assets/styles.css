@@ -1224,7 +1224,8 @@ p.lead {
   min-height: calc(100vh - 208px);
 }
 
-.product-tour-progress-track {
+.product-tour-progress-track,
+.product-tour-window-progress {
   position: relative;
   height: 10px;
   border-radius: 999px;
@@ -1330,7 +1331,7 @@ p.lead {
 }
 
 .product-tour-window-progress {
-  width: min(100%, 360px);
+  width: min(100%, 180px);
   justify-self: center;
 }
 
