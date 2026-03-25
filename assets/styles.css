@@ -1241,7 +1241,10 @@ p.lead {
   width: 100%;
   border-radius: inherit;
   background:
-    linear-gradient(90deg, rgba(118, 196, 255, 0.95), rgba(241, 221, 145, 0.95));
+    linear-gradient(90deg, rgba(255, 236, 168, 0.98), rgba(224, 191, 84, 0.98) 58%, rgba(180, 139, 42, 0.98));
+  box-shadow:
+    0 0 18px rgba(224, 191, 84, 0.18),
+    inset 0 1px 0 rgba(255, 248, 215, 0.22);
   transform: scaleX(0);
   transform-origin: 0 50%;
   will-change: transform;
@@ -1331,8 +1334,9 @@ p.lead {
 }
 
 .product-tour-window-progress {
-  width: min(100%, 180px);
-  justify-self: center;
+  width: 100%;
+  max-width: none;
+  justify-self: stretch;
 }
 
 .product-tour-video {
