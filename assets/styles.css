@@ -1217,6 +1217,7 @@ p.lead {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   align-items: center;
+  justify-items: center;
 }
 
 .product-tour-progress-head {
@@ -1265,6 +1266,8 @@ p.lead {
   display: grid;
   align-items: center;
   width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
 }
 
 .product-tour-window-shell {
@@ -1745,6 +1748,10 @@ textarea {
   .product-tour-window-shell {
     padding: 12px;
     border-radius: 24px;
+  }
+
+  .product-tour-visual {
+    max-width: none;
   }
 
   .product-tour-window {
