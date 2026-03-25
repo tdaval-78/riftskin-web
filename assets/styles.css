@@ -679,6 +679,11 @@ p.lead {
   display: grid;
   align-content: start;
   gap: 16px;
+  padding: 8px 4px 4px 0;
+}
+
+.pricing-summary-copy .capability-tags {
+  margin-top: 6px;
 }
 
 .pricing-hero-section {
