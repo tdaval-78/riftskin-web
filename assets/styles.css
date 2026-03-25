@@ -718,10 +718,6 @@ p.lead {
   gap: 12px;
 }
 
-.pricing-featured-list {
-  margin-top: 4px;
-}
-
 .pricing-compare-grid {
   margin-top: 8px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -758,25 +754,8 @@ p.lead {
   gap: 8px;
 }
 
-.pricing-reassurance-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+.pricing-page-notice {
   margin-top: 18px;
-}
-
-.pricing-reassurance-card {
-  display: grid;
-  align-content: start;
-  gap: 10px;
-  min-height: 100%;
-}
-
-.pricing-reassurance-card-accent {
-  background:
-    radial-gradient(circle at 100% 0%, rgba(211, 176, 75, 0.14), transparent 34%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
-    rgba(14, 19, 27, 0.88);
 }
 
 .pricing-benefits-section {
@@ -1635,8 +1614,7 @@ textarea {
 
   .pricing-summary-grid,
   .account-hero-grid,
-  .features-2x2,
-  .pricing-reassurance-grid {
+  .features-2x2 {
     grid-template-columns: 1fr;
   }
 
@@ -1720,7 +1698,6 @@ textarea {
   .grid-2,
   .price-table,
   .pricing-summary-grid,
-  .pricing-reassurance-grid,
   .download-grid,
   .capabilities-grid,
   .fit-grid,
