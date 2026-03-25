@@ -89,6 +89,111 @@
   setPremiumCtaState(false);
   syncHomePremiumCta();
 
+  const productTour = document.querySelector('[data-product-tour]');
+  const productVideo = document.querySelector('[data-product-video]');
+  const productProgressFill = document.querySelector('[data-product-progress-fill]');
+  const productProgressValue = document.querySelector('[data-product-progress-value]');
+  const productProgressTime = document.querySelector('[data-product-progress-time]');
+
+  if (productTour && productVideo) {
+    let rafId = 0;
+
+    function clamp(value, min, max) {
+      return Math.min(Math.max(value, min), max);
+    }
+
+    function formatTime(seconds) {
+      const safeSeconds = Math.max(0, Math.floor(seconds || 0));
+      const minutes = String(Math.floor(safeSeconds / 60)).padStart(2, '0');
+      const remainder = String(safeSeconds % 60).padStart(2, '0');
+      return minutes + ':' + remainder;
+    }
+
+    function setTourUi(progress) {
+      const safeProgress = clamp(progress || 0, 0, 1);
+      if (productProgressFill) {
+        productProgressFill.style.transform = 'scaleX(' + safeProgress + ')';
+      }
+      if (productProgressValue) {
+        productProgressValue.textContent = Math.round(safeProgress * 100) + '%';
+      }
+      if (productProgressTime) {
+        productProgressTime.textContent = formatTime((productVideo.duration || 0) * safeProgress);
+      }
+    }
+
+    function isScrollScrubMode() {
+      return !reducedMotion && window.innerWidth > 860;
+    }
+
+    function getTourProgressFromScroll() {
+      const rect = productTour.getBoundingClientRect();
+      const travel = Math.max(productTour.offsetHeight - window.innerHeight, 1);
+      return clamp(-rect.top / travel, 0, 1);
+    }
+
+    function syncTourFromScroll() {
+      if (!isScrollScrubMode() || !productVideo.duration) return;
+      const progress = getTourProgressFromScroll();
+      const targetTime = progress * productVideo.duration;
+      if (Math.abs((productVideo.currentTime || 0) - targetTime) > 0.033) {
+        try {
+          productVideo.currentTime = targetTime;
+        } catch (_err) {
+          return;
+        }
+      }
+      setTourUi(progress);
+    }
+
+    function requestTourSync() {
+      if (rafId) return;
+      rafId = window.requestAnimationFrame(function () {
+        rafId = 0;
+        syncTourFromScroll();
+      });
+    }
+
+    function applyProductTourMode() {
+      if (!productVideo.duration) return;
+      productVideo.muted = true;
+      productVideo.playsInline = true;
+      if (isScrollScrubMode()) {
+        productVideo.loop = false;
+        productVideo.pause();
+        requestTourSync();
+        return;
+      }
+
+      productVideo.loop = true;
+      setTourUi((productVideo.currentTime || 0) / productVideo.duration);
+      productVideo.play().catch(function () {});
+    }
+
+    productVideo.addEventListener('loadedmetadata', function () {
+      applyProductTourMode();
+    });
+
+    productVideo.addEventListener('timeupdate', function () {
+      if (isScrollScrubMode() || !productVideo.duration) return;
+      setTourUi((productVideo.currentTime || 0) / productVideo.duration);
+    });
+
+    window.addEventListener('scroll', requestTourSync, { passive: true });
+    window.addEventListener('resize', function () {
+      applyProductTourMode();
+      requestTourSync();
+    });
+
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) {
+        productVideo.pause();
+        return;
+      }
+      applyProductTourMode();
+    });
+  }
+
   if (!reducedMotion && 'IntersectionObserver' in window) {
     const revealed = document.querySelectorAll('[data-reveal]');
     const observer = new IntersectionObserver(function (entries) {
