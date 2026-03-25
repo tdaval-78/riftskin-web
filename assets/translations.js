@@ -1780,7 +1780,7 @@ Object.assign(window.RiftSkinTranslations.en, {
   site_download_windows_notice: "If Windows SmartScreen or your antivirus blocks the installer on first launch, approve it manually, then continue the normal installation flow.",
   site_download_panel_1_title: "Before you launch",
   site_download_panel_1_desc: "RIFTSKIN is currently focused on macOS distribution. Once installed, you can stay in free mode or attach a premium code later from the desktop app.",
-  site_download_panel_2_title: "Need help after install?",
+  site_download_panel_2_title: "Need help with installation?",
   site_download_panel_2_desc: "Use the support page if you hit a macOS security warning, import issue, activation problem, or launch regression after an update.",
 
   site_faq_title: "RIFTSKIN FAQ",
@@ -2035,7 +2035,7 @@ Object.assign(window.RiftSkinTranslations.fr, {
   site_download_windows_notice: "Si Windows SmartScreen ou votre antivirus bloque l'installeur au premier lancement, autorisez-le manuellement, puis poursuivez l'installation normale.",
   site_download_panel_1_title: "Avant de lancer",
   site_download_panel_1_desc: "RIFTSKIN est actuellement centré sur une distribution macOS. Une fois installé, vous pouvez rester en mode gratuit ou rattacher un code premium plus tard depuis l'application desktop.",
-  site_download_panel_2_title: "Besoin d'aide après l'installation ?",
+  site_download_panel_2_title: "Besoin d'aide pour l'installation ?",
   site_download_panel_2_desc: "Utilisez la page support si vous rencontrez un blocage macOS, un problème d'import, une erreur d'activation ou une régression au lancement après une mise à jour.",
 
   site_faq_title: "RIFTSKIN - FAQ",

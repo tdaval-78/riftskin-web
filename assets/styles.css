@@ -796,6 +796,11 @@ p.lead {
     rgba(12, 17, 24, 0.82);
 }
 
+.download-support-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
 .features-2x2 {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
