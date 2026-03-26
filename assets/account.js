@@ -93,15 +93,15 @@
   }
 
   function serviceStateInfo(state) {
-    if (state === 'ok') return { label: 'INJECTION & LOGICIEL FONCTIONNEL', kind: 'ok' };
-    return { label: 'INJECTION EN COURS DE PATCH PAR NOTRE EQUIPE', kind: 'warning' };
+    if (state === 'ok') return { label: 'INJECTION & SOFTWARE FUNCTIONAL', kind: 'ok' };
+    return { label: 'INJECTION CURRENTLY BEING PATCHED BY OUR TEAM', kind: 'warning' };
   }
 
   function defaultServiceMessage(state) {
     if (state === 'ok') {
-      return "L'injection de skins fonctionne actuellement sur le dernier patch de League of Legends.";
+      return 'Skin injection is currently functional on the latest League of Legends patch.';
     }
-    return "L'injection de skins ne fonctionne pas actuellement sur le dernier patch de League of Legends. Nos developpeurs travaillent activement sur une nouvelle mise a jour.";
+    return 'Skin injection is currently unavailable on the latest League of Legends patch. Our developers are actively working on a new update.';
   }
 
   function serviceStatusBackendMessage(errorText) {
