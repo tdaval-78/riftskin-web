@@ -1624,6 +1624,12 @@ p.lead {
   background: linear-gradient(90deg, rgba(211, 176, 75, 0.34), rgba(95, 145, 204, 0.18), transparent 80%);
 }
 
+.faq-grid > .faq-item:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+  width: min(100%, calc(50% - 8px));
+  justify-self: center;
+}
+
 .faq-kicker {
   display: inline-flex;
   align-items: center;
