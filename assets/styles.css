@@ -384,6 +384,10 @@ body[data-page="support"] .section-intro {
   max-width: none;
 }
 
+body[data-page="legal"] .section-intro {
+  max-width: none;
+}
+
 .steps-section h2 {
   margin-bottom: 14px;
 }
