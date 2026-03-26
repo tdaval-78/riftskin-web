@@ -2041,7 +2041,7 @@ Object.assign(window.RiftSkinTranslations.fr, {
   site_download_title: "RIFTSKIN - Téléchargement",
   site_download_h2: "Télécharger RIFTSKIN pour macOS",
   site_download_intro: "Téléchargez la dernière version macOS, installez-la, puis choisissez le mode gratuit ou activez directement le premium dans l'application.",
-  site_download_card_1_title: "Télécharger et installer sur macOS",
+  site_download_card_1_title: "Télécharger la dernière version de RIFTSKIN",
   site_download_card_1_desc: "Téléchargez notre installateur macOS. Ouvrez le paquet, autorisez-le dans les réglages de sécurité macOS s'il est bloqué, puis terminez l'installation.",
   site_download_cta: "Télécharger pour macOS",
   site_download_release_cta: "Ouvrir les releases publiques",
