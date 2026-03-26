@@ -979,6 +979,49 @@ p.lead {
   grid-template-columns: 1fr;
 }
 
+.download-guide-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.download-guide-card {
+  display: grid;
+  gap: 14px;
+  padding: 24px;
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius-xl);
+  background:
+    radial-gradient(circle at 82% 100%, rgba(66, 118, 190, 0.1), transparent 24%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
+    rgba(12, 17, 24, 0.86);
+  box-shadow: var(--shadow-md);
+}
+
+.download-guide-card-wide {
+  grid-column: 1 / -1;
+}
+
+.download-guide-card h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  line-height: 1.18;
+}
+
+.download-guide-card img {
+  width: 100%;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.02);
+  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.28);
+}
+
+.download-guide-split {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
 .features-2x2 {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2159,6 +2202,7 @@ textarea {
   .price-table,
   .pricing-tier-hero-grid,
   .download-grid,
+  .download-guide-grid,
   .capabilities-grid,
   .fit-grid,
   .admin-grid,
@@ -2212,6 +2256,10 @@ textarea {
 
   .legal-hub-grid,
   .legal-doc-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .download-guide-split {
     grid-template-columns: 1fr;
   }
 
