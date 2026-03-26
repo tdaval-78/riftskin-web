@@ -89,6 +89,27 @@
   setPremiumCtaState(false);
   syncHomePremiumCta();
 
+  const pricingAck = document.querySelector('[data-pricing-ack]');
+  const pricingPremiumCta = document.querySelector('[data-premium-cta]');
+
+  if (pricingAck && pricingPremiumCta) {
+    function syncPricingAckState() {
+      const checked = !!pricingAck.checked;
+      pricingPremiumCta.classList.toggle('is-disabled', !checked);
+      pricingPremiumCta.setAttribute('aria-disabled', checked ? 'false' : 'true');
+      pricingPremiumCta.tabIndex = checked ? 0 : -1;
+    }
+
+    pricingAck.addEventListener('change', syncPricingAckState);
+    pricingPremiumCta.addEventListener('click', function (event) {
+      if (pricingAck.checked) return;
+      event.preventDefault();
+      pricingAck.focus();
+    });
+
+    syncPricingAckState();
+  }
+
   const productTour = document.querySelector('[data-product-tour]');
   const productVideo = document.querySelector('[data-product-video]');
   const productProgressFill = document.querySelector('[data-product-progress-fill]');
