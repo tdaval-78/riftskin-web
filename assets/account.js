@@ -93,22 +93,22 @@
   }
 
   function serviceStateInfo(state) {
-    if (state === 'ok') return { label: 'Injection functional', kind: 'ok' };
-    return { label: 'Maintenance in progress', kind: 'warning' };
+    if (state === 'ok') return { label: 'INJECTION & LOGICIEL FONCTIONNEL', kind: 'ok' };
+    return { label: 'INJECTION EN COURS DE PATCH PAR NOTRE EQUIPE', kind: 'warning' };
   }
 
   function defaultServiceMessage(state) {
     if (state === 'ok') {
-      return 'Skin injection is currently functional on the latest League of Legends patch.';
+      return "L'injection de skins fonctionne actuellement sur le dernier patch de League of Legends.";
     }
-    return 'Skin injection is currently unavailable on the latest League of Legends patch. Our developers are actively working on a new update.';
+    return "L'injection de skins ne fonctionne pas actuellement sur le dernier patch de League of Legends. Nos developpeurs travaillent activement sur une nouvelle mise a jour.";
   }
 
   function serviceStatusBackendMessage(errorText) {
     if (/get_public_service_status|set_public_service_status/i.test(errorText || '')) {
-      return 'Desktop status backend is not deployed yet. Apply riftskin-web/supabase/activation_keys.sql on the website Supabase project first.';
+      return "Le backend du statut desktop n'est pas encore deploye. Appliquez d'abord le SQL du statut de service sur le projet Supabase du site.";
     }
-    return errorText || 'Failed to load desktop status.';
+    return errorText || "Impossible de charger le statut desktop.";
   }
 
   function keyStateInfo(state) {
@@ -635,9 +635,9 @@
 
   async function loadAdminServiceStatus() {
     if (!adminServiceLive) return;
-    adminServiceLive.textContent = 'Loading...';
+    adminServiceLive.textContent = 'Chargement...';
     adminServiceLive.className = 'status-badge';
-    if (adminServicePublished) adminServicePublished.textContent = 'Loading current live status...';
+    if (adminServicePublished) adminServicePublished.textContent = 'Chargement du statut actuel...';
     if (adminServiceLiveMessage) adminServiceLiveMessage.textContent = '';
 
     const { data, error } = await supabaseClient.rpc('get_public_service_status', { p_channel: 'stable' });

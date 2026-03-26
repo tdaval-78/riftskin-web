@@ -188,15 +188,15 @@
         <section class="panel admin-panel-block">
           <div class="section-head">
             <div>
-              <h3>Desktop injection status</h3>
-              <p class="subtle">Control the ETAT button shown in the desktop app and publish the service message visible in its status panel.</p>
+              <h3>Etat de l'injection desktop</h3>
+              <p class="subtle">Controlez le bouton ETAT affiche dans l'application desktop et publiez le message de service visible dans son panneau de statut.</p>
             </div>
           </div>
 
           <div class="notice admin-service-live-block">
             <div class="admin-service-live-meta">
-              <span class="status-badge" data-admin-service-live>Loading...</span>
-              <span class="subtle" data-admin-service-published>Loading current live status...</span>
+              <span class="status-badge" data-admin-service-live>Chargement...</span>
+              <span class="subtle" data-admin-service-published>Chargement du statut actuel...</span>
             </div>
             <p class="subtle admin-service-live-message" data-admin-service-live-message></p>
           </div>
@@ -204,17 +204,17 @@
           <form data-admin-service-form>
             <div class="field-row">
               <select name="injection_state">
-                <option value="ok">Operational / green</option>
+                <option value="ok">Fonctionnel / vert</option>
                 <option value="maintenance">Maintenance / orange</option>
               </select>
             </div>
             <textarea
               name="service_message"
-              placeholder="Type the service message shown in the desktop app when users open the ETAT panel."
+              placeholder="Saisissez le message de service affiche dans l'application desktop quand l'utilisateur ouvre le panneau ETAT."
             ></textarea>
-            <p class="subtle admin-service-help">The current League of Legends patch is fetched directly by the desktop app at launch and when the user clicks refresh.</p>
+            <p class="subtle admin-service-help">Le dernier patch de League of Legends est recupere directement par l'application desktop au lancement et quand l'utilisateur clique sur Actualiser.</p>
             <div class="field-row">
-              <button class="btn btn-primary" type="submit">Publish desktop status</button>
+              <button class="btn btn-primary" type="submit">Publier le statut desktop</button>
             </div>
             <div class="msg" data-admin-service-msg></div>
           </form>
