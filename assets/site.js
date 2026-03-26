@@ -98,6 +98,8 @@
     let rafId = 0;
     let isDraggingProgress = false;
     let pendingProgress = null;
+    let isPrimingVideo = false;
+    let hasPrimedVideo = false;
 
     function clamp(value, min, max) {
       return Math.min(Math.max(value, min), max);
@@ -174,6 +176,23 @@
       setTourProgress(progress);
     }
 
+    async function primeVideoForScrub() {
+      if (hasPrimedVideo || isPrimingVideo) return;
+      isPrimingVideo = true;
+      try {
+        const playResult = productVideo.play();
+        if (playResult && typeof playResult.then === 'function') {
+          await playResult;
+        }
+      } catch (_err) {
+        // Ignore autoplay warm-up failures and keep the fallback scrub path.
+      } finally {
+        productVideo.pause();
+        isPrimingVideo = false;
+        hasPrimedVideo = true;
+      }
+    }
+
     function applyProductTourMode() {
       productVideo.muted = true;
       productVideo.playsInline = true;
@@ -186,6 +205,7 @@
       }
       if (isScrollScrubMode()) {
         productVideo.loop = false;
+        primeVideoForScrub();
         productVideo.pause();
         requestTourSync();
         return;
@@ -203,6 +223,8 @@
 
     productVideo.addEventListener('loadedmetadata', syncTourWhenReady);
     productVideo.addEventListener('loadeddata', syncTourWhenReady);
+    productVideo.addEventListener('canplay', syncTourWhenReady);
+    productVideo.addEventListener('canplaythrough', syncTourWhenReady);
     productVideo.addEventListener('durationchange', syncTourWhenReady);
 
     productVideo.addEventListener('timeupdate', function () {
