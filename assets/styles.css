@@ -1586,6 +1586,12 @@ p.lead {
   color: #92e4c8;
 }
 
+.status-badge.warning {
+  border-color: #d5a45b;
+  color: #f1cf90;
+  background: rgba(73, 49, 14, 0.35);
+}
+
 .status-badge.error {
   border-color: #cf7688;
   color: #ff9ab0;
@@ -1669,6 +1675,24 @@ textarea {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
+}
+
+.admin-service-live-block {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.admin-service-live-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.admin-service-live-message,
+.admin-service-help {
+  margin: 0;
 }
 
 .field-row-3 {

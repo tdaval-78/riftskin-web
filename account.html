@@ -26,7 +26,6 @@
         <a data-link="pricing" href="/pricing.html" data-i18n="nav_pricing">Pricing</a>
         <a data-link="faq" href="/faq.html" data-i18n="nav_faq">FAQ</a>
         <a data-link="support" href="/support.html" data-i18n="nav_support">Support</a>
-        <a data-link="legal" href="/legal.html" data-i18n="nav_legal">Legal</a>
         <a data-link="account" href="/account.html" data-i18n="nav_account">My account</a>
       </nav>
       <div class="cta-row">
@@ -188,6 +187,41 @@
         <section class="panel admin-panel-block">
           <div class="section-head">
             <div>
+              <h3>Desktop injection status</h3>
+              <p class="subtle">Control the ETAT button shown in the desktop app and publish the service message visible in its status panel.</p>
+            </div>
+          </div>
+
+          <div class="notice admin-service-live-block">
+            <div class="admin-service-live-meta">
+              <span class="status-badge" data-admin-service-live>Loading...</span>
+              <span class="subtle" data-admin-service-published>Loading current live status...</span>
+            </div>
+            <p class="subtle admin-service-live-message" data-admin-service-live-message></p>
+          </div>
+
+          <form data-admin-service-form>
+            <div class="field-row">
+              <select name="injection_state">
+                <option value="ok">Operational / green</option>
+                <option value="maintenance">Maintenance / orange</option>
+              </select>
+            </div>
+            <textarea
+              name="service_message"
+              placeholder="Type the service message shown in the desktop app when users open the ETAT panel."
+            ></textarea>
+            <p class="subtle admin-service-help">The current League of Legends patch is fetched directly by the desktop app at launch and when the user clicks refresh.</p>
+            <div class="field-row">
+              <button class="btn btn-primary" type="submit">Publish desktop status</button>
+            </div>
+            <div class="msg" data-admin-service-msg></div>
+          </form>
+        </section>
+
+        <section class="panel admin-panel-block">
+          <div class="section-head">
+            <div>
               <h3 data-i18n="admin_keys_title">Recent keys</h3>
               <p class="subtle" data-i18n="admin_keys_intro">Every generated key appears here, whether it is standalone or already attached to an account.</p>
             </div>
@@ -223,7 +257,6 @@
         <a href="/pricing.html" data-i18n="nav_pricing">Pricing</a>
         <a href="/faq.html" data-i18n="nav_faq">FAQ</a>
         <a href="/support.html" data-i18n="nav_support">Support</a>
-        <a href="/legal.html" data-i18n="nav_legal">Legal</a>
       </div>
     </footer>
   </div>

@@ -23,6 +23,11 @@
   const adminBoundOutput = document.querySelector('[data-admin-bound-output]');
   const adminKeysBody = document.querySelector('[data-admin-keys-body]');
   const adminListMsg = document.querySelector('[data-admin-list-msg]');
+  const adminServiceForm = document.querySelector('[data-admin-service-form]');
+  const adminServiceMsg = document.querySelector('[data-admin-service-msg]');
+  const adminServiceLive = document.querySelector('[data-admin-service-live]');
+  const adminServicePublished = document.querySelector('[data-admin-service-published]');
+  const adminServiceLiveMessage = document.querySelector('[data-admin-service-live-message]');
 
   function t(key) {
     return window.RiftSkinI18n ? window.RiftSkinI18n.t(key) : key;
@@ -85,6 +90,25 @@
     if (item.access_source === 'activation_key') return t('admin_source_key');
     if (item.access_source) return item.access_source;
     return t('admin_not_available');
+  }
+
+  function serviceStateInfo(state) {
+    if (state === 'ok') return { label: 'Injection functional', kind: 'ok' };
+    return { label: 'Maintenance in progress', kind: 'warning' };
+  }
+
+  function defaultServiceMessage(state) {
+    if (state === 'ok') {
+      return 'Skin injection is currently functional on the latest League of Legends patch.';
+    }
+    return 'Skin injection is currently unavailable on the latest League of Legends patch. Our developers are actively working on a new update.';
+  }
+
+  function serviceStatusBackendMessage(errorText) {
+    if (/get_public_service_status|set_public_service_status/i.test(errorText || '')) {
+      return 'Desktop status backend is not deployed yet. Apply riftskin-web/supabase/activation_keys.sql on the website Supabase project first.';
+    }
+    return errorText || 'Failed to load desktop status.';
   }
 
   function keyStateInfo(state) {
@@ -588,12 +612,55 @@
     }
   }
 
+  function renderAdminServiceStatus(row) {
+    const normalized = row && row.injection_state === 'ok' ? 'ok' : 'maintenance';
+    const info = serviceStateInfo(normalized);
+    if (adminServiceLive) {
+      adminServiceLive.textContent = info.label;
+      adminServiceLive.className = 'status-badge ' + info.kind;
+    }
+    if (adminServicePublished) {
+      adminServicePublished.textContent = row && row.published_at
+        ? 'Live since ' + formatDate(row.published_at)
+        : 'No live desktop status published yet.';
+    }
+    if (adminServiceLiveMessage) {
+      adminServiceLiveMessage.textContent = (row && row.service_message) || defaultServiceMessage(normalized);
+    }
+    if (adminServiceForm) {
+      adminServiceForm.querySelector('[name="injection_state"]').value = normalized;
+      adminServiceForm.querySelector('[name="service_message"]').value = (row && row.service_message) || '';
+    }
+  }
+
+  async function loadAdminServiceStatus() {
+    if (!adminServiceLive) return;
+    adminServiceLive.textContent = 'Loading...';
+    adminServiceLive.className = 'status-badge';
+    if (adminServicePublished) adminServicePublished.textContent = 'Loading current live status...';
+    if (adminServiceLiveMessage) adminServiceLiveMessage.textContent = '';
+
+    const { data, error } = await supabaseClient.rpc('get_public_service_status', { p_channel: 'stable' });
+    if (error) {
+      if (adminServiceLive) {
+        adminServiceLive.textContent = 'Unavailable';
+        adminServiceLive.className = 'status-badge error';
+      }
+      if (adminServicePublished) adminServicePublished.textContent = serviceStatusBackendMessage(error.message || '');
+      return;
+    }
+
+    const row = safeArray(data)[0] || null;
+    renderAdminServiceStatus(row);
+  }
+
   async function refreshAdminPanels() {
     if (!adminPanel) return;
     const isAdmin = await checkIsAdmin();
     adminPanel.style.display = isAdmin ? 'block' : 'none';
     if (!isAdmin) return;
     await loadAdminKeys();
+    await loadAdminServiceStatus();
   }
 
   async function loadMyKeys(userId) {
@@ -917,6 +984,37 @@
       renderAdminKeyOutput(adminBoundOutput, keyCode, createdRow, config);
       adminBoundForm.reset();
       await loadAdminKeys();
+    });
+  }
+
+  if (adminServiceForm) {
+    adminServiceForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      msg(adminServiceMsg, 'Publishing desktop status...');
+
+      const fd = new FormData(adminServiceForm);
+      const injectionState = ((fd.get('injection_state') || '').toString().trim()) || 'maintenance';
+      const serviceMessage = ((fd.get('service_message') || '').toString().trim()) || null;
+
+      const { data, error } = await supabaseClient.rpc('set_public_service_status', {
+        p_channel: 'stable',
+        p_injection_state: injectionState,
+        p_service_message: serviceMessage
+      });
+
+      if (error) {
+        msg(adminServiceMsg, serviceStatusBackendMessage(error.message || ''), 'error');
+        return;
+      }
+
+      const row = safeArray(data)[0] || {};
+      if (!row.success) {
+        msg(adminServiceMsg, row.message || 'Failed to publish desktop status.', 'error');
+        return;
+      }
+
+      msg(adminServiceMsg, 'Desktop status updated.', 'ok');
+      await loadAdminServiceStatus();
     });
   }
 
