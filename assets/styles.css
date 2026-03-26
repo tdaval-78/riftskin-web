@@ -179,6 +179,31 @@ textarea:focus-visible,
   transition: color 160ms ease, background 160ms ease, transform 160ms ease;
 }
 
+.nav-status-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-status-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: rgba(118, 130, 149, 0.7);
+  box-shadow: 0 0 0 4px rgba(118, 130, 149, 0.12);
+  transition: background 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.nav-status-dot.ok {
+  background: #58d7b2;
+  box-shadow: 0 0 0 4px rgba(88, 215, 178, 0.18);
+}
+
+.nav-status-dot.warning {
+  background: #e2b25f;
+  box-shadow: 0 0 0 4px rgba(226, 178, 95, 0.18);
+}
+
 .nav a.active,
 .nav a:hover {
   color: var(--text-primary);
@@ -1180,6 +1205,78 @@ p.lead {
   min-height: 100%;
 }
 
+.status-page-section {
+  background:
+    radial-gradient(circle at 100% 0%, rgba(211, 176, 75, 0.1), transparent 32%),
+    radial-gradient(circle at 0% 100%, rgba(70, 138, 214, 0.08), transparent 26%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
+    var(--panel-strong);
+}
+
+.status-page-grid {
+  align-items: start;
+}
+
+.status-overview-panel,
+.status-message-panel {
+  display: grid;
+  gap: 16px;
+}
+
+.status-overview-head {
+  display: grid;
+  gap: 10px;
+}
+
+.status-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.status-detail-card {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 16px 18px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.01)),
+    rgba(9, 13, 20, 0.55);
+}
+
+.status-detail-card strong {
+  display: block;
+  margin-top: 10px;
+  font-size: clamp(1.28rem, 2.3vw, 2rem);
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.status-detail-label {
+  display: inline-flex;
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.status-page-note {
+  margin-top: 0;
+}
+
+.status-message-box {
+  min-height: 148px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 20px 22px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.032), rgba(255, 255, 255, 0.01)),
+    rgba(11, 15, 22, 0.78);
+  color: var(--text-primary);
+  font-size: 1.02rem;
+  line-height: 1.72;
+}
+
 .capability {
   position: relative;
   min-height: 184px;
@@ -2178,6 +2275,10 @@ textarea {
     border-radius: 14px;
   }
 
+  .nav-status-link {
+    justify-content: space-between;
+  }
+
   .hero,
   .section {
     padding: 20px;
@@ -2210,6 +2311,10 @@ textarea {
   .features-2x2,
   .field-row,
   .field-row-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .status-detail-grid {
     grid-template-columns: 1fr;
   }
 
