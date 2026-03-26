@@ -844,6 +844,7 @@ p.lead {
   align-content: start;
   gap: 10px;
   padding: 12px 2px 0 0;
+  max-width: none;
 }
 
 .pricing-matrix-intro h3 {
@@ -854,6 +855,7 @@ p.lead {
 
 .pricing-matrix-intro .subtle {
   line-height: 1.75;
+  max-width: none;
 }
 
 .pricing-matrix-colhead {
