@@ -747,7 +747,7 @@ p.lead {
 .pricing-featured-points {
   display: grid;
   gap: 12px;
-  margin: 2px 0 0;
+  margin: 0;
   padding: 0;
   list-style: none;
 }
@@ -802,6 +802,14 @@ p.lead {
 
 .pricing-tier-cta-free:hover {
   background: linear-gradient(180deg, #4786d9, #2b5f9f);
+}
+
+.pricing-price-row-hero {
+  margin: 0 0 4px;
+}
+
+.pricing-price-row-hero .subtle {
+  line-height: 1;
 }
 
 .pricing-tier-card-free .hero-price {
