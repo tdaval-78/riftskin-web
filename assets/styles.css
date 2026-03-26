@@ -827,7 +827,14 @@ p.lead {
   padding: 18px;
 }
 
-.pricing-matrix-head,
+.pricing-matrix-head {
+  display: grid;
+  grid-template-columns: minmax(300px, 1.35fr) repeat(2, minmax(0, 0.82fr));
+  gap: 12px;
+  align-items: end;
+  margin-bottom: 8px;
+}
+
 .pricing-matrix-row {
   display: grid;
   grid-template-columns: minmax(300px, 1.35fr) repeat(2, minmax(0, 0.82fr));
@@ -835,15 +842,11 @@ p.lead {
   align-items: stretch;
 }
 
-.pricing-matrix-head {
-  margin-bottom: 14px;
-}
-
 .pricing-matrix-intro {
   display: grid;
   align-content: start;
   gap: 10px;
-  padding: 12px 2px 0 0;
+  padding: 12px 2px 14px 0;
   max-width: none;
 }
 
@@ -865,6 +868,7 @@ p.lead {
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+  padding-bottom: 8px;
 }
 
 .pricing-matrix-colhead-accent {
