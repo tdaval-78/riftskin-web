@@ -1666,6 +1666,84 @@ p.lead {
   font-size: 1.02rem;
 }
 
+.legal-notice {
+  margin-top: 18px;
+  margin-bottom: 16px;
+  border-color: rgba(211, 176, 75, 0.28);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(211, 176, 75, 0.12), transparent 42%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015)),
+    rgba(31, 28, 22, 0.82);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 16px 34px rgba(0, 0, 0, 0.18);
+}
+
+.legal-grid {
+  align-items: stretch;
+}
+
+.legal-item {
+  position: relative;
+  overflow: hidden;
+  padding: 20px 20px 22px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(211, 176, 75, 0.08), transparent 30%),
+    radial-gradient(circle at 0% 100%, rgba(70, 138, 214, 0.07), transparent 28%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.01)),
+    var(--panel);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 16px 36px rgba(0, 0, 0, 0.16);
+}
+
+.legal-item::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(211, 176, 75, 0.34), rgba(95, 145, 204, 0.18), transparent 80%);
+}
+
+.legal-item-accent {
+  background:
+    radial-gradient(circle at 100% 0%, rgba(211, 176, 75, 0.12), transparent 34%),
+    radial-gradient(circle at 0% 100%, rgba(70, 138, 214, 0.09), transparent 28%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.012)),
+    var(--panel);
+}
+
+.legal-kicker {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(211, 176, 75, 0.28);
+  background: rgba(211, 176, 75, 0.08);
+  color: #f0ddb0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.legal-item h3 {
+  margin: 14px 0 14px;
+  font-size: clamp(1.12rem, 1.45vw, 1.48rem);
+  line-height: 1.24;
+}
+
+.legal-item .list {
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+
+.legal-item .list li + li {
+  margin-top: 10px;
+}
+
 form {
   display: grid;
   gap: 10px;
