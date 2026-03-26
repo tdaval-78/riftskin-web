@@ -97,6 +97,7 @@
   if (productTour && productVideo && productProgressTrack) {
     let rafId = 0;
     let isDraggingProgress = false;
+    let pendingProgress = null;
 
     function clamp(value, min, max) {
       return Math.min(Math.max(value, min), max);
@@ -135,9 +136,11 @@
     function setTourProgress(progress) {
       const safeProgress = clamp(progress, 0, 1);
       if (!productVideo.duration) {
+        pendingProgress = safeProgress;
         setTourUi(safeProgress);
         return;
       }
+      pendingProgress = null;
       const targetTime = safeProgress * productVideo.duration;
       if (Math.abs((productVideo.currentTime || 0) - targetTime) > 0.033) {
         try {
@@ -175,8 +178,11 @@
       productVideo.muted = true;
       productVideo.playsInline = true;
       if (!productVideo.duration) {
-        setTourUi(0);
+        setTourUi(pendingProgress !== null ? pendingProgress : 0);
         return;
+      }
+      if (pendingProgress !== null) {
+        setTourProgress(pendingProgress);
       }
       if (isScrollScrubMode()) {
         productVideo.loop = false;
@@ -190,9 +196,14 @@
       productVideo.play().catch(function () {});
     }
 
-    productVideo.addEventListener('loadedmetadata', function () {
+    function syncTourWhenReady() {
       applyProductTourMode();
-    });
+      requestTourSync();
+    }
+
+    productVideo.addEventListener('loadedmetadata', syncTourWhenReady);
+    productVideo.addEventListener('loadeddata', syncTourWhenReady);
+    productVideo.addEventListener('durationchange', syncTourWhenReady);
 
     productVideo.addEventListener('timeupdate', function () {
       if (isScrollScrubMode() || !productVideo.duration) return;
@@ -254,6 +265,14 @@
       }
       applyProductTourMode();
     });
+
+    if (productVideo.readyState >= 1) {
+      syncTourWhenReady();
+    } else {
+      try {
+        productVideo.load();
+      } catch (_err) {}
+    }
   }
 
   if (!reducedMotion && 'IntersectionObserver' in window) {
