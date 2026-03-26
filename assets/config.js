@@ -3,8 +3,8 @@ window.RiftSkinConfig = {
   trialDays: 0,
   monthlyPriceEUR: 15,
   supportEmail: "support@riftskin.com",
-  supabaseUrl: "https://bvajoufrxxntivxghdgs.supabase.co",
-  supabaseAnonKey: "sb_publishable_rY0OywIhbXTT8cYXJUZBZA_6URk4FUe",
+  supabaseUrl: "https://jfmrwxmlncvzoremcmbi.supabase.co",
+  supabaseAnonKey: "sb_publishable_SP6Tibi0ck1Qy3zSzn_YbQ_uAcTe9aV",
 
   // Paddle settings (fill these when your Paddle account is ready)
   paddleEnvironment: "production", // "production" or "sandbox"

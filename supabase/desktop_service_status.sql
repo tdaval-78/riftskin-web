@@ -1,5 +1,5 @@
 -- RiftSkin desktop service status
--- Run in Supabase SQL editor (project: bvajoufrxxntivxghdgs)
+-- Run in Supabase SQL editor (project: jfmrwxmlncvzoremcmbi)
 
 create table if not exists public.app_service_status (
   channel text primary key,

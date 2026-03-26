@@ -1,5 +1,5 @@
 -- RiftSkin activation key system
--- Run in Supabase SQL editor (project: bvajoufrxxntivxghdgs)
+-- Run in Supabase SQL editor (project: jfmrwxmlncvzoremcmbi)
 
 create extension if not exists pgcrypto;
 
@@ -417,7 +417,6 @@ end $$;
 
 grant execute on function public.is_app_admin(uuid) to authenticated, anon;
 grant execute on function public.has_active_access(uuid) to authenticated, anon;
-grant execute on function public.create_activation_key(text, text, integer, integer, integer, boolean) to authenticated;
 grant execute on function public.redeem_activation_key(text) to authenticated;
 grant execute on function public.attach_activation_key_to_user(text, text) to authenticated;
 
