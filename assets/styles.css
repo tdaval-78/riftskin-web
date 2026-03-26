@@ -328,6 +328,10 @@ textarea:focus-visible,
   align-content: start;
 }
 
+.hero-copy .lead {
+  max-width: none;
+}
+
 .eyebrow,
 .kicker {
   display: inline-flex;
