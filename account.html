@@ -207,6 +207,18 @@
                 <option value="ok">Fonctionnel / vert</option>
                 <option value="maintenance">Maintenance / orange</option>
               </select>
+              <select name="service_message_template" data-admin-service-template>
+                <option value="__custom__">Message manuel</option>
+                <option value="ok_general">Exemple EN: service fully operational</option>
+                <option value="ok_update_deployed">Exemple EN: compatibility update deployed</option>
+                <option value="maintenance_patch">Exemple EN: patch in progress after Riot update</option>
+                <option value="maintenance_testing">Exemple EN: final testing before release</option>
+              </select>
+            </div>
+            <div class="notice admin-service-live-block">
+              <p class="subtle admin-service-help">Choisir un exemple remplit automatiquement le message anglais et l'etat recommande. Vous pouvez ensuite le modifier manuellement.</p>
+              <p class="subtle admin-service-live-message"><strong>EN:</strong> <span data-admin-service-template-preview>Select a template or write your own message.</span></p>
+              <p class="subtle admin-service-live-message"><strong>FR:</strong> <span data-admin-service-template-translation>Selectionnez un modele ou ecrivez votre propre message.</span></p>
             </div>
             <textarea
               name="service_message"

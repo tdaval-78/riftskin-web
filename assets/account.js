@@ -28,6 +28,37 @@
   const adminServiceLive = document.querySelector('[data-admin-service-live]');
   const adminServicePublished = document.querySelector('[data-admin-service-published]');
   const adminServiceLiveMessage = document.querySelector('[data-admin-service-live-message]');
+  const adminServiceTemplate = document.querySelector('[data-admin-service-template]');
+  const adminServiceTemplatePreview = document.querySelector('[data-admin-service-template-preview]');
+  const adminServiceTemplateTranslation = document.querySelector('[data-admin-service-template-translation]');
+
+  const CUSTOM_SERVICE_TEMPLATE = '__custom__';
+  const SERVICE_MESSAGE_TEMPLATES = [
+    {
+      id: 'ok_general',
+      state: 'ok',
+      message: 'Injection is fully operational on the latest League of Legends patch. You can use RiftSkin normally.',
+      translation: "L'injection est entierement fonctionnelle sur le dernier patch de League of Legends. Vous pouvez utiliser RiftSkin normalement."
+    },
+    {
+      id: 'ok_update_deployed',
+      state: 'ok',
+      message: 'A compatibility update has been deployed and injection is functional again on the latest League of Legends patch.',
+      translation: "Une mise a jour de compatibilite a ete deployee et l'injection fonctionne de nouveau sur le dernier patch de League of Legends."
+    },
+    {
+      id: 'maintenance_patch',
+      state: 'maintenance',
+      message: 'Injection is temporarily unavailable after the latest League of Legends patch. Our team is actively working on a compatibility update.',
+      translation: "L'injection est temporairement indisponible apres le dernier patch de League of Legends. Notre equipe travaille activement sur une mise a jour de compatibilite."
+    },
+    {
+      id: 'maintenance_testing',
+      state: 'maintenance',
+      message: 'Our team has completed the main fix and is currently testing the next RiftSkin update before release.',
+      translation: "Notre equipe a termine le correctif principal et teste actuellement la prochaine mise a jour de RiftSkin avant sa publication."
+    }
+  ];
 
   function t(key) {
     return window.RiftSkinI18n ? window.RiftSkinI18n.t(key) : key;
@@ -102,6 +133,65 @@
       return 'Skin injection is currently functional on the latest League of Legends patch.';
     }
     return 'Skin injection is currently unavailable on the latest League of Legends patch. Our developers are actively working on a new update.';
+  }
+
+  function getServiceMessageInput() {
+    return adminServiceForm ? adminServiceForm.querySelector('[name="service_message"]') : null;
+  }
+
+  function getServiceStateInput() {
+    return adminServiceForm ? adminServiceForm.querySelector('[name="injection_state"]') : null;
+  }
+
+  function findServiceTemplateById(id) {
+    return SERVICE_MESSAGE_TEMPLATES.find(function (item) {
+      return item.id === id;
+    }) || null;
+  }
+
+  function findServiceTemplateByMessage(message) {
+    const normalized = (message || '').trim();
+    if (!normalized) return null;
+    return SERVICE_MESSAGE_TEMPLATES.find(function (item) {
+      return item.message === normalized;
+    }) || null;
+  }
+
+  function updateServiceTemplateHelper(template, message) {
+    if (adminServiceTemplatePreview) {
+      adminServiceTemplatePreview.textContent = template
+        ? template.message
+        : ((message || '').trim() || 'Custom message');
+    }
+    if (adminServiceTemplateTranslation) {
+      adminServiceTemplateTranslation.textContent = template
+        ? template.translation
+        : "Message manuel, traduction libre.";
+    }
+  }
+
+  function syncServiceTemplateSelection(message) {
+    const template = findServiceTemplateByMessage(message);
+    if (adminServiceTemplate) {
+      adminServiceTemplate.value = template ? template.id : CUSTOM_SERVICE_TEMPLATE;
+    }
+    updateServiceTemplateHelper(template, message);
+  }
+
+  function applyServiceTemplate(templateId) {
+    const template = findServiceTemplateById(templateId);
+    const messageInput = getServiceMessageInput();
+    const stateInput = getServiceStateInput();
+    if (!template || !messageInput) {
+      updateServiceTemplateHelper(null, messageInput ? messageInput.value : '');
+      return;
+    }
+
+    messageInput.value = template.message;
+    if (stateInput) {
+      stateInput.value = template.state;
+    }
+    updateServiceTemplateHelper(template, template.message);
   }
 
   function serviceStatusBackendMessage(errorText) {
@@ -631,6 +721,7 @@
       adminServiceForm.querySelector('[name="injection_state"]').value = normalized;
       adminServiceForm.querySelector('[name="service_message"]').value = (row && row.service_message) || '';
     }
+    syncServiceTemplateSelection((row && row.service_message) || '');
   }
 
   async function loadAdminServiceStatus() {
@@ -988,6 +1079,24 @@
   }
 
   if (adminServiceForm) {
+    const serviceMessageInput = getServiceMessageInput();
+    if (adminServiceTemplate) {
+      adminServiceTemplate.addEventListener('change', function () {
+        const selected = adminServiceTemplate.value || CUSTOM_SERVICE_TEMPLATE;
+        if (selected === CUSTOM_SERVICE_TEMPLATE) {
+          updateServiceTemplateHelper(null, serviceMessageInput ? serviceMessageInput.value : '');
+          return;
+        }
+        applyServiceTemplate(selected);
+      });
+    }
+
+    if (serviceMessageInput) {
+      serviceMessageInput.addEventListener('input', function () {
+        syncServiceTemplateSelection(serviceMessageInput.value || '');
+      });
+    }
+
     adminServiceForm.addEventListener('submit', async function (e) {
       e.preventDefault();
       msg(adminServiceMsg, 'Publishing desktop status...');
