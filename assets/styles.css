@@ -380,6 +380,10 @@ h2 {
   line-height: 1.85;
 }
 
+body[data-page="support"] .section-intro {
+  max-width: none;
+}
+
 .steps-section h2 {
   margin-bottom: 14px;
 }
