@@ -4,179 +4,264 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex,nofollow" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; img-src 'self' data: https://jfmrwxmlncvzoremcmbi.supabase.co; style-src 'self' 'unsafe-inline'; script-src 'self' https://cdn.jsdelivr.net; connect-src 'self' https://jfmrwxmlncvzoremcmbi.supabase.co;" />
-  <title data-i18n="cb_title">RIFTSKIN - Account</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; img-src 'self' data: https://riftskin.com https://jfmrwxmlncvzoremcmbi.supabase.co; style-src 'self' 'unsafe-inline'; script-src 'self' https://cdn.jsdelivr.net; connect-src 'self' https://jfmrwxmlncvzoremcmbi.supabase.co;" />
+  <title>RIFTSKIN - Account Access</title>
   <style>
     :root {
-      --bg-top: #0c1626;
-      --bg-bottom: #16293e;
-      --panel: rgba(43, 67, 93, 0.88);
-      --stroke: #48607b;
-      --text-main: #edf3fb;
-      --text-sub: #a9bbd0;
-      --ok: #5aa2c7;
-      --ok-soft: #2a536a;
-      --danger: #ff6f82;
-      --input-bg: #2a435b;
-      --input-stroke: #43627f;
+      --bg: #06070a;
+      --panel: rgba(15, 19, 27, 0.82);
+      --panel-strong: rgba(16, 21, 30, 0.92);
+      --stroke: rgba(255, 255, 255, 0.12);
+      --stroke-strong: rgba(255, 255, 255, 0.18);
+      --text-primary: #f6f8fc;
+      --text-secondary: #a6b0bf;
+      --text-tertiary: #7c8798;
+      --accent: #d3b04b;
+      --accent-soft: #f1dd91;
+      --danger: #ff8a7a;
+      --ok: #63e2b8;
+      --radius-xl: 28px;
+      --radius: 16px;
+      --shadow-lg: 0 28px 80px rgba(0, 0, 0, 0.4);
+      --shadow-md: 0 18px 44px rgba(0, 0, 0, 0.28);
     }
     * { box-sizing: border-box; }
-    html, body { height: 100%; margin: 0; }
+    html, body { min-height: 100%; margin: 0; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Avenir Next", "Segoe UI", sans-serif;
-      background: radial-gradient(circle at 80% -10%, rgba(74,122,168,.25), transparent 46%),
-                  radial-gradient(circle at -10% 110%, rgba(46,82,118,.28), transparent 38%),
-                  linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
-      color: var(--text-main);
+      font-family: "Avenir Next", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text-primary);
+      background:
+        linear-gradient(180deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.48)),
+        radial-gradient(circle at 18% 8%, rgba(211, 176, 75, 0.1), transparent 22%),
+        radial-gradient(circle at 84% 14%, rgba(131, 140, 154, 0.08), transparent 20%),
+        radial-gradient(circle at 52% 100%, rgba(255, 255, 255, 0.035), transparent 28%),
+        linear-gradient(180deg, #090c11 0%, #0b0f15 24%, #0c1118 62%, #090c12 100%);
+      background-color: var(--bg);
       display: grid;
       place-items: center;
       padding: 24px;
     }
-    .card {
-      width: min(760px, 100%);
+    .shell {
+      width: min(840px, 100%);
       border: 1px solid var(--stroke);
-      background: var(--panel);
-      border-radius: 22px;
-      padding: 34px 28px;
-      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.28);
+      border-radius: var(--radius-xl);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.02)),
+        linear-gradient(135deg, rgba(18, 23, 32, 0.96), rgba(10, 13, 19, 0.94));
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+    }
+    .hero {
+      padding: 30px 30px 18px;
+      border-bottom: 1px solid var(--stroke);
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0));
       text-align: center;
     }
     .logo {
-      width: 92px;
-      height: 92px;
+      width: 168px;
+      height: 168px;
       object-fit: contain;
-      margin: 0 auto 14px;
+      margin: 0 auto 12px;
       display: block;
     }
+    .eyebrow {
+      display: inline-block;
+      padding: 8px 14px;
+      border: 1px solid rgba(211, 176, 75, 0.28);
+      border-radius: 999px;
+      background: rgba(211, 176, 75, 0.1);
+      color: var(--accent-soft);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .content {
+      padding: 28px 30px 34px;
+      text-align: center;
+    }
     h1 {
-      margin: 0 0 12px;
-      font-size: clamp(28px, 5vw, 40px);
-      line-height: 1.08;
+      margin: 0 0 14px;
+      font-size: clamp(34px, 5vw, 54px);
+      line-height: 1.02;
+      letter-spacing: -0.03em;
     }
     p {
       margin: 0 auto 16px;
       max-width: 620px;
-      color: var(--text-sub);
-      font-size: 16px;
-      line-height: 1.5;
+      color: var(--text-secondary);
+      font-size: 18px;
+      line-height: 1.65;
     }
-    .badge {
-      margin: 20px auto 0;
-      display: inline-block;
+    .status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 18px;
       border-radius: 999px;
-      border: 1px solid #5f86a8;
-      background: linear-gradient(180deg, var(--ok), var(--ok-soft));
-      color: #eff7ff;
-      padding: 9px 16px;
-      font-weight: 700;
+      border: 1px solid rgba(211, 176, 75, 0.28);
+      background: rgba(255,255,255,0.03);
+      color: var(--text-primary);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      font-size: 12px;
+      margin-top: 8px;
+    }
+    .status-chip::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 6px rgba(211, 176, 75, 0.14);
+    }
+    .panel {
+      max-width: 620px;
+      margin: 24px auto 0;
+      padding: 20px 22px;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 22px;
+      background: rgba(255,255,255,0.03);
+      text-align: left;
+    }
+    .panel-title {
+      margin: 0 0 10px;
+      color: var(--accent-soft);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    .panel-copy {
+      margin: 0;
+      color: #c8d0dd;
+      font-size: 15px;
+      line-height: 1.7;
     }
     form {
-      margin: 18px auto 0;
-      max-width: 520px;
+      margin: 24px auto 0;
+      max-width: 620px;
       text-align: left;
     }
     label {
       display: block;
       margin: 0 0 8px;
-      color: #d9e8f8;
+      color: #d8dfeb;
       font-size: 14px;
       font-weight: 600;
     }
     input {
       width: 100%;
-      height: 48px;
-      border-radius: 10px;
-      border: 1px solid var(--input-stroke);
-      background: var(--input-bg);
-      color: #eef6ff;
+      height: 56px;
+      border-radius: var(--radius);
+      border: 1px solid var(--stroke-strong);
+      background: rgba(13, 18, 27, 0.88);
+      color: var(--text-primary);
       font-size: 16px;
-      padding: 0 14px;
-      margin-bottom: 12px;
+      padding: 0 16px;
+      margin-bottom: 14px;
       outline: none;
     }
-    button {
-      width: 100%;
-      height: 48px;
-      border: 1px solid #5f86a8;
-      border-radius: 10px;
-      background: linear-gradient(180deg, var(--ok), var(--ok-soft));
-      color: #eff7ff;
-      font-size: 15px;
-      font-weight: 700;
+    .primary-btn,
+    .ghost-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 54px;
+      padding: 0 26px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.01em;
       cursor: pointer;
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
     }
-    .msg { margin-top: 12px; font-size: 14px; line-height: 1.4; }
-    .msg.error { color: var(--danger); }
-    .msg.ok { color: #7ce6c0; }
+    .primary-btn {
+      width: 100%;
+      border: 1px solid rgba(211, 176, 75, 0.55);
+      background: linear-gradient(180deg, #d3b04b, #8f7130);
+      color: #fffdf5;
+      box-shadow: 0 12px 30px rgba(211, 176, 75, 0.18);
+    }
+    .ghost-btn {
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(255,255,255,0.02);
+      color: var(--text-primary);
+    }
     .actions {
-      margin-top: 18px;
+      margin-top: 22px;
       display: flex;
       justify-content: center;
       gap: 12px;
       flex-wrap: wrap;
     }
-    .link-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 44px;
-      padding: 0 18px;
-      border-radius: 10px;
-      border: 1px solid #5f86a8;
-      background: rgba(19, 31, 44, 0.42);
-      color: #eff7ff;
-      text-decoration: none;
+    .msg {
+      margin-top: 14px;
       font-size: 15px;
-      font-weight: 700;
+      line-height: 1.6;
+      text-align: center;
     }
+    .msg.error { color: var(--danger); }
+    .msg.ok { color: var(--ok); }
     .hidden { display: none; }
+    @media (max-width: 640px) {
+      .hero, .content { padding-left: 20px; padding-right: 20px; }
+      .logo { width: 132px; height: 132px; }
+      h1 { font-size: 36px; }
+      p { font-size: 16px; }
+    }
   </style>
 </head>
 <body>
-  <main class="card">
-    <img class="logo" src="https://riftskin.com/assets/logo.png" alt="RIFTSKIN logo" />
+  <main class="shell">
+    <section class="hero">
+      <img class="logo" src="https://riftskin.com/assets/logo.png" alt="RIFTSKIN logo" />
+      <div class="eyebrow">Account Access</div>
+    </section>
 
-    <section id="confirm-view" class="hidden">
-      <h1 data-i18n="cb_confirm_h1">Email confirmed</h1>
-      <p data-i18n-html="cb_confirm_p_html">Your email address has been confirmed.</p>
-      <div class="badge" data-i18n="cb_badge">Account Ready</div>
+    <section id="confirm-view" class="content hidden">
+      <h1>Email confirmed.</h1>
+      <p>Your account is now verified. You can go back to the RIFTSKIN account page and sign in normally.</p>
+      <div class="status-chip">Account ready</div>
+      <div class="panel">
+        <div class="panel-title">What happens next</div>
+        <p class="panel-copy">Return to the account page, sign in with your email and password, and continue your setup from there.</p>
+      </div>
       <div id="confirm-message" class="msg"></div>
       <div class="actions">
-        <a class="link-btn" href="/account.html" data-i18n="cb_back_account">Back to account</a>
+        <a class="ghost-btn" href="/account.html">Back to account</a>
       </div>
     </section>
 
-    <section id="recovery-view" class="hidden">
-      <h1 data-i18n="cb_recovery_h1">Choose a new password</h1>
-      <p data-i18n="cb_recovery_p">Enter your new RIFTSKIN password, then return to the app and sign in.</p>
+    <section id="recovery-view" class="content hidden">
+      <h1>Reset your password.</h1>
+      <p>Choose a new password for your RIFTSKIN account, then return to the account page and sign in.</p>
       <form id="reset-form">
-        <label for="password" data-i18n="cb_new_password">New password</label>
+        <label for="password">New password</label>
         <input id="password" type="password" minlength="8" required />
-        <label for="confirm-password" data-i18n="cb_confirm_password">Confirm password</label>
+        <label for="confirm-password">Confirm password</label>
         <input id="confirm-password" type="password" minlength="8" required />
-        <button id="submit-btn" type="submit" data-i18n="cb_update_password">Update password</button>
+        <button id="submit-btn" class="primary-btn" type="submit">Update password</button>
         <div id="message" class="msg"></div>
       </form>
       <div class="actions">
-        <a class="link-btn" href="/account.html" data-i18n="cb_back_account">Back to account</a>
+        <a class="ghost-btn" href="/account.html">Back to account</a>
       </div>
     </section>
 
-    <section id="error-view" class="hidden">
-      <h1 data-i18n="cb_error_h1">Link unavailable</h1>
-      <p id="error-copy" data-i18n="cb_error_p">This confirmation or reset link is invalid, expired, or has already been used.</p>
+    <section id="error-view" class="content hidden">
+      <h1>Link unavailable.</h1>
+      <p id="error-copy">This confirmation or recovery link is invalid, expired, or has already been used.</p>
       <div class="actions">
-        <a class="link-btn" href="/account.html" data-i18n="cb_back_account">Back to account</a>
+        <a class="ghost-btn" href="/account.html">Back to account</a>
       </div>
     </section>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/assets/config.js"></script>
-  <script src="/assets/translations.js"></script>
-  <script src="/assets/i18n.js"></script>
   <script src="/assets/auth-callback.js"></script>
 </body>
 </html>

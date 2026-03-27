@@ -14,9 +14,18 @@
   const submitBtn = document.getElementById('submit-btn');
   const messageEl = document.getElementById('message');
 
-  function t(key) {
-    return window.RiftSkinI18n ? window.RiftSkinI18n.t(key) : key;
-  }
+  const copy = {
+    supabaseMissing: 'Supabase configuration is missing.',
+    invalidReset: 'This recovery link is invalid or has expired. Please request a new password reset.',
+    confirmFailed: 'Email confirmation failed. Please request a new confirmation email.',
+    confirmSuccess: 'Email confirmed successfully. You can now sign in to your account.',
+    resetSessionFailed: 'The recovery session could not be initialized.',
+    passwordMin: 'Your password must contain at least 8 characters.',
+    passwordMismatch: 'The passwords do not match.',
+    passwordUpdateFailed: 'Your password could not be updated.',
+    passwordUpdated: 'Password updated successfully. Return to the account page and sign in with your new password.',
+    genericError: 'This confirmation or recovery link is invalid, expired, or has already been used.'
+  };
 
   function setMessage(type, text) {
     if (!messageEl) return;
@@ -62,7 +71,7 @@
 
   function setErrorCopy(text) {
     if (!errorCopyEl) return;
-    errorCopyEl.textContent = text || t('cb_error_p');
+    errorCopyEl.textContent = text || copy.genericError;
   }
 
   async function initRecoverySession(supabaseClient, params) {
@@ -80,7 +89,7 @@
       });
     }
 
-    return { error: new Error(t('cb_invalid_reset')) };
+    return { error: new Error(copy.invalidReset) };
   }
 
   async function initConfirmationSession(supabaseClient, params) {
@@ -112,11 +121,11 @@
       const confirm = confirmInput ? confirmInput.value : '';
 
       if (password.length < 8) {
-        setMessage('error', t('cb_pwd_min'));
+        setMessage('error', copy.passwordMin);
         return;
       }
       if (password !== confirm) {
-        setMessage('error', t('cb_pwd_mismatch'));
+        setMessage('error', copy.passwordMismatch);
         return;
       }
 
@@ -125,11 +134,11 @@
       submitBtn.disabled = false;
 
       if (updateError) {
-        setMessage('error', updateError.message || t('cb_pwd_update_failed'));
+        setMessage('error', updateError.message || copy.passwordUpdateFailed);
         return;
       }
 
-      setMessage('ok', t('cb_pwd_updated'));
+      setMessage('ok', copy.passwordUpdated);
       form.reset();
     });
   }
@@ -137,7 +146,7 @@
   async function init() {
     if (!window.supabase || !supabaseUrl || !supabaseAnonKey) {
       showView('error');
-      setErrorCopy(t('msg_status_supabase_missing'));
+      setErrorCopy(copy.supabaseMissing);
       if (submitBtn) submitBtn.disabled = true;
       return;
     }
@@ -145,7 +154,7 @@
     const params = parseParams();
     if (params.error || params.errorCode) {
       showView('error');
-      setErrorCopy(params.errorDescription || t('cb_error_p'));
+      setErrorCopy(params.errorDescription || copy.genericError);
       if (submitBtn) submitBtn.disabled = true;
       return;
     }
@@ -157,7 +166,7 @@
       const { error } = await initRecoverySession(supabaseClient, params);
       if (error) {
         showView('error');
-        setErrorCopy(error.message || t('cb_invalid_reset'));
+        setErrorCopy(error.message || copy.invalidReset);
         if (submitBtn) submitBtn.disabled = true;
         return;
       }
@@ -170,12 +179,12 @@
     const { error } = await initConfirmationSession(supabaseClient, params);
     if (error) {
       showView('error');
-      setErrorCopy(error.message || t('cb_confirm_failed'));
+      setErrorCopy(error.message || copy.confirmFailed);
       return;
     }
 
     if (params.type === 'signup' || params.type === 'email_change' || params.tokenHash || params.accessToken) {
-      setConfirmMessage('ok', t('cb_confirm_success'));
+      setConfirmMessage('ok', copy.confirmSuccess);
     }
   }
 
