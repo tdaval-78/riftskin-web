@@ -1339,6 +1339,10 @@ body[data-page="account"] .section-intro {
   object-position: center top;
 }
 
+.premium-activation-shot-image-settings {
+  object-position: center 16%;
+}
+
 .features-2x2 {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2982,6 +2986,10 @@ textarea {
     height: auto;
     max-height: 100%;
     object-fit: contain;
+  }
+
+  .premium-activation-shot-image-settings {
+    object-position: center top;
   }
 
   .legal-hub-grid,
