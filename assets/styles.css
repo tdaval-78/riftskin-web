@@ -1139,7 +1139,7 @@ p.lead {
 }
 
 .download-guide-visuals-step1 .download-guide-shot {
-  width: min(100%, 560px);
+  width: min(100%, 440px);
 }
 
 .download-guide-visuals.two-up {
@@ -1175,7 +1175,7 @@ p.lead {
 }
 
 .download-guide-shot-frame.browser {
-  min-height: 270px;
+  min-height: 220px;
 }
 
 .download-guide-shot-frame.landscape {
@@ -1188,13 +1188,12 @@ p.lead {
 
 .download-guide-shot-frame-step2-primary,
 .download-guide-shot-frame-step2-secondary {
-  min-height: 500px;
-  padding: 6px;
+  min-height: 520px;
+  padding: 0;
 }
 
 .download-guide-shot-frame-step2-primary {
-  min-height: 660px;
-  padding: 2px;
+  min-height: 700px;
 }
 
 .download-guide-shot-frame-step3-match {
@@ -1212,22 +1211,28 @@ p.lead {
 }
 
 .download-guide-shot-image-step1 {
-  width: 46%;
+  width: 34%;
   max-width: none;
 }
 
 .download-guide-shot-image-step2-primary {
-  width: 228%;
+  width: 100%;
+  height: 100%;
   max-width: none;
-  transform: scale(1.22);
-  transform-origin: center center;
+  max-height: none;
+  object-fit: cover;
+  object-position: 50% 54%;
+  transform: none;
 }
 
 .download-guide-shot-image-step2-secondary {
-  width: 172%;
+  width: 100%;
+  height: 100%;
   max-width: none;
-  transform: scale(1.12);
-  transform-origin: center center;
+  max-height: none;
+  object-fit: cover;
+  object-position: center 54%;
+  transform: none;
 }
 
 .download-guide-shot-image-step3-secondary {
@@ -2759,6 +2764,9 @@ textarea {
   .download-guide-shot-image-step2-secondary,
   .download-guide-shot-image-step3-secondary {
     width: 100%;
+    height: auto;
+    max-height: 100%;
+    object-fit: contain;
     transform: none;
   }
 
