@@ -1206,6 +1206,7 @@ p.lead {
 }
 
 .status-page-section {
+  padding: 18px 20px 22px;
   background:
     radial-gradient(circle at 100% 0%, rgba(211, 176, 75, 0.1), transparent 32%),
     radial-gradient(circle at 0% 100%, rgba(70, 138, 214, 0.08), transparent 26%),
@@ -1213,33 +1214,40 @@ p.lead {
     var(--panel-strong);
 }
 
+.status-page-shell {
+  max-width: 1120px;
+  margin: 0 auto;
+  display: grid;
+  gap: 18px;
+}
+
 .status-page-head {
-  margin-bottom: 22px;
+  margin-bottom: 0;
 }
 
 .status-page-copy {
-  max-width: 1040px;
+  max-width: 720px;
 }
 
 .status-page-copy h2 {
-  margin: 12px 0 12px;
-  max-width: 16ch;
-  font-size: clamp(2.65rem, 5.6vw, 4.9rem);
-  line-height: 0.96;
+  margin: 10px 0 10px;
+  max-width: 11ch;
+  font-size: clamp(1.95rem, 3.1vw, 3rem);
+  line-height: 1;
   letter-spacing: -0.04em;
 }
 
 .status-page-copy .section-intro {
-  max-width: 760px;
+  max-width: 58ch;
   margin: 0;
-  font-size: 1.04rem;
-  line-height: 1.72;
+  font-size: 0.98rem;
+  line-height: 1.68;
 }
 
 .status-page-grid {
-  grid-template-columns: minmax(0, 1.08fr) minmax(360px, 0.92fr);
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.94fr);
   align-items: start;
-  gap: 18px;
+  gap: 14px;
 }
 
 .status-overview-panel,
@@ -1251,53 +1259,57 @@ p.lead {
 .status-primary-panel {
   position: relative;
   overflow: hidden;
-  gap: 18px;
+  gap: 14px;
 }
 
 .status-primary-panel::before {
   content: "";
   position: absolute;
-  inset: -20% auto auto 58%;
-  width: 240px;
-  height: 240px;
+  inset: -24% auto auto 72%;
+  width: 180px;
+  height: 180px;
   border-radius: 999px;
-  background: radial-gradient(circle, rgba(88, 215, 178, 0.1), transparent 68%);
+  background: radial-gradient(circle, rgba(88, 215, 178, 0.08), transparent 68%);
   pointer-events: none;
 }
 
 .status-primary-top {
   position: relative;
   display: grid;
-  gap: 12px;
+  gap: 10px;
   z-index: 1;
 }
 
 .status-primary-badge {
   justify-self: start;
-  padding: 10px 16px;
-  min-height: 48px;
-  font-size: 1.04rem;
+  width: fit-content;
+  max-width: 100%;
+  padding: 8px 14px;
+  min-height: 40px;
+  font-size: 0.92rem;
   font-weight: 800;
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
 }
 
 .status-primary-intro {
   position: relative;
   margin: 0;
-  max-width: 62ch;
+  max-width: 46ch;
+  font-size: 0.94rem;
   z-index: 1;
 }
 
 .status-detail-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
+  gap: 10px;
 }
 
 .status-detail-card {
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 18px;
-  padding: 16px 18px;
+  min-height: 120px;
+  padding: 14px 16px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.01)),
     rgba(9, 13, 20, 0.55);
@@ -1306,21 +1318,21 @@ p.lead {
 .status-detail-value {
   display: block;
   margin-top: 10px;
-  font-size: clamp(1.2rem, 2vw, 1.72rem);
+  font-size: clamp(1.06rem, 1.5vw, 1.34rem);
   font-weight: 800;
   color: var(--text-primary);
-  line-height: 1.08;
+  line-height: 1.14;
   text-wrap: balance;
 }
 
 .status-detail-value-number {
-  font-size: clamp(2.1rem, 4vw, 3.4rem);
+  font-size: clamp(1.72rem, 3vw, 2.4rem);
   letter-spacing: -0.05em;
 }
 
 .status-detail-value-compact {
-  font-size: clamp(1.12rem, 1.55vw, 1.34rem);
-  line-height: 1.22;
+  font-size: clamp(0.98rem, 1.24vw, 1.12rem);
+  line-height: 1.28;
 }
 
 .status-detail-label {
@@ -1333,16 +1345,26 @@ p.lead {
 }
 
 .status-message-box {
-  min-height: 148px;
+  min-height: 120px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 20px;
-  padding: 24px 26px;
+  padding: 18px 20px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.032), rgba(255, 255, 255, 0.01)),
     rgba(11, 15, 22, 0.78);
   color: var(--text-primary);
-  font-size: 1.02rem;
-  line-height: 1.72;
+  font-size: 0.98rem;
+  line-height: 1.68;
+}
+
+@media (max-width: 1180px) {
+  .status-page-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .status-page-copy h2 {
+    max-width: 12ch;
+  }
 }
 
 .capability {
@@ -2388,7 +2410,7 @@ textarea {
   }
 
   .status-detail-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .product-tour-window-shell {
