@@ -4,6 +4,7 @@ Use these files in `Authentication -> Email Templates` in Supabase:
 
 - `confirm-signup.html` for `Confirm signup`
 - `password-reset.html` for `Reset password`
+- `supabase-resend-smtp-setup.md` for the exact Resend SMTP config to apply in Supabase
 
 Required auth URL configuration:
 
