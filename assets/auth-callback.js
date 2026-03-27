@@ -118,6 +118,27 @@
     }
   }
 
+  async function clearRecoverySession(supabaseClient) {
+    try {
+      await supabaseClient.auth.signOut();
+    } catch (_error) {
+      // Best-effort cleanup: recovery should not leave the user signed in.
+    }
+  }
+
+  function bindBackToAccountLinks(supabaseClient) {
+    const links = document.querySelectorAll('a[href="/account.html"]');
+    if (!links.length) return;
+
+    links.forEach(function (link) {
+      link.addEventListener('click', async function (event) {
+        event.preventDefault();
+        await clearRecoverySession(supabaseClient);
+        window.location.href = link.getAttribute('href') || '/account.html';
+      });
+    });
+  }
+
   function bindResetForm(supabaseClient) {
     if (!form || !submitBtn) return;
 
@@ -146,6 +167,7 @@
         return;
       }
 
+      await clearRecoverySession(supabaseClient);
       setMessage('ok', copy.passwordUpdated);
       form.reset();
     });
@@ -175,6 +197,8 @@
         detectSessionInUrl: false
       }
     });
+
+    bindBackToAccountLinks(supabaseClient);
 
     if (params.type === 'recovery') {
       showView('recovery');
