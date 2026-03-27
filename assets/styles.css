@@ -186,6 +186,7 @@ textarea:focus-visible,
 }
 
 .nav-status-dot {
+  display: none;
   width: 9px;
   height: 9px;
   border-radius: 999px;
