@@ -5,6 +5,7 @@
   const loggedInView = document.querySelector('[data-logged-in]');
   const accountEmail = document.querySelector('[data-session-email]');
   const accountEmailInput = document.querySelector('[data-account-email]');
+  const signInPasswordInput = document.querySelector('[data-signin-password]');
   const resendRow = document.querySelector('[data-resend-row]');
   const resendConfirmationBtn = document.querySelector('[data-resend-confirmation]');
   const resendMsg = document.querySelector('[data-resend-msg]');
@@ -92,6 +93,19 @@
   function setResendVisibility(visible) {
     if (!resendRow) return;
     resendRow.style.display = visible ? '' : 'none';
+  }
+
+  function setForgotMode(active) {
+    if (!signInPasswordInput) return;
+    if (active) {
+      signInPasswordInput.value = '';
+      signInPasswordInput.required = false;
+      signInPasswordInput.style.display = 'none';
+      return;
+    }
+
+    signInPasswordInput.required = true;
+    signInPasswordInput.style.display = '';
   }
 
   function setStatus(text, kind) {
@@ -864,6 +878,11 @@
   if (signInForm) {
     signInForm.addEventListener('submit', async function (e) {
       e.preventDefault();
+      if (signInPasswordInput && signInPasswordInput.style.display === 'none') {
+        setForgotMode(false);
+        signInPasswordInput.focus();
+        return;
+      }
       const email = signInForm.querySelector('[name="email"]').value.trim();
       const password = signInForm.querySelector('[name="password"]').value;
       const out = signInForm.querySelector('[data-msg]');
@@ -966,10 +985,12 @@
       const out = document.querySelector('[data-forgot-msg]');
       const email = (accountEmailInput && accountEmailInput.value.trim()) || '';
       if (!email || email.indexOf('@') === -1) {
+        setForgotMode(true);
         msg(out, t('msg_enter_email_first'), 'error');
         return;
       }
 
+      setForgotMode(true);
       msg(out, t('msg_sending_reset'));
       const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
         redirectTo: authCallbackUrl()
