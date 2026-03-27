@@ -443,6 +443,10 @@ p.lead {
   max-width: 56ch;
 }
 
+body[data-page="account"] .section-intro {
+  max-width: none;
+}
+
 .hero-actions,
 .hero-meta {
   display: flex;
