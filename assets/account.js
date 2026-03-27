@@ -3,7 +3,7 @@
   const statusBox = document.querySelector('[data-account-status]');
   const loggedOutView = document.querySelector('[data-logged-out]');
   const loggedInView = document.querySelector('[data-logged-in]');
-  const accountEmail = document.querySelector('[data-session-email]');
+  const accountEmails = document.querySelectorAll('[data-session-email]');
   const accountEmailInput = document.querySelector('[data-account-email]');
   const signInPasswordInput = document.querySelector('[data-signin-password]');
   const resendRow = document.querySelector('[data-resend-row]');
@@ -381,7 +381,9 @@
     if (user) {
       if (loggedOutView) loggedOutView.style.display = 'none';
       if (loggedInView) loggedInView.style.display = 'block';
-      if (accountEmail) accountEmail.textContent = user.email || '';
+      accountEmails.forEach(function (el) {
+        el.textContent = user.email || '';
+      });
       if (accountEmailInput && user.email) accountEmailInput.value = user.email;
       setStatus(t('msg_status_connected'), 'ok');
       return;
@@ -389,7 +391,9 @@
 
     if (loggedOutView) loggedOutView.style.display = 'grid';
     if (loggedInView) loggedInView.style.display = 'none';
-    if (accountEmail) accountEmail.textContent = '-';
+    accountEmails.forEach(function (el) {
+      el.textContent = '-';
+    });
     resetAccountManagementUi();
     setStatus(t('msg_status_not_connected'), '');
     setAccessBadge(t('admin_sign_in_required'), '');
