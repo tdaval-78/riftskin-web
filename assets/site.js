@@ -45,10 +45,8 @@
   const navStatusDots = Array.from(document.querySelectorAll('[data-site-status-dot]'));
   const publicServiceBadge = document.querySelector('[data-public-service-badge]');
   const publicServicePublished = document.querySelector('[data-public-service-published]');
-  const publicServicePatch = document.querySelector('[data-public-service-patch]');
   const publicServiceMessage = document.querySelector('[data-public-service-message]');
   let lastPublicStatusRow = null;
-  let lastPublicStatusPatch = null;
   let publicStatusLoadFailed = false;
 
   function t(key, fallback) {
@@ -77,9 +75,9 @@
 
   function getDefaultPublicServiceMessage(state) {
     if (state === 'ok') {
-      return 'Skin injection is currently functional on the latest League of Legends patch.';
+      return 'Skin injection is currently functional.';
     }
-    return 'Skin injection is currently unavailable on the latest League of Legends patch. Our team is actively working on a compatibility update.';
+    return 'Skin injection is currently unavailable. Our team is actively working on a compatibility update.';
   }
 
   function formatPublicTimestamp(value) {
@@ -129,27 +127,11 @@
     return Array.isArray(payload) ? (payload[0] || null) : null;
   }
 
-  async function fetchLatestLolPatch() {
-    const response = await fetch('https://ddragon.leagueoflegends.com/api/versions.json', {
-      cache: 'no-store'
-    });
-    const payload = await response.json().catch(function () {
-      return null;
-    });
-
-    if (!response.ok) {
-      throw new Error('Unable to fetch latest LoL patch.');
-    }
-
-    return Array.isArray(payload) ? (payload[0] || null) : null;
-  }
-
-  function renderPublicStatusPage(row, latestPatch) {
-    if (!publicServiceBadge && !publicServicePublished && !publicServicePatch && !publicServiceMessage) return;
+  function renderPublicStatusPage(row) {
+    if (!publicServiceBadge && !publicServicePublished && !publicServiceMessage) return;
 
     const normalizedState = row && row.injection_state === 'ok' ? 'ok' : 'maintenance';
     const info = getPublicServiceStateInfo(normalizedState);
-    const patchValue = latestPatch || t('site_status_patch_unavailable', 'Unavailable');
     const publishedValue = row && row.published_at
       ? (t('site_status_live_since', 'Live since') + ' ' + formatPublicTimestamp(row.published_at))
       : t('site_status_published_empty', 'No public status published yet.');
@@ -161,9 +143,6 @@
     }
     if (publicServicePublished) {
       publicServicePublished.textContent = publishedValue;
-    }
-    if (publicServicePatch) {
-      publicServicePatch.textContent = patchValue;
     }
     if (publicServiceMessage) {
       publicServiceMessage.textContent = messageValue;
@@ -178,16 +157,13 @@
     if (publicServicePublished) {
       publicServicePublished.textContent = t('site_status_unavailable_desc', 'The public service status could not be loaded right now.');
     }
-    if (publicServicePatch) {
-      publicServicePatch.textContent = t('site_status_patch_unavailable', 'Unavailable');
-    }
     if (publicServiceMessage) {
       publicServiceMessage.textContent = t('site_status_message_fallback', 'The public service message could not be loaded right now.');
     }
   }
 
   async function syncPublicServiceStatus() {
-    if (!navStatusDots.length && !publicServiceBadge && !publicServicePublished && !publicServicePatch && !publicServiceMessage) {
+    if (!navStatusDots.length && !publicServiceBadge && !publicServicePublished && !publicServiceMessage) {
       return;
     }
 
@@ -200,12 +176,8 @@
 
       setNavStatusState(normalizedState, message);
 
-      if (publicServiceBadge || publicServicePublished || publicServicePatch || publicServiceMessage) {
-        const latestPatch = await fetchLatestLolPatch().catch(function () {
-          return null;
-        });
-        lastPublicStatusPatch = latestPatch;
-        renderPublicStatusPage(statusRow, latestPatch);
+      if (publicServiceBadge || publicServicePublished || publicServiceMessage) {
+        renderPublicStatusPage(statusRow);
       }
     } catch (_err) {
       publicStatusLoadFailed = true;
@@ -221,8 +193,8 @@
       renderPublicStatusUnavailable();
       return;
     }
-    if (publicServiceBadge || publicServicePublished || publicServicePatch || publicServiceMessage) {
-      renderPublicStatusPage(lastPublicStatusRow, lastPublicStatusPatch);
+    if (publicServiceBadge || publicServicePublished || publicServiceMessage) {
+      renderPublicStatusPage(lastPublicStatusRow);
     }
   });
 
