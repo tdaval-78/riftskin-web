@@ -12,6 +12,10 @@
 
   const accessStatus = document.querySelector('[data-access-status]');
   const accessMeta = document.querySelector('[data-access-meta]');
+  const emailChangeForm = document.querySelector('[data-email-change-form]');
+  const emailChangeMsg = document.querySelector('[data-email-change-msg]');
+  const passwordChangeForm = document.querySelector('[data-password-change-form]');
+  const passwordChangeMsg = document.querySelector('[data-password-change-msg]');
   const redeemForm = document.querySelector('[data-redeem-form]');
   const redeemMsg = document.querySelector('[data-redeem-msg]');
   const myKeysBody = document.querySelector('[data-my-keys-body]');
@@ -118,6 +122,13 @@
     if (!accessStatus) return;
     accessStatus.textContent = text;
     accessStatus.className = 'status-badge ' + (kind || '');
+  }
+
+  function resetAccountManagementUi() {
+    if (emailChangeForm) emailChangeForm.reset();
+    if (passwordChangeForm) passwordChangeForm.reset();
+    if (emailChangeMsg) msg(emailChangeMsg, '', '');
+    if (passwordChangeMsg) msg(passwordChangeMsg, '', '');
   }
 
   function formatDate(isoString) {
@@ -375,6 +386,7 @@
     if (loggedOutView) loggedOutView.style.display = 'grid';
     if (loggedInView) loggedInView.style.display = 'none';
     if (accountEmail) accountEmail.textContent = '-';
+    resetAccountManagementUi();
     setStatus(t('msg_status_not_connected'), '');
     setAccessBadge(t('admin_sign_in_required'), '');
     if (accessMeta) accessMeta.textContent = '';
@@ -1207,6 +1219,98 @@
       }
       msg(out, t('msg_signed_out'), 'ok');
       await refreshSession();
+    });
+  }
+
+  if (emailChangeForm) {
+    emailChangeForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const session = await getSession();
+      if (!session || !session.user) {
+        msg(emailChangeMsg, t('admin_sign_in_required'), 'error');
+        return;
+      }
+
+      const currentEmail = (session.user.email || '').trim().toLowerCase();
+      const newEmail = (emailChangeForm.querySelector('[name="new_email"]').value || '').trim().toLowerCase();
+
+      if (!newEmail || newEmail.indexOf('@') === -1) {
+        msg(emailChangeMsg, t('msg_enter_email_first'), 'error');
+        return;
+      }
+      if (newEmail === currentEmail) {
+        msg(emailChangeMsg, t('msg_email_same'), 'error');
+        return;
+      }
+
+      msg(emailChangeMsg, t('msg_updating_email'), '');
+      const { error } = await supabaseClient.auth.updateUser(
+        { email: newEmail },
+        { emailRedirectTo: authCallbackUrl() }
+      );
+
+      if (error) {
+        msg(emailChangeMsg, error.message || t('msg_email_change_failed'), 'error');
+        return;
+      }
+
+      emailChangeForm.reset();
+      msg(emailChangeMsg, t('msg_email_change_sent'), 'ok');
+    });
+  }
+
+  if (passwordChangeForm) {
+    passwordChangeForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const session = await getSession();
+      if (!session || !session.user) {
+        msg(passwordChangeMsg, t('admin_sign_in_required'), 'error');
+        return;
+      }
+
+      const currentPassword = passwordChangeForm.querySelector('[name="current_password"]').value || '';
+      const newPassword = passwordChangeForm.querySelector('[name="new_password"]').value || '';
+      const confirmPassword = passwordChangeForm.querySelector('[name="confirm_password"]').value || '';
+      const currentEmail = (session.user.email || '').trim();
+
+      if (!currentPassword) {
+        msg(passwordChangeMsg, t('msg_current_password_required'), 'error');
+        return;
+      }
+      if (newPassword.length < 8) {
+        msg(passwordChangeMsg, t('msg_password_len'), 'error');
+        return;
+      }
+      if (newPassword !== confirmPassword) {
+        msg(passwordChangeMsg, t('msg_password_match'), 'error');
+        return;
+      }
+      if (newPassword === currentPassword) {
+        msg(passwordChangeMsg, t('msg_new_password_same'), 'error');
+        return;
+      }
+
+      msg(passwordChangeMsg, t('msg_updating_password'), '');
+
+      const { error: reauthError } = await supabaseClient.auth.signInWithPassword({
+        email: currentEmail,
+        password: currentPassword
+      });
+
+      if (reauthError) {
+        msg(passwordChangeMsg, t('msg_current_password_invalid'), 'error');
+        return;
+      }
+
+      const { error: updateError } = await supabaseClient.auth.updateUser({ password: newPassword });
+
+      if (updateError) {
+        msg(passwordChangeMsg, updateError.message || t('msg_password_change_failed'), 'error');
+        return;
+      }
+
+      passwordChangeForm.reset();
+      msg(passwordChangeMsg, t('msg_password_changed'), 'ok');
     });
   }
 })();

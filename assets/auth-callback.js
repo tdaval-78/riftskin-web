@@ -7,6 +7,9 @@
   const recoveryView = document.getElementById('recovery-view');
   const errorView = document.getElementById('error-view');
   const confirmMessageEl = document.getElementById('confirm-message');
+  const confirmTitleEl = document.getElementById('confirm-title');
+  const confirmCopyEl = document.getElementById('confirm-copy');
+  const confirmPanelCopyEl = document.getElementById('confirm-panel-copy');
   const errorCopyEl = document.getElementById('error-copy');
   const form = document.getElementById('reset-form');
   const passwordInput = document.getElementById('password');
@@ -19,6 +22,10 @@
     invalidReset: 'This recovery link is invalid or has expired. Please request a new password reset.',
     confirmFailed: 'Email confirmation failed. Please request a new confirmation email.',
     confirmSuccess: 'Email confirmed successfully. You can now sign in to your account.',
+    emailChangeTitle: 'Email change confirmed.',
+    emailChangeCopy: 'Your new email address is now active. Return to the RIFTSKIN account page and sign in with that new address.',
+    emailChangePanelCopy: 'Return to the account page, sign in with your new email and password, and continue from there.',
+    emailChangeSuccess: 'Email updated successfully. You can now sign in with your new address.',
     resetSessionFailed: 'The recovery session could not be initialized.',
     passwordMin: 'Your password must contain at least 8 characters.',
     passwordMismatch: 'The passwords do not match.',
@@ -37,6 +44,12 @@
     if (!confirmMessageEl) return;
     confirmMessageEl.className = 'msg ' + (type || '');
     confirmMessageEl.textContent = text || '';
+  }
+
+  function setConfirmCopy(title, body, panel) {
+    if (confirmTitleEl) confirmTitleEl.textContent = title || '';
+    if (confirmCopyEl) confirmCopyEl.textContent = body || '';
+    if (confirmPanelCopyEl) confirmPanelCopyEl.textContent = panel || '';
   }
 
   function showView(view) {
@@ -225,6 +238,11 @@
     await clearConfirmationSession(supabaseClient);
 
     if (params.type === 'signup' || params.type === 'email_change' || params.tokenHash || params.accessToken) {
+      if (params.type === 'email_change') {
+        setConfirmCopy(copy.emailChangeTitle, copy.emailChangeCopy, copy.emailChangePanelCopy);
+        setConfirmMessage('ok', copy.emailChangeSuccess);
+        return;
+      }
       setConfirmMessage('ok', copy.confirmSuccess);
     }
   }
