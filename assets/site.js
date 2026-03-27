@@ -220,7 +220,14 @@
     }
 
     try {
-      const supabaseClient = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+      const supabaseClient = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey, {
+        auth: {
+          storage: window.sessionStorage,
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: false
+        }
+      });
       const sessionResult = await supabaseClient.auth.getSession();
       const session = sessionResult && sessionResult.data ? sessionResult.data.session : null;
 
@@ -312,9 +319,13 @@
       return clamp(-rect.top / travel, 0, 1);
     }
 
+    function canScrubVideo() {
+      return !!(productVideo.duration && Number.isFinite(productVideo.duration) && productVideo.readyState >= 2);
+    }
+
     function setTourProgress(progress) {
       const safeProgress = clamp(progress, 0, 1);
-      if (!productVideo.duration) {
+      if (!canScrubVideo()) {
         pendingProgress = safeProgress;
         setTourUi(safeProgress);
         return;
@@ -334,7 +345,13 @@
     }
 
     function syncTourFromScroll() {
-      if (!isScrollScrubMode() || !productVideo.duration || isDraggingProgress) return;
+      if (!isScrollScrubMode() || isDraggingProgress) return;
+      if (!canScrubVideo()) {
+        pendingProgress = getTourProgressFromScroll();
+        setTourUi(pendingProgress);
+        primeVideoForScrub();
+        return;
+      }
       setTourProgress(getTourProgressFromScroll());
     }
 
@@ -354,27 +371,33 @@
     }
 
     async function primeVideoForScrub() {
-      if (hasPrimedVideo || isPrimingVideo) return;
+      if (document.hidden || isPrimingVideo) return;
+      if (hasPrimedVideo && canScrubVideo()) return;
       isPrimingVideo = true;
+      let warmedUp = false;
       try {
         const playResult = productVideo.play();
         if (playResult && typeof playResult.then === 'function') {
           await playResult;
         }
+        warmedUp = true;
       } catch (_err) {
         // Ignore autoplay warm-up failures and keep the fallback scrub path.
       } finally {
         productVideo.pause();
         isPrimingVideo = false;
-        hasPrimedVideo = true;
+        hasPrimedVideo = warmedUp || canScrubVideo();
       }
     }
 
     function applyProductTourMode() {
       productVideo.muted = true;
       productVideo.playsInline = true;
-      if (!productVideo.duration) {
+      if (!canScrubVideo()) {
         setTourUi(pendingProgress !== null ? pendingProgress : 0);
+        if (isScrollScrubMode()) {
+          primeVideoForScrub();
+        }
         return;
       }
       if (pendingProgress !== null) {
@@ -462,7 +485,26 @@
         productVideo.pause();
         return;
       }
+      hasPrimedVideo = canScrubVideo();
+      if (!hasPrimedVideo) {
+        try {
+          productVideo.load();
+        } catch (_err) {}
+      }
       applyProductTourMode();
+    });
+
+    window.addEventListener('pageshow', function (event) {
+      if (event.persisted) {
+        hasPrimedVideo = canScrubVideo();
+        if (!hasPrimedVideo) {
+          try {
+            productVideo.load();
+          } catch (_err) {}
+        }
+      }
+      applyProductTourMode();
+      requestTourSync();
     });
 
     if (productVideo.readyState >= 1) {

@@ -55,7 +55,14 @@
     }
 
     try {
-      const supabaseClient = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+      const supabaseClient = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey, {
+        auth: {
+          storage: window.sessionStorage,
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: false
+        }
+      });
       const sessionResult = await supabaseClient.auth.getSession();
       const session = sessionResult && sessionResult.data ? sessionResult.data.session : null;
       const sessionEmail = session && session.user ? session.user.email : '';
@@ -110,7 +117,14 @@
     try {
       let authToken = cfg.supabaseAnonKey;
       if (window.supabase) {
-        const supabaseClient = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+        const supabaseClient = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey, {
+          auth: {
+            storage: window.sessionStorage,
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: false
+          }
+        });
         const sessionResult = await supabaseClient.auth.getSession();
         const session = sessionResult && sessionResult.data ? sessionResult.data.session : null;
         if (session && session.access_token) {

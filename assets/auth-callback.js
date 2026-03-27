@@ -167,7 +167,14 @@
       return;
     }
 
-    const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+    const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        storage: window.sessionStorage,
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: false
+      }
+    });
 
     if (params.type === 'recovery') {
       showView('recovery');
