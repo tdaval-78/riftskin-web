@@ -1171,6 +1171,11 @@ p.lead {
   padding: 8px;
 }
 
+.download-guide-shot-frame-step2-primary {
+  min-height: 520px;
+  padding: 4px;
+}
+
 .download-guide-shot-frame-step3-match {
   min-height: 340px;
   padding: 14px;
@@ -1186,14 +1191,14 @@ p.lead {
 }
 
 .download-guide-shot-image-step1 {
-  width: 82%;
+  width: 62%;
   max-width: none;
 }
 
 .download-guide-shot-image-step2-primary {
-  width: 148%;
+  width: 182%;
   max-width: none;
-  transform: scale(1.11);
+  transform: scale(1.18);
   transform-origin: center center;
 }
 
