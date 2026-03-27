@@ -2450,6 +2450,24 @@ textarea {
   color: var(--ok);
 }
 
+.account-danger-panel {
+  border-color: rgba(255, 138, 122, 0.28);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(255, 138, 122, 0.08), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
+    var(--panel);
+}
+
+.account-danger-btn {
+  border-color: rgba(255, 138, 122, 0.32);
+  color: #ffd5cf;
+}
+
+.account-danger-btn:hover {
+  border-color: rgba(255, 138, 122, 0.5);
+  background: rgba(255, 138, 122, 0.08);
+}
+
 .support-upload {
   display: grid;
   gap: 8px;

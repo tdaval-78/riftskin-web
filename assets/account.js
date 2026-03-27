@@ -16,6 +16,8 @@
   const emailChangeMsg = document.querySelector('[data-email-change-msg]');
   const passwordChangeForm = document.querySelector('[data-password-change-form]');
   const passwordChangeMsg = document.querySelector('[data-password-change-msg]');
+  const deleteAccountForm = document.querySelector('[data-delete-account-form]');
+  const deleteAccountMsg = document.querySelector('[data-delete-account-msg]');
   const redeemForm = document.querySelector('[data-redeem-form]');
   const redeemMsg = document.querySelector('[data-redeem-msg]');
   const myKeysBody = document.querySelector('[data-my-keys-body]');
@@ -127,8 +129,10 @@
   function resetAccountManagementUi() {
     if (emailChangeForm) emailChangeForm.reset();
     if (passwordChangeForm) passwordChangeForm.reset();
+    if (deleteAccountForm) deleteAccountForm.reset();
     if (emailChangeMsg) msg(emailChangeMsg, '', '');
     if (passwordChangeMsg) msg(passwordChangeMsg, '', '');
+    if (deleteAccountMsg) msg(deleteAccountMsg, '', '');
   }
 
   function formatDate(isoString) {
@@ -1311,6 +1315,71 @@
 
       passwordChangeForm.reset();
       msg(passwordChangeMsg, t('msg_password_changed'), 'ok');
+    });
+  }
+
+  if (deleteAccountForm) {
+    deleteAccountForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const session = await getSession();
+      if (!session || !session.user) {
+        msg(deleteAccountMsg, t('admin_sign_in_required'), 'error');
+        return;
+      }
+
+      const password = deleteAccountForm.querySelector('[name="password"]').value || '';
+      const confirmationText = (deleteAccountForm.querySelector('[name="confirmation_text"]').value || '').trim();
+
+      if (!password) {
+        msg(deleteAccountMsg, t('msg_current_password_required'), 'error');
+        return;
+      }
+      if (confirmationText !== 'YES, I WANT TO DELETE MY ACCOUNT AND DATA') {
+        msg(deleteAccountMsg, t('msg_delete_confirmation_mismatch'), 'error');
+        return;
+      }
+
+      msg(deleteAccountMsg, t('msg_deleting_account'), '');
+      const { data, error } = await supabaseClient.functions.invoke('delete-account', {
+        body: {
+          password: password,
+          confirmationText: confirmationText
+        }
+      });
+
+      if (error) {
+        msg(deleteAccountMsg, error.message || t('msg_delete_account_failed'), 'error');
+        return;
+      }
+
+      if (!data || data.ok !== true) {
+        const code = data && data.error ? data.error : '';
+        if (code === 'active_subscription') {
+          msg(deleteAccountMsg, t('msg_delete_account_active_subscription'), 'error');
+          return;
+        }
+        if (code === 'invalid_password') {
+          msg(deleteAccountMsg, t('msg_current_password_invalid'), 'error');
+          return;
+        }
+        if (code === 'invalid_confirmation_text') {
+          msg(deleteAccountMsg, t('msg_delete_confirmation_mismatch'), 'error');
+          return;
+        }
+        msg(deleteAccountMsg, t('msg_delete_account_failed'), 'error');
+        return;
+      }
+
+      try {
+        await supabaseClient.auth.signOut();
+      } catch (_error) {
+        window.sessionStorage.clear();
+      }
+
+      resetAccountManagementUi();
+      msg(deleteAccountMsg, t('msg_account_deleted'), 'ok');
+      await refreshSession();
+      window.location.href = '/account.html';
     });
   }
 })();

@@ -115,6 +115,17 @@
               </form>
             </div>
           </div>
+
+          <div class="panel account-danger-panel" style="margin-top:12px;">
+            <h3 data-i18n="account_delete_title">Delete my account and data</h3>
+            <p class="subtle" data-i18n="account_delete_intro">This permanently deletes your web account and related data. This action is blocked while a premium subscription is still active.</p>
+            <form data-delete-account-form style="margin-top:12px;">
+              <input type="password" name="password" data-i18n-placeholder="account_delete_password_ph" placeholder="Current password" autocomplete="current-password" required />
+              <input type="text" name="confirmation_text" data-i18n-placeholder="account_delete_confirmation_ph" placeholder="YES, I WANT TO DELETE MY ACCOUNT AND DATA" autocapitalize="characters" spellcheck="false" required />
+              <button class="btn btn-ghost account-danger-btn" type="submit" data-i18n="account_delete_btn">Delete my account and data</button>
+              <div class="msg" data-delete-account-msg></div>
+            </form>
+          </div>
         </div>
 
         <div class="panel" id="account-subscription" style="margin-top:12px;">
