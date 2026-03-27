@@ -2193,11 +2193,24 @@ textarea {
   gap: 16px;
 }
 
+.admin-gate-card,
+.admin-panel-block {
+  display: grid;
+  gap: 16px;
+}
+
 .admin-console-head {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 14px;
+}
+
+.admin-console-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
 }
 
 .admin-grid {

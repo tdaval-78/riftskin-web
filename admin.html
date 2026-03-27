@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self' mailto:; img-src 'self' data: https://jfmrwxmlncvzoremcmbi.supabase.co; style-src 'self' 'unsafe-inline'; script-src 'self' https://cdn.jsdelivr.net https://cdn.paddle.com; connect-src 'self' https://jfmrwxmlncvzoremcmbi.supabase.co https://api.paddle.com https://sandbox-api.paddle.com https://checkout.paddle.com https://sandbox-checkout.paddle.com; frame-src https://checkout.paddle.com https://sandbox-checkout.paddle.com;" />
+  <title data-i18n="site_admin_title">RIFTSKIN Admin</title>
+  <meta name="description" data-i18n-content="site_admin_meta_desc" content="Manage the public RiftSkin desktop status and service message from the admin console." />
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+<body data-page="account">
+  <div class="site-wrap">
+    <header class="topbar">
+      <a href="/" class="brand">
+        <img class="brand-mark" src="/assets/logo.png" alt="RIFTSKIN logo" />
+        <span class="brand-copy">
+          <span class="brand-wordmark">RIFTSKIN</span>
+          <span class="brand-subtitle" data-i18n="site_brand_tagline">macOS LoL skin manager</span>
+        </span>
+      </a>
+      <button class="btn btn-ghost burger" data-burger type="button" data-i18n="nav_menu">Menu</button>
+      <nav class="nav" data-nav>
+        <a data-link="home" href="/" data-i18n="nav_home">Home</a>
+        <a data-link="download" href="/download.html" data-i18n="nav_download">Download</a>
+        <a data-link="pricing" href="/pricing.html" data-i18n="nav_pricing">Pricing</a>
+        <a data-link="faq" href="/faq.html" data-i18n="nav_faq">FAQ</a>
+        <a data-link="support" href="/support.html" data-i18n="nav_support">Support</a>
+        <a data-link="status" href="/status.html" class="nav-status-link">
+          <span data-i18n="nav_status">Status</span>
+          <span class="nav-status-dot" data-site-status-dot aria-hidden="true"></span>
+        </a>
+        <a data-link="account" href="/account.html" data-i18n="nav_account">My account</a>
+      </nav>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="/download.html" data-i18n="site_home_cta_download">Download for Mac</a>
+        <a class="btn btn-ghost" href="/account.html" data-i18n="nav_account">My account</a>
+      </div>
+    </header>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <h2 data-i18n="site_admin_h2">Desktop admin console</h2>
+          <p class="section-intro" data-i18n="site_admin_intro">Manage the public ETAT status shown in the RiftSkin app and on the website.</p>
+        </div>
+        <a class="btn btn-ghost" href="/account.html" data-i18n="site_admin_back_account">Back to my account</a>
+      </div>
+
+      <div class="notice"><span data-i18n="account_status_label">Session status</span>: <span class="status-badge" data-admin-session-status data-i18n="account_checking">Checking...</span></div>
+
+      <article class="panel admin-gate-card" data-admin-guard style="margin-top: 12px;">
+        <h3 data-admin-guard-title data-i18n="site_admin_guard_title">Admin access required</h3>
+        <p class="subtle" data-admin-guard-message data-i18n="site_admin_guard_auth">Sign in on your account page with the admin account to access this console.</p>
+        <div class="field-row" style="margin-top: 12px;">
+          <a class="btn btn-primary" href="/account.html" data-i18n="site_admin_back_account">Back to my account</a>
+        </div>
+      </article>
+
+      <article class="panel admin-console" data-admin-content style="display:none; margin-top: 12px;">
+        <div class="admin-console-head">
+          <div>
+            <h3 data-i18n="admin_console_title">Admin console</h3>
+            <p class="subtle"><span data-i18n="site_admin_connected_as">Connected as</span> <strong data-admin-email>-</strong></p>
+            <p class="subtle" data-i18n="site_admin_status_intro">Update the desktop injection state and the public service message shown both in the app and on the website.</p>
+          </div>
+          <div class="admin-console-actions">
+            <a class="btn btn-ghost" href="/account.html" data-i18n="site_admin_back_account">Back to my account</a>
+            <button class="btn btn-ghost" type="button" data-admin-refresh data-i18n="admin_console_refresh">Refresh</button>
+          </div>
+        </div>
+
+        <section class="panel admin-panel-block">
+          <div class="notice admin-service-live-block">
+            <div class="admin-service-live-meta">
+              <span class="status-badge" data-admin-service-live>Loading...</span>
+              <span class="subtle" data-admin-service-published>Checking current public status...</span>
+            </div>
+            <p class="subtle admin-service-live-message" data-admin-service-live-message></p>
+          </div>
+
+          <form data-admin-service-form>
+            <div class="field-row">
+              <select name="injection_state">
+                <option value="ok">Operational / green</option>
+                <option value="maintenance">Maintenance / orange</option>
+              </select>
+              <select name="service_message_template" data-admin-service-template>
+                <option value="__custom__">Manual message</option>
+                <option value="ok_general">EN example: service fully operational</option>
+                <option value="ok_update_deployed">EN example: compatibility update deployed</option>
+                <option value="maintenance_patch">EN example: patch in progress after Riot update</option>
+                <option value="maintenance_testing">EN example: final testing before release</option>
+              </select>
+            </div>
+            <div class="notice admin-service-live-block">
+              <p class="subtle admin-service-help">Selecting a template automatically fills the English message and the recommended state. You can still edit the text manually.</p>
+              <p class="subtle admin-service-live-message"><strong>EN:</strong> <span data-admin-service-template-preview>Select a template or write your own message.</span></p>
+              <p class="subtle admin-service-live-message"><strong>FR:</strong> <span data-admin-service-template-translation>Select a template or write your own message.</span></p>
+            </div>
+            <textarea
+              name="service_message"
+              placeholder="Write the public message shown in the ETAT panel inside the desktop app and on the website status page."
+            ></textarea>
+            <p class="subtle admin-service-help">The latest League of Legends patch is still fetched automatically by the desktop app at launch and when the user clicks Refresh.</p>
+            <div class="field-row">
+              <button class="btn btn-primary" type="submit">Publish desktop status</button>
+            </div>
+            <div class="msg" data-admin-service-msg></div>
+          </form>
+        </section>
+      </article>
+    </section>
+
+    <footer class="footer">
+      <div><span data-i18n="footer_rights">Copyright</span> © <span data-year></span> RIFTSKIN</div>
+      <div class="links">
+        <a href="/legal/">Légal</a>
+        <a href="/legal/cgv/">CGV Premium</a>
+        <a href="/legal/confidentialite/">Confidentialité</a>
+        <a href="/legal/cookies/">Cookies</a>
+        <a href="/support.html">Support</a>
+      </div>
+    </footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/assets/config.js"></script>
+  <script src="/assets/translations.js"></script>
+  <script src="/assets/i18n.js"></script>
+  <script src="/assets/site.js"></script>
+  <script src="/assets/admin.js"></script>
+</body>
+</html>

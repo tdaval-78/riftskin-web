@@ -125,139 +125,19 @@
           <div class="msg" data-my-keys-msg></div>
         </div>
 
+        <div class="panel" data-admin-entry style="display:none; margin-top:12px;">
+          <h3 data-i18n="site_account_admin_title">Admin tools</h3>
+          <p class="subtle" data-i18n="site_account_admin_intro">This authenticated session has admin rights. Open the dedicated admin console to manage desktop status and public service messages.</p>
+          <div class="field-row" style="margin-top:12px;">
+            <a class="btn btn-primary" href="/admin.html" data-i18n="site_account_admin_open">Open admin console</a>
+          </div>
+        </div>
+
         <div class="field-row" style="margin-top: 12px;">
           <button class="btn btn-ghost" type="button" data-signout data-i18n="account_signout">Sign out</button>
           <a class="btn btn-ghost" href="/support.html" data-i18n="account_need_help">Need help</a>
         </div>
         <div class="msg" data-session-msg></div>
-      </article>
-
-      <article class="panel admin-console" data-admin-only style="display:none; margin-top: 12px;">
-        <div class="admin-console-head">
-          <div>
-            <h3 data-i18n="admin_console_title">Admin console</h3>
-            <p class="subtle" data-i18n="admin_console_intro">Generate monthly or permanent keys, and optionally attach them directly to a web account.</p>
-          </div>
-          <button class="btn btn-ghost" type="button" data-admin-refresh data-i18n="admin_console_refresh">Refresh</button>
-        </div>
-
-        <div class="admin-grid">
-          <section class="panel admin-panel-block">
-            <h3 data-i18n="admin_key_create_title">Create a standalone key</h3>
-            <p class="subtle" data-i18n="admin_key_create_intro">Generate a code you can copy into the desktop app. Monthly keys last 1 month. Permanent keys never expire.</p>
-            <form data-admin-create-key>
-              <div class="field-row">
-                <select name="key_kind">
-                  <option value="monthly" data-i18n="admin_key_kind_monthly">Monthly key</option>
-                  <option value="permanent" data-i18n="admin_key_kind_permanent">Permanent key</option>
-                </select>
-                <select name="duration_months" data-duration-select>
-                  <option value="1">1 month</option>
-                  <option value="3">3 months</option>
-                  <option value="6">6 months</option>
-                  <option value="12">12 months</option>
-                </select>
-              </div>
-              <div class="field-row"><button class="btn btn-primary" type="submit" data-i18n="admin_generate_key_btn">Generate key</button></div>
-              <div class="msg" data-admin-create-msg></div>
-              <div class="key-box" data-admin-key-output style="display:none;"></div>
-            </form>
-          </section>
-
-          <section class="panel admin-panel-block">
-            <h3 data-i18n="admin_attach_title">Create and attach a key to an account</h3>
-            <p class="subtle" data-i18n="admin_attach_intro">Choose an account email, then generate either a monthly subscription key or a permanent key. The code will appear in that account page.</p>
-            <form data-admin-bound-key>
-              <div class="field-row">
-                <input type="email" name="user_email" placeholder="Target account email" data-i18n-placeholder="admin_target_email_ph" required />
-                <select name="key_kind">
-                  <option value="monthly" data-i18n="admin_key_kind_monthly">Monthly key</option>
-                  <option value="permanent" data-i18n="admin_key_kind_permanent">Permanent key</option>
-                </select>
-                <select name="duration_months" data-duration-select>
-                  <option value="1">1 month</option>
-                  <option value="3">3 months</option>
-                  <option value="6">6 months</option>
-                  <option value="12">12 months</option>
-                </select>
-              </div>
-              <div class="field-row"><button class="btn btn-primary" type="submit" data-i18n="admin_attach_btn">Generate and attach</button></div>
-              <div class="msg" data-admin-bound-msg></div>
-              <div class="key-box" data-admin-bound-output style="display:none;"></div>
-            </form>
-          </section>
-        </div>
-
-        <section class="panel admin-panel-block">
-          <div class="section-head">
-            <div>
-              <h3>Etat de l'injection desktop</h3>
-              <p class="subtle">Controlez le bouton ETAT affiche dans l'application desktop et publiez le message de service visible dans son panneau de statut.</p>
-            </div>
-          </div>
-
-          <div class="notice admin-service-live-block">
-            <div class="admin-service-live-meta">
-              <span class="status-badge" data-admin-service-live>Chargement...</span>
-              <span class="subtle" data-admin-service-published>Chargement du statut actuel...</span>
-            </div>
-            <p class="subtle admin-service-live-message" data-admin-service-live-message></p>
-          </div>
-
-          <form data-admin-service-form>
-            <div class="field-row">
-              <select name="injection_state">
-                <option value="ok">Fonctionnel / vert</option>
-                <option value="maintenance">Maintenance / orange</option>
-              </select>
-              <select name="service_message_template" data-admin-service-template>
-                <option value="__custom__">Message manuel</option>
-                <option value="ok_general">Exemple EN: service fully operational</option>
-                <option value="ok_update_deployed">Exemple EN: compatibility update deployed</option>
-                <option value="maintenance_patch">Exemple EN: patch in progress after Riot update</option>
-                <option value="maintenance_testing">Exemple EN: final testing before release</option>
-              </select>
-            </div>
-            <div class="notice admin-service-live-block">
-              <p class="subtle admin-service-help">Choisir un exemple remplit automatiquement le message anglais et l'etat recommande. Vous pouvez ensuite le modifier manuellement.</p>
-              <p class="subtle admin-service-live-message"><strong>EN:</strong> <span data-admin-service-template-preview>Select a template or write your own message.</span></p>
-              <p class="subtle admin-service-live-message"><strong>FR:</strong> <span data-admin-service-template-translation>Selectionnez un modele ou ecrivez votre propre message.</span></p>
-            </div>
-            <textarea
-              name="service_message"
-              placeholder="Saisissez le message de service affiche dans l'application desktop quand l'utilisateur ouvre le panneau ETAT."
-            ></textarea>
-            <p class="subtle admin-service-help">Le dernier patch de League of Legends est recupere directement par l'application desktop au lancement et quand l'utilisateur clique sur Actualiser.</p>
-            <div class="field-row">
-              <button class="btn btn-primary" type="submit">Publier le statut desktop</button>
-            </div>
-            <div class="msg" data-admin-service-msg></div>
-          </form>
-        </section>
-
-        <section class="panel admin-panel-block">
-          <div class="section-head">
-            <div>
-              <h3 data-i18n="admin_keys_title">Recent keys</h3>
-              <p class="subtle" data-i18n="admin_keys_intro">Every generated key appears here, whether it is standalone or already attached to an account.</p>
-            </div>
-          </div>
-          <div class="keys-table-wrap">
-            <table class="keys-table" data-admin-keys-table>
-              <thead>
-                <tr>
-                  <th data-i18n="admin_col_code">Code</th>
-                  <th data-i18n="admin_col_uses">Uses</th>
-                  <th data-i18n="admin_col_key_expiry">Key expiry</th>
-                  <th data-i18n="admin_col_access_duration">Access duration</th>
-                  <th data-i18n="admin_col_target">Target</th>
-                </tr>
-              </thead>
-              <tbody data-admin-keys-body></tbody>
-            </table>
-          </div>
-          <div class="msg" data-admin-list-msg></div>
-        </section>
       </article>
 
       <div class="notice" style="margin-top:10px;" data-i18n="account_callback_notice">

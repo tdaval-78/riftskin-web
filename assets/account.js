@@ -12,6 +12,7 @@
   const redeemMsg = document.querySelector('[data-redeem-msg]');
   const myKeysBody = document.querySelector('[data-my-keys-body]');
   const myKeysMsg = document.querySelector('[data-my-keys-msg]');
+  const adminEntry = document.querySelector('[data-admin-entry]');
 
   const adminPanel = document.querySelector('[data-admin-only]');
   const adminRefreshBtn = document.querySelector('[data-admin-refresh]');
@@ -342,6 +343,7 @@
     if (accessMeta) accessMeta.textContent = '';
     if (myKeysBody) myKeysBody.replaceChildren();
     if (myKeysMsg) msg(myKeysMsg, '');
+    if (adminEntry) adminEntry.style.display = 'none';
     if (adminPanel) adminPanel.style.display = 'none';
   }
 
@@ -364,8 +366,14 @@
     if (session && session.user) {
       await refreshAccessStatus(session.user.id);
       await loadMyKeys(session.user.id);
-      await refreshAdminPanels();
+      await refreshAdminEntry();
     }
+  }
+
+  async function refreshAdminEntry() {
+    if (!adminEntry) return;
+    const isAdmin = await checkIsAdmin();
+    adminEntry.style.display = isAdmin ? 'block' : 'none';
   }
 
   async function refreshAccessStatus(userId) {
@@ -814,7 +822,7 @@
     if (session && session.user) {
       refreshAccessStatus(session.user.id);
       loadMyKeys(session.user.id);
-      refreshAdminPanels();
+      refreshAdminEntry();
     }
   });
 
