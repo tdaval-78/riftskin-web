@@ -5,6 +5,9 @@
   const loggedInView = document.querySelector('[data-logged-in]');
   const accountEmail = document.querySelector('[data-session-email]');
   const accountEmailInput = document.querySelector('[data-account-email]');
+  const resendRow = document.querySelector('[data-resend-row]');
+  const resendConfirmationBtn = document.querySelector('[data-resend-confirmation]');
+  const resendMsg = document.querySelector('[data-resend-msg]');
 
   const accessStatus = document.querySelector('[data-access-status]');
   const accessMeta = document.querySelector('[data-access-meta]');
@@ -69,6 +72,26 @@
     if (!target) return;
     target.textContent = text || '';
     target.className = 'msg ' + (type || '');
+  }
+
+  function authCallbackUrl() {
+    return window.location.origin + '/auth/callback';
+  }
+
+  function isEmailNotConfirmedError(error) {
+    const message = ((error && error.message) || '').toLowerCase();
+    const code = ((error && error.code) || '').toLowerCase();
+    return (
+      code === 'email_not_confirmed' ||
+      message.indexOf('email not confirmed') !== -1 ||
+      message.indexOf('email_not_confirmed') !== -1 ||
+      message.indexOf('confirm your email') !== -1
+    );
+  }
+
+  function setResendVisibility(visible) {
+    if (!resendRow) return;
+    resendRow.style.display = visible ? '' : 'none';
   }
 
   function setStatus(text, kind) {
@@ -841,10 +864,19 @@
       msg(out, t('msg_signing_in'));
       const { error } = await supabaseClient.auth.signInWithPassword({ email: email, password: password });
       if (error) {
-        msg(out, error.message || t('msg_sign_in_failed'), 'error');
+        if (accountEmailInput) accountEmailInput.value = email;
+        if (isEmailNotConfirmedError(error)) {
+          setResendVisibility(true);
+          msg(out, t('msg_email_not_confirmed'), 'error');
+        } else {
+          setResendVisibility(false);
+          msg(out, error.message || t('msg_sign_in_failed'), 'error');
+        }
         return;
       }
 
+      setResendVisibility(false);
+      msg(resendMsg, '', '');
       if (accountEmailInput) accountEmailInput.value = email;
       msg(out, t('msg_signed_in'), 'ok');
       await refreshSession();
@@ -900,7 +932,7 @@
         password: password,
         options: {
           data: { username: username },
-          emailRedirectTo: window.location.origin + '/auth/callback'
+          emailRedirectTo: authCallbackUrl()
         }
       });
 
@@ -910,6 +942,7 @@
       }
 
       if (accountEmailInput) accountEmailInput.value = email;
+      setResendVisibility(true);
       msg(out, t('msg_account_created'), 'ok');
     });
   }
@@ -958,7 +991,7 @@
 
       msg(out, t('msg_sending_reset'));
       const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin + '/auth/callback'
+        redirectTo: authCallbackUrl()
       });
 
       if (error) {
@@ -967,6 +1000,32 @@
       }
 
       msg(out, t('msg_reset_sent'), 'ok');
+    });
+  }
+
+  if (resendConfirmationBtn) {
+    resendConfirmationBtn.addEventListener('click', async function () {
+      const email = (accountEmailInput && accountEmailInput.value.trim()) || '';
+      if (!email || email.indexOf('@') === -1) {
+        msg(resendMsg, t('msg_enter_email_first'), 'error');
+        return;
+      }
+
+      msg(resendMsg, t('msg_sending_confirmation'), '');
+      const { error } = await supabaseClient.auth.resend({
+        type: 'signup',
+        email: email,
+        options: {
+          emailRedirectTo: authCallbackUrl()
+        }
+      });
+
+      if (error) {
+        msg(resendMsg, error.message || t('msg_confirmation_resend_failed'), 'error');
+        return;
+      }
+
+      msg(resendMsg, t('msg_confirmation_resent'), 'ok');
     });
   }
 

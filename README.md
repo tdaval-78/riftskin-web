@@ -39,6 +39,7 @@ Edit `/assets/config.js`:
 - Auth providers: Email enabled
 - Redirect URL: `https://riftskin.com/auth/callback`
 - Email template links should point to `https://riftskin.com/auth/callback`
+- Email templates ready to paste: `/supabase/email-templates/`
 - `profiles` table must exist (for unique username check during sign-up)
 - Run SQL bootstrap: [supabase/activation_keys.sql](/Users/thomasdaval/Desktop/riftskin-web/supabase/activation_keys.sql)
 - Add yourself to `app_admins` (SQL comment at bottom of the file)
