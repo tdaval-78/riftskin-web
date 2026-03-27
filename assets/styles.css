@@ -1101,7 +1101,11 @@ p.lead {
 }
 
 .download-guide-step-card-step2 {
-  grid-template-columns: minmax(320px, 0.82fr) minmax(760px, 1.18fr);
+  grid-template-columns: minmax(320px, 0.82fr) minmax(420px, 0.8fr);
+}
+
+.download-guide-step-card-step3-single {
+  grid-template-columns: minmax(320px, 0.82fr) minmax(420px, 0.8fr);
 }
 
 .download-guide-step-card:nth-child(even) .download-guide-step-copy {
@@ -1146,10 +1150,14 @@ p.lead {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.download-guide-visuals-step2 {
-  grid-template-columns: minmax(0, 1fr) minmax(220px, 0.38fr);
-  gap: 18px;
-  align-items: start;
+.download-guide-visuals-step2,
+.download-guide-visuals-step3-single {
+  justify-items: center;
+}
+
+.download-guide-visuals-step2 .download-guide-shot,
+.download-guide-visuals-step3-single .download-guide-shot {
+  width: min(100%, 440px);
 }
 
 .download-guide-shot {
@@ -1187,21 +1195,9 @@ p.lead {
   min-height: 340px;
 }
 
-.download-guide-shot-step2-primary {
-  min-width: 0;
-}
-
-.download-guide-shot-step2-secondary {
-  align-self: start;
-}
-
-.download-guide-shot-frame-step2-primary-hero {
-  min-height: 520px;
-  padding: 0;
-}
-
-.download-guide-shot-frame-step2-secondary {
-  min-height: 420px;
+.download-guide-shot-frame-step2-single,
+.download-guide-shot-frame-step3-single {
+  min-height: 560px;
   padding: 0;
 }
 
@@ -1230,11 +1226,11 @@ p.lead {
   max-width: none;
   max-height: none;
   object-fit: cover;
-  object-position: 50% 63%;
+  object-position: 50% 54%;
   transform: none;
 }
 
-.download-guide-shot-image-step2-secondary {
+.download-guide-shot-image-step3-single {
   width: 100%;
   height: 100%;
   max-width: none;
@@ -2607,7 +2603,8 @@ textarea {
   }
 
   .download-guide-step-card-step1,
-  .download-guide-step-card-step2 {
+  .download-guide-step-card-step2,
+  .download-guide-step-card-step3-single {
     grid-template-columns: 1fr;
   }
 
@@ -2762,15 +2759,16 @@ textarea {
   .download-guide-shot-frame.browser,
   .download-guide-shot-frame.landscape,
   .download-guide-shot-frame.portrait,
-  .download-guide-shot-frame-step2-primary,
+  .download-guide-shot-frame-step2-single,
   .download-guide-shot-frame-step2-secondary,
+  .download-guide-shot-frame-step3-single,
   .download-guide-shot-frame-step3-match {
     min-height: auto;
   }
 
   .download-guide-shot-image-step1,
   .download-guide-shot-image-step2-primary,
-  .download-guide-shot-image-step2-secondary,
+  .download-guide-shot-image-step3-single,
   .download-guide-shot-image-step3-secondary {
     width: 100%;
     height: auto;
