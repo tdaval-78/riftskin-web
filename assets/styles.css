@@ -1096,6 +1096,14 @@ p.lead {
   box-shadow: var(--shadow-md);
 }
 
+.download-guide-step-card-step1 {
+  grid-template-columns: minmax(280px, 0.8fr) minmax(420px, 0.8fr);
+}
+
+.download-guide-step-card-step2 {
+  grid-template-columns: minmax(320px, 0.88fr) minmax(540px, 1.12fr);
+}
+
 .download-guide-step-card:nth-child(even) .download-guide-step-copy {
   order: 2;
 }
@@ -1126,8 +1134,21 @@ p.lead {
   gap: 14px;
 }
 
+.download-guide-visuals-step1 {
+  justify-items: center;
+}
+
+.download-guide-visuals-step1 .download-guide-shot {
+  width: min(100%, 560px);
+}
+
 .download-guide-visuals.two-up {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.download-guide-visuals-step2 {
+  grid-template-columns: minmax(0, 1.18fr) minmax(0, 0.92fr);
+  gap: 18px;
 }
 
 .download-guide-shot {
@@ -1154,7 +1175,7 @@ p.lead {
 }
 
 .download-guide-shot-frame.browser {
-  min-height: 330px;
+  min-height: 270px;
 }
 
 .download-guide-shot-frame.landscape {
@@ -1167,13 +1188,13 @@ p.lead {
 
 .download-guide-shot-frame-step2-primary,
 .download-guide-shot-frame-step2-secondary {
-  min-height: 430px;
-  padding: 8px;
+  min-height: 500px;
+  padding: 6px;
 }
 
 .download-guide-shot-frame-step2-primary {
-  min-height: 520px;
-  padding: 4px;
+  min-height: 660px;
+  padding: 2px;
 }
 
 .download-guide-shot-frame-step3-match {
@@ -1191,21 +1212,21 @@ p.lead {
 }
 
 .download-guide-shot-image-step1 {
-  width: 62%;
+  width: 46%;
   max-width: none;
 }
 
 .download-guide-shot-image-step2-primary {
-  width: 182%;
+  width: 228%;
   max-width: none;
-  transform: scale(1.18);
+  transform: scale(1.22);
   transform-origin: center center;
 }
 
 .download-guide-shot-image-step2-secondary {
-  width: 138%;
+  width: 172%;
   max-width: none;
-  transform: scale(1.1);
+  transform: scale(1.12);
   transform-origin: center center;
 }
 
@@ -2571,6 +2592,11 @@ textarea {
     grid-template-columns: 1fr;
   }
 
+  .download-guide-step-card-step1,
+  .download-guide-step-card-step2 {
+    grid-template-columns: 1fr;
+  }
+
   .download-guide-copy .section-intro,
   .download-guide-step-copy p {
     max-width: none;
@@ -2712,6 +2738,10 @@ textarea {
 
   .download-guide-overview,
   .download-guide-visuals.two-up {
+    grid-template-columns: 1fr;
+  }
+
+  .download-guide-visuals-step2 {
     grid-template-columns: 1fr;
   }
 
