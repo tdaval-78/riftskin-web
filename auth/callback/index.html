@@ -235,8 +235,8 @@
     </section>
 
     <section id="recovery-view" class="content hidden">
-      <h1>Reset your password.</h1>
-      <p>Choose a new password for your RIFTSKIN account, then return to the account page and sign in.</p>
+      <h1 id="recovery-title">Reset your password.</h1>
+      <p id="recovery-copy">Choose a new password for your RIFTSKIN account, then return to the account page and sign in.</p>
       <form id="reset-form">
         <label for="password">New password</label>
         <input id="password" type="password" minlength="8" required />
@@ -245,6 +245,10 @@
         <button id="submit-btn" class="primary-btn" type="submit">Update password</button>
         <div id="message" class="msg"></div>
       </form>
+      <div id="recovery-success-panel" class="panel hidden">
+        <div class="panel-title">Password updated</div>
+        <p class="panel-copy">Your password has been changed successfully. Return to the account page and sign in with your new password.</p>
+      </div>
       <div class="actions">
         <a class="ghost-btn" href="/account.html">Back to account</a>
       </div>

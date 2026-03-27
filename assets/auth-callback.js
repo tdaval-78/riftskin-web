@@ -10,6 +10,9 @@
   const confirmTitleEl = document.getElementById('confirm-title');
   const confirmCopyEl = document.getElementById('confirm-copy');
   const confirmPanelCopyEl = document.getElementById('confirm-panel-copy');
+  const recoveryTitleEl = document.getElementById('recovery-title');
+  const recoveryCopyEl = document.getElementById('recovery-copy');
+  const recoverySuccessPanelEl = document.getElementById('recovery-success-panel');
   const errorCopyEl = document.getElementById('error-copy');
   const form = document.getElementById('reset-form');
   const passwordInput = document.getElementById('password');
@@ -50,6 +53,13 @@
     if (confirmTitleEl) confirmTitleEl.textContent = title || '';
     if (confirmCopyEl) confirmCopyEl.textContent = body || '';
     if (confirmPanelCopyEl) confirmPanelCopyEl.textContent = panel || '';
+  }
+
+  function showRecoverySuccessState() {
+    if (recoveryTitleEl) recoveryTitleEl.textContent = 'Password updated.';
+    if (recoveryCopyEl) recoveryCopyEl.textContent = 'Your password has already been changed. Return to the account page and sign in with your new password.';
+    if (form) form.classList.add('hidden');
+    if (recoverySuccessPanelEl) recoverySuccessPanelEl.classList.remove('hidden');
   }
 
   function showView(view) {
@@ -183,6 +193,7 @@
       await clearRecoverySession(supabaseClient);
       setMessage('ok', copy.passwordUpdated);
       form.reset();
+      showRecoverySuccessState();
     });
   }
 
