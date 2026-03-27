@@ -1586,6 +1586,18 @@ body[data-page="account"] .section-intro {
   text-wrap: balance;
 }
 
+@media (min-width: 1280px) {
+  .status-page-head {
+    grid-template-columns: minmax(0, 1.58fr) minmax(320px, 0.64fr);
+  }
+
+  .status-page-copy h2 {
+    font-size: clamp(2.2rem, 3.55vw, 4rem);
+    white-space: nowrap;
+    text-wrap: nowrap;
+  }
+}
+
 .status-page-copy .section-intro {
   max-width: 56ch;
   margin: 0;
