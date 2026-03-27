@@ -88,10 +88,16 @@
       </div>
 
       <article class="panel" data-logged-in style="display:none; margin-top: 12px;">
-        <h3 data-i18n="site_account_connected_title">Connected web account</h3>
+        <div class="account-subnav">
+          <a class="btn btn-ghost" href="#account-web" data-i18n="site_account_tab_account">Web account</a>
+          <a class="btn btn-ghost" href="#account-subscription" data-i18n="site_account_tab_subscription">Subscription</a>
+          <button class="btn btn-ghost" type="button" data-signout data-i18n="account_signout">Sign out</button>
+        </div>
+
+        <h3 id="account-web" data-i18n="site_account_connected_title">Connected web account</h3>
         <p class="subtle"><span data-i18n="account_connected_as">Signed in as</span> <strong data-session-email>-</strong></p>
 
-        <div class="panel" style="margin-top:12px;">
+        <div class="panel" id="account-subscription" style="margin-top:12px;">
           <h3 data-i18n="site_account_premium_title">Premium status</h3>
           <p class="subtle" data-i18n="site_account_premium_intro">Free mode is always available in the desktop app. Premium unlocks favorites and automatic champion recognition while your subscription stays active.</p>
           <div class="notice"><span data-i18n="account_access_status_label">Status</span>: <span class="status-badge" data-access-status data-i18n="account_checking">Checking...</span></div>
@@ -134,7 +140,6 @@
         </div>
 
         <div class="field-row" style="margin-top: 12px;">
-          <button class="btn btn-ghost" type="button" data-signout data-i18n="account_signout">Sign out</button>
           <a class="btn btn-ghost" href="/support.html" data-i18n="account_need_help">Need help</a>
         </div>
         <div class="msg" data-session-msg></div>

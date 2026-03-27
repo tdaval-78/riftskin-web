@@ -529,6 +529,17 @@ p.lead {
   padding: 18px;
 }
 
+.account-subnav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.account-subnav .btn {
+  min-height: 40px;
+}
+
 .hero-card {
   position: relative;
   overflow: hidden;
