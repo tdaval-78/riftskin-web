@@ -1165,6 +1165,10 @@ p.lead {
   min-height: 340px;
 }
 
+.download-guide-shot-frame-focus {
+  padding: 8px;
+}
+
 .download-guide-shot-frame img {
   display: block;
   width: 100%;
@@ -1172,6 +1176,13 @@ p.lead {
   max-height: 100%;
   object-fit: contain;
   border-radius: 18px;
+}
+
+.download-guide-shot-image-focus {
+  width: 122%;
+  max-width: none;
+  transform: scale(1.08);
+  transform-origin: center center;
 }
 
 .download-guide-shot figcaption {
