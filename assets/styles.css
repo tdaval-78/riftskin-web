@@ -412,6 +412,7 @@ h2 {
 
 body[data-page="support"] .section-intro {
   max-width: none;
+  line-height: 1.8;
 }
 
 body[data-page="legal"] .section-intro {
@@ -2511,7 +2512,7 @@ textarea {
 
 .support-upload {
   display: grid;
-  gap: 8px;
+  gap: 12px;
 }
 
 .support-upload-label,
@@ -2523,6 +2524,43 @@ textarea {
 
 .support-upload-hint {
   margin: 0;
+}
+
+body[data-page="support"] .section {
+  padding: 32px 34px 36px;
+}
+
+body[data-page="support"] .section-head {
+  margin-bottom: 22px;
+}
+
+body[data-page="support"] .grid-2 {
+  gap: 22px;
+}
+
+body[data-page="support"] .panel {
+  padding: 28px;
+}
+
+body[data-page="support"] .panel h3 {
+  margin-bottom: 16px;
+}
+
+body[data-page="support"] .list li + li {
+  margin-top: 18px;
+}
+
+body[data-page="support"] #support-form {
+  gap: 16px;
+}
+
+body[data-page="support"] textarea[name="message"] {
+  min-height: 190px;
+}
+
+body[data-page="support"] .notice {
+  margin-top: 22px;
+  padding: 18px 22px;
 }
 
 .support-files-list {
