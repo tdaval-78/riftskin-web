@@ -836,20 +836,6 @@ p.lead {
   margin-top: auto;
 }
 
-.pricing-legal-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px 16px;
-}
-
-.pricing-legal-links a {
-  color: var(--accent-soft);
-  font-size: 0.95rem;
-  text-decoration: underline;
-  text-decoration-color: rgba(241, 221, 145, 0.34);
-  text-underline-offset: 3px;
-}
-
 .pricing-ack {
   display: grid;
   grid-template-columns: 18px minmax(0, 1fr);
