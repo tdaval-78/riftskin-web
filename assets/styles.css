@@ -2203,7 +2203,7 @@ p.lead {
   border: 1px solid rgba(211, 176, 75, 0.28);
   background: rgba(211, 176, 75, 0.08);
   color: #f0ddb0;
-  font-size: 0.8rem;
+  font-size: 0.74rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -2211,15 +2211,15 @@ p.lead {
 
 .faq-item h3 {
   margin: 14px 0 14px;
-  font-size: clamp(1.15rem, 1.5vw, 1.55rem);
-  line-height: 1.22;
+  font-size: clamp(1.02rem, 1.28vw, 1.34rem);
+  line-height: 1.2;
 }
 
 .faq-item p {
   margin: 0;
   color: var(--text-secondary);
-  line-height: 1.78;
-  font-size: 1.02rem;
+  line-height: 1.68;
+  font-size: 0.94rem;
 }
 
 .legal-notice {
