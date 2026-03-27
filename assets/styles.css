@@ -497,6 +497,13 @@ p.lead {
   margin-top: 16px;
 }
 
+.hero-meta .mini-note {
+  display: block;
+  width: 100%;
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
 .mini-note {
   color: var(--text-tertiary);
   font-size: 0.88rem;
