@@ -504,6 +504,12 @@ p.lead {
   line-height: 1.6;
 }
 
+.hero-meta .mini-note-legal {
+  font-size: 0.8rem;
+  line-height: 1.55;
+  opacity: 0.9;
+}
+
 .mini-note {
   color: var(--text-tertiary);
   font-size: 0.88rem;
