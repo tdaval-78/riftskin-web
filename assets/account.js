@@ -887,16 +887,11 @@
   if (signUpForm) {
     signUpForm.addEventListener('submit', async function (e) {
       e.preventDefault();
-      const username = signUpForm.querySelector('[name="username"]').value.trim();
       const email = signUpForm.querySelector('[name="email"]').value.trim();
       const password = signUpForm.querySelector('[name="password"]').value;
       const confirm = signUpForm.querySelector('[name="confirm_password"]').value;
       const out = signUpForm.querySelector('[data-msg]');
 
-      if (!/^[A-Za-z0-9_\-.]{3,24}$/.test(username)) {
-        msg(out, t('msg_username_rule'), 'error');
-        return;
-      }
       if (password.length < 8) {
         msg(out, t('msg_password_len'), 'error');
         return;
@@ -906,32 +901,11 @@
         return;
       }
 
-      msg(out, t('msg_checking_username'));
-      const { data: taken, error: checkError } = await supabaseClient
-        .from('profiles')
-        .select('id')
-        .eq('username', username)
-        .limit(1);
-
-      if (checkError) {
-        if (checkError.code === 'PGRST205') {
-          msg(out, t('msg_profiles_missing'), 'error');
-        } else {
-          msg(out, checkError.message || t('msg_username_check_failed'), 'error');
-        }
-        return;
-      }
-      if (taken && taken.length > 0) {
-        msg(out, t('msg_username_taken'), 'error');
-        return;
-      }
-
       msg(out, t('msg_creating_account'));
       const { error } = await supabaseClient.auth.signUp({
         email: email,
         password: password,
         options: {
-          data: { username: username },
           emailRedirectTo: authCallbackUrl()
         }
       });
