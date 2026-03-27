@@ -3,6 +3,7 @@
   const statusBox = document.querySelector('[data-account-status]');
   const loggedOutView = document.querySelector('[data-logged-out]');
   const loggedInView = document.querySelector('[data-logged-in]');
+  const sessionSummary = document.querySelector('[data-session-summary]');
   const accountEmails = document.querySelectorAll('[data-session-email]');
   const accountEmailInput = document.querySelector('[data-account-email]');
   const signInPasswordInput = document.querySelector('[data-signin-password]');
@@ -381,6 +382,7 @@
     if (user) {
       if (loggedOutView) loggedOutView.style.display = 'none';
       if (loggedInView) loggedInView.style.display = 'block';
+      if (sessionSummary) sessionSummary.style.display = 'block';
       accountEmails.forEach(function (el) {
         el.textContent = user.email || '';
       });
@@ -391,6 +393,7 @@
 
     if (loggedOutView) loggedOutView.style.display = 'grid';
     if (loggedInView) loggedInView.style.display = 'none';
+    if (sessionSummary) sessionSummary.style.display = 'none';
     accountEmails.forEach(function (el) {
       el.textContent = '-';
     });
