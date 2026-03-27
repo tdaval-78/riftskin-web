@@ -96,7 +96,7 @@
     if (!topbar) return;
 
     const nav = topbar.querySelector('.nav');
-    const anchor = nav ? nav.querySelector('[data-link="legal"]') : null;
+    const anchor = nav ? nav.querySelector('[data-link="status"]') : null;
     const host = nav || topbar.querySelector('.cta-row') || topbar;
     const wrapper = document.createElement('div');
     wrapper.className = 'lang-picker';
