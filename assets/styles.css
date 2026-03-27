@@ -1216,13 +1216,17 @@ p.lead {
 
 .status-page-shell {
   width: 100%;
-  max-width: 1240px;
+  max-width: 1180px;
   margin: 0 auto;
   display: grid;
-  gap: 18px;
+  gap: 16px;
 }
 
 .status-page-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+  align-items: start;
+  gap: 14px;
   margin-bottom: 0;
 }
 
@@ -1233,50 +1237,48 @@ p.lead {
 
 .status-page-copy h2 {
   margin: 10px 0 10px;
-  max-width: 20ch;
-  font-size: clamp(2rem, 4.2vw, 3.55rem);
-  line-height: 0.98;
+  max-width: 13ch;
+  font-size: clamp(1.8rem, 3vw, 2.7rem);
+  line-height: 1.02;
   letter-spacing: -0.04em;
   text-wrap: balance;
 }
 
 .status-page-copy .section-intro {
-  max-width: 76ch;
+  max-width: 60ch;
   margin: 0;
-  font-size: 0.98rem;
-  line-height: 1.68;
+  font-size: 0.95rem;
+  line-height: 1.62;
 }
 
 .status-page-grid {
-  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.94fr);
+  grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
   align-items: start;
   gap: 14px;
 }
 
-.status-overview-panel,
-.status-message-panel {
+.status-head-card,
+.status-message-panel,
+.status-side-panel {
   display: grid;
-  gap: 16px;
-}
-
-.status-primary-panel {
   position: relative;
   overflow: hidden;
   gap: 14px;
+  min-height: 100%;
 }
 
-.status-primary-panel::before {
+.status-head-card::before {
   content: "";
   position: absolute;
-  inset: -24% auto auto 72%;
-  width: 180px;
-  height: 180px;
+  inset: -32% auto auto 70%;
+  width: 160px;
+  height: 160px;
   border-radius: 999px;
-  background: radial-gradient(circle, rgba(88, 215, 178, 0.08), transparent 68%);
+  background: radial-gradient(circle, rgba(88, 215, 178, 0.07), transparent 68%);
   pointer-events: none;
 }
 
-.status-primary-top {
+.status-head-top {
   position: relative;
   display: grid;
   gap: 10px;
@@ -1289,53 +1291,40 @@ p.lead {
   max-width: 100%;
   padding: 8px 14px;
   min-height: 40px;
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   font-weight: 800;
   letter-spacing: 0;
 }
 
-.status-primary-intro {
-  position: relative;
-  margin: 0;
-  max-width: 46ch;
-  font-size: 0.94rem;
-  z-index: 1;
-}
-
-.status-detail-grid {
+.status-head-metrics {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 }
 
-.status-detail-card {
+.status-head-metric {
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 18px;
-  min-height: 120px;
+  min-height: 102px;
   padding: 14px 16px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.01)),
     rgba(9, 13, 20, 0.55);
 }
 
-.status-detail-value {
+.status-head-value {
   display: block;
   margin-top: 10px;
-  font-size: clamp(1.06rem, 1.5vw, 1.34rem);
+  font-size: clamp(1.45rem, 2.2vw, 2rem);
   font-weight: 800;
   color: var(--text-primary);
-  line-height: 1.14;
+  line-height: 1.08;
   text-wrap: balance;
 }
 
-.status-detail-value-number {
-  font-size: clamp(1.72rem, 3vw, 2.4rem);
-  letter-spacing: -0.05em;
-}
-
-.status-detail-value-compact {
-  font-size: clamp(0.98rem, 1.24vw, 1.12rem);
-  line-height: 1.28;
+.status-head-value-small {
+  font-size: clamp(0.98rem, 1.15vw, 1.08rem);
+  line-height: 1.3;
 }
 
 .status-detail-label {
@@ -1347,8 +1336,34 @@ p.lead {
   text-transform: uppercase;
 }
 
+.status-side-panel {
+  align-content: start;
+}
+
+.status-side-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid rgba(211, 176, 75, 0.26);
+  border-radius: 999px;
+  background: rgba(211, 176, 75, 0.08);
+  color: #eadcae;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.status-side-copy {
+  max-width: 36ch;
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.62;
+}
+
 .status-message-box {
-  min-height: 120px;
+  min-height: 108px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 20px;
   padding: 18px 20px;
@@ -1361,13 +1376,18 @@ p.lead {
 }
 
 @media (max-width: 1180px) {
+  .status-page-head,
   .status-page-grid {
     grid-template-columns: 1fr;
   }
 
   .status-page-copy h2 {
     max-width: none;
-    font-size: clamp(2rem, 6vw, 3rem);
+    font-size: clamp(1.85rem, 5vw, 2.55rem);
+  }
+
+  .status-head-metrics {
+    grid-template-columns: 1fr;
   }
 }
 

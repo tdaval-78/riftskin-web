@@ -46,37 +46,35 @@
             <h2 data-i18n="site_status_h2">See whether RiftSkin is currently functional on the latest League of Legends patch.</h2>
             <p class="section-intro" data-i18n="site_status_intro">This page mirrors the ETAT panel inside the desktop app and reflects the latest public message published by the RiftSkin team.</p>
           </div>
-        </div>
-
-        <div class="grid-2 status-page-grid">
-          <article class="panel status-overview-panel status-primary-panel">
-            <div class="status-primary-top">
+          <aside class="panel status-head-card">
+            <div class="status-head-top">
               <span class="status-detail-label" data-i18n="site_status_current_label">Current desktop status</span>
               <span class="status-badge status-primary-badge" data-public-service-badge data-i18n="site_status_loading">Loading...</span>
             </div>
-
-            <p class="subtle status-primary-intro" data-i18n="site_status_current_intro">The same public state is reflected inside the ETAT panel of the desktop app.</p>
-
-            <div class="status-detail-grid">
-              <div class="status-detail-card">
+            <div class="status-head-metrics">
+              <div class="status-head-metric">
                 <span class="status-detail-label" data-i18n="site_status_patch_label">Latest LoL patch</span>
-                <strong class="status-detail-value status-detail-value-number" data-public-service-patch data-i18n="site_status_patch_loading">Loading...</strong>
+                <strong class="status-head-value" data-public-service-patch data-i18n="site_status_patch_loading">Loading...</strong>
               </div>
-              <div class="status-detail-card">
-                <span class="status-detail-label" data-i18n="site_status_channel_label">RiftSkin channel</span>
-                <strong class="status-detail-value status-detail-value-compact" data-i18n="site_status_channel_value">Stable public release</strong>
-              </div>
-              <div class="status-detail-card">
+              <div class="status-head-metric">
                 <span class="status-detail-label" data-i18n="site_status_published_label">Latest public update</span>
-                <strong class="status-detail-value status-detail-value-compact" data-public-service-published data-i18n="site_status_published_loading">Checking current public status...</strong>
+                <strong class="status-head-value status-head-value-small" data-public-service-published data-i18n="site_status_published_loading">Checking current public status...</strong>
               </div>
             </div>
-          </article>
+          </aside>
+        </div>
 
+        <div class="grid-2 status-page-grid">
           <article class="panel status-message-panel">
             <h3 data-i18n="site_status_message_title">RiftSkin service message</h3>
             <p class="subtle" data-i18n="site_status_message_intro">Use this page to confirm whether the software is currently functional before you download, update or subscribe.</p>
             <div class="status-message-box" data-public-service-message data-i18n="site_status_message_loading">Loading service message...</div>
+          </article>
+
+          <article class="panel status-side-panel">
+            <h3 data-i18n="site_status_channel_label">RiftSkin channel</h3>
+            <div class="status-side-pill" data-i18n="site_status_channel_value">Stable public release</div>
+            <p class="subtle status-side-copy" data-i18n="site_status_current_intro">The same public state is reflected inside the ETAT panel of the desktop app.</p>
           </article>
         </div>
       </div>
