@@ -2346,6 +2346,23 @@ select {
   font: inherit;
 }
 
+input[type="file"] {
+  padding: 12px 13px;
+  line-height: 1.35;
+}
+
+input[type="file"]::file-selector-button {
+  margin-right: 12px;
+  border: 1px solid rgba(88, 152, 224, 0.42);
+  border-radius: 999px;
+  background: rgba(55, 111, 180, 0.18);
+  color: #eef6ff;
+  padding: 8px 12px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 textarea {
   min-height: 128px;
   resize: vertical;
@@ -2403,6 +2420,34 @@ textarea {
 
 .msg.ok {
   color: var(--ok);
+}
+
+.support-upload {
+  display: grid;
+  gap: 8px;
+}
+
+.support-upload-label,
+.support-files-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.support-upload-hint {
+  margin: 0;
+}
+
+.support-files-list {
+  display: grid;
+  gap: 6px;
+}
+
+.support-files-items {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--text-secondary);
+  line-height: 1.6;
 }
 
 .key-box {

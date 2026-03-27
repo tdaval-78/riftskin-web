@@ -65,11 +65,18 @@
             </div>
             <select name="topic" required>
               <option value="" data-i18n="site_support_topic_ph">Select topic</option>
-              <option data-i18n="site_support_topic_1">Billing and subscription</option>
-              <option data-i18n="site_support_topic_2">Premium code activation</option>
-              <option data-i18n="site_support_topic_3">Import or skin application</option>
-              <option data-i18n="site_support_topic_4">Bug report</option>
+              <option value="billing" data-i18n="site_support_topic_1">Billing and subscription</option>
+              <option value="premium" data-i18n="site_support_topic_2">Premium code activation</option>
+              <option value="import" data-i18n="site_support_topic_3">Import or skin application</option>
+              <option value="bug" data-i18n="site_support_topic_4">Bug report</option>
+              <option value="other" data-i18n="site_support_topic_5">Other</option>
             </select>
+            <div class="support-upload">
+              <label class="support-upload-label" for="support-files" data-i18n="site_support_files_label">Attachments</label>
+              <input id="support-files" name="attachments" type="file" multiple accept="image/*,video/*,.zip,.txt,.log,.json" />
+              <p class="mini-note support-upload-hint" data-i18n="site_support_files_hint">You can add screenshots, screen recordings, logs, or archives.</p>
+              <div class="support-files-list" id="support-files-list" aria-live="polite"></div>
+            </div>
             <textarea name="message" data-i18n-placeholder="site_support_message_ph" placeholder="Describe your issue in detail" required></textarea>
             <button class="btn btn-primary" type="submit" data-i18n="site_support_submit">Open support email</button>
             <div class="msg" id="support-msg"></div>
@@ -92,6 +99,7 @@
     </footer>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/assets/config.js"></script>
   <script src="/assets/translations.js"></script>
   <script src="/assets/i18n.js"></script>
