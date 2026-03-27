@@ -1213,8 +1213,33 @@ p.lead {
     var(--panel-strong);
 }
 
+.status-page-head {
+  margin-bottom: 22px;
+}
+
+.status-page-copy {
+  max-width: 1040px;
+}
+
+.status-page-copy h2 {
+  margin: 12px 0 12px;
+  max-width: 16ch;
+  font-size: clamp(2.65rem, 5.6vw, 4.9rem);
+  line-height: 0.96;
+  letter-spacing: -0.04em;
+}
+
+.status-page-copy .section-intro {
+  max-width: 760px;
+  margin: 0;
+  font-size: 1.04rem;
+  line-height: 1.72;
+}
+
 .status-page-grid {
+  grid-template-columns: minmax(0, 1.08fr) minmax(360px, 0.92fr);
   align-items: start;
+  gap: 18px;
 }
 
 .status-overview-panel,
@@ -1223,14 +1248,49 @@ p.lead {
   gap: 16px;
 }
 
-.status-overview-head {
+.status-primary-panel {
+  position: relative;
+  overflow: hidden;
+  gap: 18px;
+}
+
+.status-primary-panel::before {
+  content: "";
+  position: absolute;
+  inset: -20% auto auto 58%;
+  width: 240px;
+  height: 240px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(88, 215, 178, 0.1), transparent 68%);
+  pointer-events: none;
+}
+
+.status-primary-top {
+  position: relative;
   display: grid;
-  gap: 10px;
+  gap: 12px;
+  z-index: 1;
+}
+
+.status-primary-badge {
+  justify-self: start;
+  padding: 10px 16px;
+  min-height: 48px;
+  font-size: 1.04rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.status-primary-intro {
+  position: relative;
+  margin: 0;
+  max-width: 62ch;
+  z-index: 1;
 }
 
 .status-detail-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -1243,12 +1303,24 @@ p.lead {
     rgba(9, 13, 20, 0.55);
 }
 
-.status-detail-card strong {
+.status-detail-value {
   display: block;
   margin-top: 10px;
-  font-size: clamp(1.28rem, 2.3vw, 2rem);
+  font-size: clamp(1.2rem, 2vw, 1.72rem);
   font-weight: 800;
   color: var(--text-primary);
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.status-detail-value-number {
+  font-size: clamp(2.1rem, 4vw, 3.4rem);
+  letter-spacing: -0.05em;
+}
+
+.status-detail-value-compact {
+  font-size: clamp(1.12rem, 1.55vw, 1.34rem);
+  line-height: 1.22;
 }
 
 .status-detail-label {
@@ -1260,15 +1332,11 @@ p.lead {
   text-transform: uppercase;
 }
 
-.status-page-note {
-  margin-top: 0;
-}
-
 .status-message-box {
   min-height: 148px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 20px;
-  padding: 20px 22px;
+  padding: 24px 26px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.032), rgba(255, 255, 255, 0.01)),
     rgba(11, 15, 22, 0.78);
@@ -2312,6 +2380,11 @@ textarea {
   .field-row,
   .field-row-3 {
     grid-template-columns: 1fr;
+  }
+
+  .status-page-copy h2 {
+    max-width: none;
+    font-size: clamp(2.2rem, 9vw, 3.4rem);
   }
 
   .status-detail-grid {
