@@ -1101,7 +1101,7 @@ p.lead {
 }
 
 .download-guide-step-card-step2 {
-  grid-template-columns: minmax(300px, 0.76fr) minmax(720px, 1.34fr);
+  grid-template-columns: minmax(320px, 0.82fr) minmax(760px, 1.18fr);
 }
 
 .download-guide-step-card:nth-child(even) .download-guide-step-copy {
@@ -1147,8 +1147,9 @@ p.lead {
 }
 
 .download-guide-visuals-step2 {
-  grid-template-columns: minmax(0, 1.62fr) minmax(220px, 0.58fr);
-  gap: 22px;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 0.38fr);
+  gap: 18px;
+  align-items: start;
 }
 
 .download-guide-shot {
@@ -1186,18 +1187,22 @@ p.lead {
   min-height: 340px;
 }
 
-.download-guide-shot-frame-step2-primary,
-.download-guide-shot-frame-step2-secondary {
+.download-guide-shot-step2-primary {
+  min-width: 0;
+}
+
+.download-guide-shot-step2-secondary {
+  align-self: start;
+}
+
+.download-guide-shot-frame-step2-primary-hero {
   min-height: 520px;
   padding: 0;
 }
 
-.download-guide-shot-frame-step2-primary {
-  min-height: 860px;
-}
-
 .download-guide-shot-frame-step2-secondary {
-  min-height: 560px;
+  min-height: 420px;
+  padding: 0;
 }
 
 .download-guide-shot-frame-step3-match {
@@ -1225,7 +1230,7 @@ p.lead {
   max-width: none;
   max-height: none;
   object-fit: cover;
-  object-position: 50% 54%;
+  object-position: 50% 63%;
   transform: none;
 }
 
