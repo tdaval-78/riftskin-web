@@ -749,13 +749,13 @@ body[data-page="account"] .section-intro {
 }
 
 .pricing-hero-section .section-head h2 {
-  margin: 0 0 16px;
+  margin: 0;
 }
 
 .pricing-hero-copy {
   display: grid;
   align-content: start;
-  gap: 16px;
+  gap: 8px;
   max-width: none;
 }
 
