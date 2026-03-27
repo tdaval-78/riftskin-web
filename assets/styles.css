@@ -1108,6 +1108,10 @@ p.lead {
   grid-template-columns: minmax(320px, 0.82fr) minmax(420px, 0.8fr);
 }
 
+.download-guide-step-card-step4 {
+  grid-template-columns: minmax(300px, 0.72fr) minmax(700px, 1.28fr);
+}
+
 .download-guide-step-card:nth-child(even) .download-guide-step-copy {
   order: 2;
 }
@@ -1155,9 +1159,12 @@ p.lead {
   justify-items: center;
 }
 
-.download-guide-visuals-step2 .download-guide-shot,
-.download-guide-visuals-step3-single .download-guide-shot {
+.download-guide-visuals-step2 .download-guide-shot {
   width: min(100%, 440px);
+}
+
+.download-guide-visuals-step3-single .download-guide-shot {
+  width: min(100%, 350px);
 }
 
 .download-guide-shot {
@@ -1201,9 +1208,22 @@ p.lead {
   padding: 0;
 }
 
+.download-guide-shot-frame-step3-single {
+  min-height: 450px;
+}
+
 .download-guide-shot-frame-step3-match {
   min-height: 340px;
   padding: 14px;
+}
+
+.download-guide-step-card-step4 .download-guide-shot-frame.portrait {
+  min-height: 430px;
+}
+
+.download-guide-step-card-step4 .download-guide-shot-frame-step3-match {
+  min-height: 430px;
+  padding: 10px;
 }
 
 .download-guide-shot-frame img {
@@ -1241,9 +1261,9 @@ p.lead {
 }
 
 .download-guide-shot-image-step3-secondary {
-  width: 116%;
+  width: 134%;
   max-width: none;
-  transform: scale(1.05);
+  transform: scale(1.1);
   transform-origin: center center;
 }
 
@@ -2604,7 +2624,8 @@ textarea {
 
   .download-guide-step-card-step1,
   .download-guide-step-card-step2,
-  .download-guide-step-card-step3-single {
+  .download-guide-step-card-step3-single,
+  .download-guide-step-card-step4 {
     grid-template-columns: 1fr;
   }
 
