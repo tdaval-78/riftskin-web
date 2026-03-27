@@ -1498,6 +1498,10 @@ body[data-page="account"] .section-intro {
     rgba(12, 17, 24, 0.84);
 }
 
+.account-help-row {
+  justify-content: center;
+}
+
 .account-auth-card {
   min-height: 100%;
 }
