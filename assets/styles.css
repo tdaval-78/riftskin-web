@@ -2475,7 +2475,7 @@ textarea {
   justify-content: space-between;
   gap: 12px;
   padding: 22px 24px;
-  font-size: clamp(1.18rem, 1.4vw, 1.62rem);
+  font-size: clamp(1rem, 1.05vw, 1.28rem);
   font-weight: 800;
   color: var(--text-primary);
 }
