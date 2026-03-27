@@ -1269,6 +1269,48 @@ p.lead {
   line-height: 1.55;
 }
 
+.premium-activation-section {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(211, 176, 75, 0.08), transparent 26%),
+    radial-gradient(circle at 100% 100%, rgba(70, 138, 214, 0.08), transparent 24%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
+    var(--panel-strong);
+}
+
+.premium-activation-head {
+  grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+}
+
+.premium-activation-overview {
+  grid-template-columns: 1fr;
+}
+
+.premium-activation-card {
+  grid-template-columns: minmax(320px, 0.76fr) minmax(560px, 1.24fr);
+}
+
+.premium-activation-visuals {
+  justify-items: center;
+}
+
+.premium-activation-shot {
+  width: min(100%, 820px);
+}
+
+.premium-activation-shot-frame {
+  min-height: 420px;
+  padding: 0;
+}
+
+.premium-activation-shot-image {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  object-fit: cover;
+  object-position: center top;
+}
+
 .features-2x2 {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2621,13 +2663,18 @@ textarea {
   .download-guide-step-card-step2,
   .download-guide-step-card-step3-single,
   .download-guide-step-card-step4-single,
-  .download-guide-step-card-step5-single {
+  .download-guide-step-card-step5-single,
+  .premium-activation-card {
     grid-template-columns: 1fr;
   }
 
   .download-guide-copy .section-intro,
   .download-guide-step-copy p {
     max-width: none;
+  }
+
+  .premium-activation-head {
+    grid-template-columns: 1fr;
   }
 
   .download-guide-step-card:nth-child(even) .download-guide-step-copy,
@@ -2769,6 +2816,10 @@ textarea {
     grid-template-columns: 1fr;
   }
 
+  .premium-activation-overview {
+    grid-template-columns: 1fr;
+  }
+
   .download-guide-visuals-step2 {
     grid-template-columns: 1fr;
   }
@@ -2783,6 +2834,10 @@ textarea {
     min-height: auto;
   }
 
+  .premium-activation-shot-frame {
+    min-height: auto;
+  }
+
   .download-guide-shot-image-step1,
   .download-guide-shot-image-step2-primary,
   .download-guide-shot-image-step3-single,
@@ -2792,6 +2847,13 @@ textarea {
     max-height: 100%;
     object-fit: contain;
     transform: none;
+  }
+
+  .premium-activation-shot-image {
+    width: 100%;
+    height: auto;
+    max-height: 100%;
+    object-fit: contain;
   }
 
   .legal-hub-grid,
