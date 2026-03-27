@@ -3,38 +3,107 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Confirm your RIFTSKIN email</title>
+    <title>Confirm your RIFTSKIN account</title>
   </head>
-  <body style="margin:0;padding:0;background:#0c1626;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#edf3fb;">
-    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#0c1626;padding:28px 12px;">
+  <body style="margin:0;padding:0;background:#06070a;font-family:'Avenir Next','SF Pro Text',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#f6f8fc;">
+    <div style="display:none;max-height:0;overflow:hidden;opacity:0;">
+      Confirm your email to activate your RIFTSKIN account and start signing in.
+    </div>
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:
+      linear-gradient(180deg, rgba(0,0,0,0.30), rgba(0,0,0,0.48)),
+      radial-gradient(circle at 18% 8%, rgba(211,176,75,0.10), transparent 22%),
+      radial-gradient(circle at 84% 14%, rgba(131,140,154,0.08), transparent 20%),
+      linear-gradient(180deg, #090c11 0%, #0b0f15 24%, #0c1118 62%, #090c12 100%);
+      padding:32px 14px;">
       <tr>
         <td align="center">
-          <table role="presentation" width="640" cellspacing="0" cellpadding="0" style="width:100%;max-width:640px;background:#22364d;border:1px solid #48607b;border-radius:16px;">
+          <table role="presentation" width="640" cellspacing="0" cellpadding="0" style="width:100%;max-width:640px;">
             <tr>
-              <td style="padding:28px 26px 20px;text-align:center;">
+              <td style="padding:0 0 16px 0;text-align:center;">
                 <img
                   src="https://jfmrwxmlncvzoremcmbi.supabase.co/storage/v1/object/public/email-assets/icon.png"
                   alt="RIFTSKIN"
-                  width="88"
-                  height="88"
-                  style="display:block;margin:0 auto 14px auto;border:0;outline:none;text-decoration:none;"
+                  width="92"
+                  height="92"
+                  style="display:block;margin:0 auto 12px auto;border:0;outline:none;text-decoration:none;"
                 />
-                <h1 style="margin:0 0 10px 0;font-size:32px;line-height:1.15;font-weight:800;color:#edf3fb;">Confirm your email</h1>
-                <p style="margin:0 0 18px 0;font-size:16px;line-height:1.55;color:#b7cade;">
-                  Welcome to RIFTSKIN. Confirm your email address to activate your web account and sign in.
-                </p>
-                <a
-                  href="{{ .ConfirmationURL }}"
-                  style="display:inline-block;background:linear-gradient(180deg,#5aa2c7,#2a536a);border:1px solid #5f86a8;border-radius:10px;padding:12px 22px;color:#eef6ff;text-decoration:none;font-size:15px;font-weight:700;letter-spacing:.2px;"
-                >
-                  Confirm email
-                </a>
-                <p style="margin:18px 0 0 0;font-size:13px;line-height:1.5;color:#9eb4c9;">
-                  After confirmation, you can return to <strong>/account.html</strong> and sign in.
-                </p>
-                <p style="margin:12px 0 0 0;font-size:13px;line-height:1.5;color:#9eb4c9;">
-                  French: Confirmez votre adresse email pour activer votre compte web et vous connecter.
-                </p>
+                <div style="font-size:13px;line-height:1;color:#e8dbb0;letter-spacing:0.22em;text-transform:uppercase;font-weight:700;">
+                  Custom Skin Injector for LoL
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td style="border:1px solid rgba(255,255,255,0.12);border-radius:28px;background:
+                linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.02)),
+                linear-gradient(135deg, rgba(18,23,32,0.96), rgba(10,13,19,0.94));
+                box-shadow:0 28px 80px rgba(0,0,0,0.4);overflow:hidden;">
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td style="padding:34px 34px 10px 34px;">
+                      <div style="display:inline-block;padding:8px 14px;border:1px solid rgba(211,176,75,0.28);border-radius:999px;background:rgba(211,176,75,0.10);color:#f1dd91;font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;">
+                        Account Security
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding:8px 34px 0 34px;">
+                      <h1 style="margin:0;font-size:38px;line-height:1.05;font-weight:800;color:#f6f8fc;">
+                        Confirm your email.
+                      </h1>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding:16px 34px 0 34px;">
+                      <p style="margin:0;font-size:17px;line-height:1.65;color:#a6b0bf;">
+                        Welcome to RIFTSKIN. Confirm your email address to activate your web account, keep authentication secure, and sign in without friction.
+                      </p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding:26px 34px 0 34px;">
+                      <a
+                        href="{{ .ConfirmationURL }}"
+                        style="display:inline-block;min-width:220px;padding:15px 24px;border-radius:999px;border:1px solid rgba(211,176,75,0.55);background:linear-gradient(180deg,#d3b04b,#8f7130);color:#fffdf5;text-decoration:none;font-size:16px;font-weight:800;letter-spacing:0.01em;text-align:center;box-shadow:0 12px 30px rgba(211,176,75,0.18);"
+                      >
+                        Confirm your account
+                      </a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding:26px 34px 0 34px;">
+                      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border:1px solid rgba(255,255,255,0.08);border-radius:20px;background:rgba(255,255,255,0.03);">
+                        <tr>
+                          <td style="padding:18px 20px;">
+                            <div style="font-size:13px;line-height:1;color:#e8dbb0;letter-spacing:0.14em;text-transform:uppercase;font-weight:700;margin-bottom:12px;">
+                              What happens next
+                            </div>
+                            <div style="font-size:15px;line-height:1.7;color:#c8d0dd;">
+                              1. Confirm your email from this button.<br />
+                              2. Return to the RIFTSKIN account page.<br />
+                              3. Sign in with the email and password you just created.
+                            </div>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding:24px 34px 0 34px;">
+                      <p style="margin:0;font-size:14px;line-height:1.7;color:#7c8798;">
+                        If you did not create a RIFTSKIN account, you can safely ignore this email.
+                      </p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding:28px 34px 34px 34px;">
+                      <div style="height:1px;background:rgba(255,255,255,0.08);margin-bottom:18px;"></div>
+                      <div style="font-size:13px;line-height:1.7;color:#7c8798;">
+                        RIFTSKIN<br />
+                        macOS workflow for custom League of Legends skins
+                      </div>
+                    </td>
+                  </tr>
+                </table>
               </td>
             </tr>
           </table>
