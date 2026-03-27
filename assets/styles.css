@@ -1101,7 +1101,7 @@ p.lead {
 }
 
 .download-guide-step-card-step2 {
-  grid-template-columns: minmax(320px, 0.88fr) minmax(540px, 1.12fr);
+  grid-template-columns: minmax(300px, 0.76fr) minmax(720px, 1.34fr);
 }
 
 .download-guide-step-card:nth-child(even) .download-guide-step-copy {
@@ -1147,8 +1147,8 @@ p.lead {
 }
 
 .download-guide-visuals-step2 {
-  grid-template-columns: minmax(0, 1.18fr) minmax(0, 0.92fr);
-  gap: 18px;
+  grid-template-columns: minmax(0, 1.62fr) minmax(220px, 0.58fr);
+  gap: 22px;
 }
 
 .download-guide-shot {
@@ -1193,7 +1193,11 @@ p.lead {
 }
 
 .download-guide-shot-frame-step2-primary {
-  min-height: 700px;
+  min-height: 860px;
+}
+
+.download-guide-shot-frame-step2-secondary {
+  min-height: 560px;
 }
 
 .download-guide-shot-frame-step3-match {
