@@ -110,6 +110,14 @@
     return { error: null };
   }
 
+  async function clearConfirmationSession(supabaseClient) {
+    try {
+      await supabaseClient.auth.signOut();
+    } catch (_error) {
+      // Best-effort cleanup: confirmation should not leave the user signed in.
+    }
+  }
+
   function bindResetForm(supabaseClient) {
     if (!form || !submitBtn) return;
 
@@ -182,6 +190,8 @@
       setErrorCopy(error.message || copy.confirmFailed);
       return;
     }
+
+    await clearConfirmationSession(supabaseClient);
 
     if (params.type === 'signup' || params.type === 'email_change' || params.tokenHash || params.accessToken) {
       setConfirmMessage('ok', copy.confirmSuccess);
