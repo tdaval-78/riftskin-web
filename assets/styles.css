@@ -1165,8 +1165,15 @@ p.lead {
   min-height: 340px;
 }
 
-.download-guide-shot-frame-focus {
+.download-guide-shot-frame-step2-primary,
+.download-guide-shot-frame-step2-secondary {
+  min-height: 430px;
   padding: 8px;
+}
+
+.download-guide-shot-frame-step3-match {
+  min-height: 340px;
+  padding: 14px;
 }
 
 .download-guide-shot-frame img {
@@ -1178,10 +1185,29 @@ p.lead {
   border-radius: 18px;
 }
 
-.download-guide-shot-image-focus {
-  width: 122%;
+.download-guide-shot-image-step1 {
+  width: 82%;
   max-width: none;
-  transform: scale(1.08);
+}
+
+.download-guide-shot-image-step2-primary {
+  width: 148%;
+  max-width: none;
+  transform: scale(1.11);
+  transform-origin: center center;
+}
+
+.download-guide-shot-image-step2-secondary {
+  width: 138%;
+  max-width: none;
+  transform: scale(1.1);
+  transform-origin: center center;
+}
+
+.download-guide-shot-image-step3-secondary {
+  width: 116%;
+  max-width: none;
+  transform: scale(1.05);
   transform-origin: center center;
 }
 
@@ -2686,8 +2712,19 @@ textarea {
 
   .download-guide-shot-frame.browser,
   .download-guide-shot-frame.landscape,
-  .download-guide-shot-frame.portrait {
+  .download-guide-shot-frame.portrait,
+  .download-guide-shot-frame-step2-primary,
+  .download-guide-shot-frame-step2-secondary,
+  .download-guide-shot-frame-step3-match {
     min-height: auto;
+  }
+
+  .download-guide-shot-image-step1,
+  .download-guide-shot-image-step2-primary,
+  .download-guide-shot-image-step2-secondary,
+  .download-guide-shot-image-step3-secondary {
+    width: 100%;
+    transform: none;
   }
 
   .legal-hub-grid,
