@@ -89,51 +89,112 @@
     </section>
 
     <section class="section download-guide-section">
-      <div class="section-head">
-        <div>
-          <h2>Guide d’installation macOS</h2>
-          <p class="section-intro">Si macOS bloque l’installateur au premier lancement, suivez ce parcours visuel. L’installation reste simple : télécharger, autoriser, installer, puis ouvrir RIFTSKIN.</p>
+      <div class="download-guide-head">
+        <div class="download-guide-copy">
+          <span class="legal-card-kicker" data-i18n="site_download_guide_kicker">Visual install guide</span>
+          <h2 data-i18n="site_download_guide_h2">Follow the macOS install flow step by step.</h2>
+          <p class="section-intro" data-i18n="site_download_guide_intro">If macOS slows down the first launch, this visual guide shows the clean path: download the package, allow it once, finish the installer, then open RiftSkin from Applications.</p>
+        </div>
+
+        <div class="download-guide-overview">
+          <div class="download-guide-overview-item">
+            <span class="download-guide-overview-index">01</span>
+            <p data-i18n="site_download_guide_overview_1">Download the .pkg installer</p>
+          </div>
+          <div class="download-guide-overview-item">
+            <span class="download-guide-overview-index">02</span>
+            <p data-i18n="site_download_guide_overview_2">Approve it once in Privacy &amp; Security</p>
+          </div>
+          <div class="download-guide-overview-item">
+            <span class="download-guide-overview-index">03</span>
+            <p data-i18n="site_download_guide_overview_3">Run the macOS installer</p>
+          </div>
+          <div class="download-guide-overview-item">
+            <span class="download-guide-overview-index">04</span>
+            <p data-i18n="site_download_guide_overview_4">Launch RiftSkin from Applications</p>
+          </div>
         </div>
       </div>
 
-      <div class="download-guide-grid">
-        <article class="download-guide-card">
-          <span class="legal-card-kicker">Étape 01</span>
-          <h3>Téléchargez le fichier `.pkg`</h3>
-          <p class="subtle">Commencez par télécharger l’installateur depuis la page RIFTSKIN. Le fichier apparaît ensuite dans votre dossier Téléchargements.</p>
-          <img src="/assets/install-guide/download.png" alt="Téléchargement de l’installateur RIFTSKIN depuis le site" />
-        </article>
+      <div class="download-guide-timeline">
+        <article class="download-guide-step-card">
+          <div class="download-guide-step-copy">
+            <span class="legal-card-kicker" data-i18n="site_download_guide_step1_kicker">Step 01</span>
+            <h3 data-i18n="site_download_guide_step1_title">Download the installer package</h3>
+            <p class="subtle" data-i18n="site_download_guide_step1_desc">Start from the download button above. The package appears in Downloads and you can open it directly from there.</p>
+          </div>
 
-        <article class="download-guide-card">
-          <span class="legal-card-kicker">Étape 02</span>
-          <h3>Si macOS bloque le fichier, cliquez d’abord sur Terminé</h3>
-          <p class="subtle">Au premier essai, macOS peut afficher une alerte indiquant que le paquet n’a pas pu être vérifié. Fermez cette alerte pour pouvoir l’autoriser ensuite dans les réglages.</p>
-          <img src="/assets/install-guide/settings-open-anyway.png" alt="Alerte macOS indiquant que le paquet n’a pas pu être ouvert" />
-        </article>
-
-        <article class="download-guide-card">
-          <span class="legal-card-kicker">Étape 03</span>
-          <h3>Autorisez l’ouverture dans Réglages système</h3>
-          <p class="subtle">Allez dans <code>Réglages système &gt; Confidentialité et sécurité</code>, puis cliquez sur <code>Ouvrir quand même</code> pour autoriser le paquet.</p>
-          <img src="/assets/install-guide/privacy-password.png" alt="Demande de mot de passe administrateur dans Confidentialité et sécurité" />
-          <img src="/assets/install-guide/settings-open-anyway.png" alt="Bouton Ouvrir quand même dans Réglages système" />
-        </article>
-
-        <article class="download-guide-card">
-          <span class="legal-card-kicker">Étape 04</span>
-          <h3>Relancez l’installateur puis validez l’installation</h3>
-          <p class="subtle">Rouvrez le paquet, cliquez sur <code>Install</code>, puis utilisez Touch ID ou le mot de passe administrateur si macOS le demande.</p>
-          <div class="download-guide-split">
-            <img src="/assets/install-guide/installer-window.png" alt="Fenêtre d’installation macOS avec bouton Install" />
-            <img src="/assets/install-guide/installer-password.png" alt="Fenêtre macOS demandant le mot de passe pour installer" />
+          <div class="download-guide-visuals">
+            <figure class="download-guide-shot">
+              <div class="download-guide-shot-frame browser">
+                <img src="/assets/install-guide/download.png" alt="RiftSkin macOS installer download page" />
+              </div>
+              <figcaption data-i18n="site_download_guide_step1_caption">RiftSkin macOS installer download page.</figcaption>
+            </figure>
           </div>
         </article>
 
-        <article class="download-guide-card download-guide-card-wide">
-          <span class="legal-card-kicker">Étape 05</span>
-          <h3>Installation terminée</h3>
-          <p class="subtle">Une fois l’écran de confirmation affiché, l’application est installée. Vous pouvez fermer l’installateur puis lancer RIFTSKIN depuis Applications.</p>
-          <img src="/assets/install-guide/install-success.png" alt="Installation RIFTSKIN réussie sur macOS" />
+        <article class="download-guide-step-card">
+          <div class="download-guide-step-copy">
+            <span class="legal-card-kicker" data-i18n="site_download_guide_step2_kicker">Step 02</span>
+            <h3 data-i18n="site_download_guide_step2_title">Approve the package in macOS security settings</h3>
+            <p class="subtle" data-i18n="site_download_guide_step2_desc">If macOS blocks the installer, open System Settings, go to Privacy &amp; Security, then allow RiftSkin with Open Anyway. macOS may ask for your administrator password during this approval step.</p>
+          </div>
+
+          <div class="download-guide-visuals two-up">
+            <figure class="download-guide-shot">
+              <div class="download-guide-shot-frame portrait">
+                <img src="/assets/install-guide/settings-open-anyway.png" alt="macOS security settings showing Open Anyway for RiftSkin" />
+              </div>
+              <figcaption data-i18n="site_download_guide_step2_caption_1">Use Open Anyway in Privacy &amp; Security.</figcaption>
+            </figure>
+            <figure class="download-guide-shot">
+              <div class="download-guide-shot-frame portrait">
+                <img src="/assets/install-guide/privacy-password.png" alt="macOS asking for administrator password in Privacy and Security" />
+              </div>
+              <figcaption data-i18n="site_download_guide_step2_caption_2">Confirm the approval with your macOS administrator password.</figcaption>
+            </figure>
+          </div>
+        </article>
+
+        <article class="download-guide-step-card">
+          <div class="download-guide-step-copy">
+            <span class="legal-card-kicker" data-i18n="site_download_guide_step3_kicker">Step 03</span>
+            <h3 data-i18n="site_download_guide_step3_title">Relaunch the installer and complete the install</h3>
+            <p class="subtle" data-i18n="site_download_guide_step3_desc">Once the package is allowed, reopen it, continue with Install, then validate with Touch ID or your administrator password if macOS asks again.</p>
+          </div>
+
+          <div class="download-guide-visuals two-up">
+            <figure class="download-guide-shot">
+              <div class="download-guide-shot-frame portrait">
+                <img src="/assets/install-guide/installer-window.png" alt="RiftSkin macOS installer window" />
+              </div>
+              <figcaption data-i18n="site_download_guide_step3_caption_1">The installer continues normally once the package is approved.</figcaption>
+            </figure>
+            <figure class="download-guide-shot">
+              <div class="download-guide-shot-frame landscape">
+                <img src="/assets/install-guide/installer-password.png" alt="macOS installer asking for administrator password" />
+              </div>
+              <figcaption data-i18n="site_download_guide_step3_caption_2">macOS can ask for a final password confirmation before copying the app.</figcaption>
+            </figure>
+          </div>
+        </article>
+
+        <article class="download-guide-step-card">
+          <div class="download-guide-step-copy">
+            <span class="legal-card-kicker" data-i18n="site_download_guide_step4_kicker">Step 04</span>
+            <h3 data-i18n="site_download_guide_step4_title">Finish and launch RiftSkin from Applications</h3>
+            <p class="subtle" data-i18n="site_download_guide_step4_desc">When the installation success screen appears, RiftSkin is ready in Applications. Close the installer, launch the app, then complete the in-app setup flow.</p>
+          </div>
+
+          <div class="download-guide-visuals">
+            <figure class="download-guide-shot">
+              <div class="download-guide-shot-frame landscape">
+                <img src="/assets/install-guide/install-success.png" alt="RiftSkin successfully installed on macOS" />
+              </div>
+              <figcaption data-i18n="site_download_guide_step4_caption">The installation confirmation screen means RiftSkin is ready to launch.</figcaption>
+            </figure>
+          </div>
         </article>
       </div>
     </section>
