@@ -1597,6 +1597,11 @@ body[data-page="account"] .section-intro {
     white-space: nowrap;
     text-wrap: nowrap;
   }
+
+  .status-message-meta .subtle {
+    white-space: nowrap;
+    text-wrap: nowrap;
+  }
 }
 
 .status-page-copy .section-intro {
