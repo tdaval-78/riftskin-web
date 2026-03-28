@@ -2270,6 +2270,11 @@ body[data-page="account"] .section-intro {
   margin-bottom: 16px;
 }
 
+.section-head > :only-child {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 .download-hero-section .section-head h2 {
   margin: 0 0 18px;
 }
