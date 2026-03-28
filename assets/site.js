@@ -20,6 +20,17 @@
   if (yearEl) yearEl.textContent = String(new Date().getFullYear());
 
   const cfg = window.RiftSkinConfig || {};
+  window.dataLayer = window.dataLayer || [];
+
+  function pushAnalyticsEvent(eventName, params) {
+    if (!eventName) return;
+    window.dataLayer.push(Object.assign({
+      event: eventName,
+      page_type: document.body.getAttribute('data-page') || 'unknown',
+      page_path: window.location.pathname
+    }, params || {}));
+  }
+
   document.querySelectorAll('[data-download-installer]').forEach(function (el) {
     el.setAttribute('href', cfg.downloadInstallerUrl || 'https://github.com/tdaval-78/riftskin-updates/releases/latest');
   });
@@ -39,6 +50,123 @@
       if (el.getAttribute('data-link') === active) {
         el.classList.add('active');
       }
+    });
+  }
+
+  document.querySelectorAll('[data-download-installer]').forEach(function (el) {
+    el.addEventListener('click', function () {
+      pushAnalyticsEvent('riftskin_download_click', {
+        link_text: (el.textContent || '').trim(),
+        link_href: el.getAttribute('href') || ''
+      });
+    });
+  });
+
+  document.querySelectorAll('[data-home-premium-cta], [data-premium-cta]').forEach(function (el) {
+    el.addEventListener('click', function () {
+      pushAnalyticsEvent('riftskin_pricing_click', {
+        cta_location: el.hasAttribute('data-home-premium-cta') ? 'home' : 'pricing',
+        link_text: (el.textContent || '').trim(),
+        link_href: el.getAttribute('href') || ''
+      });
+    });
+  });
+
+  document.querySelectorAll('a[href="/support.html"]').forEach(function (el) {
+    el.addEventListener('click', function () {
+      pushAnalyticsEvent('riftskin_support_click', {
+        link_text: (el.textContent || '').trim(),
+        link_href: el.getAttribute('href') || ''
+      });
+    });
+  });
+
+  function getVideoContext(iframe) {
+    if (!iframe) return 'unknown';
+    if (iframe.closest('.home-demo-frame')) return 'home_demo';
+    if (iframe.closest('.download-guide-video-frame')) {
+      return document.body.getAttribute('data-page') === 'download' ? 'download_guide' : 'install_guide';
+    }
+    return 'unknown';
+  }
+
+  function withYouTubeApiParams(src) {
+    if (!src) return src;
+    try {
+      const url = new URL(src, window.location.origin);
+      url.searchParams.set('enablejsapi', '1');
+      url.searchParams.set('origin', window.location.origin);
+      return url.toString();
+    } catch (_err) {
+      return src;
+    }
+  }
+
+  function loadYouTubeIframeApi() {
+    if (window.YT && window.YT.Player) {
+      return Promise.resolve(window.YT);
+    }
+
+    if (window.__riftskinYoutubeApiPromise) {
+      return window.__riftskinYoutubeApiPromise;
+    }
+
+    window.__riftskinYoutubeApiPromise = new Promise(function (resolve) {
+      const previousReady = window.onYouTubeIframeAPIReady;
+      window.onYouTubeIframeAPIReady = function () {
+        if (typeof previousReady === 'function') {
+          previousReady();
+        }
+        resolve(window.YT);
+      };
+
+      const existingScript = document.querySelector('script[data-youtube-iframe-api]');
+      if (existingScript) return;
+
+      const script = document.createElement('script');
+      script.src = 'https://www.youtube.com/iframe_api';
+      script.async = true;
+      script.setAttribute('data-youtube-iframe-api', '1');
+      document.head.appendChild(script);
+    });
+
+    return window.__riftskinYoutubeApiPromise;
+  }
+
+  const youtubeEmbeds = Array.from(document.querySelectorAll('.home-demo-frame iframe, .download-guide-video-frame iframe'));
+  if (youtubeEmbeds.length) {
+    youtubeEmbeds.forEach(function (iframe, index) {
+      iframe.setAttribute('data-riftskin-video-id', 'riftskin-video-' + index);
+      iframe.src = withYouTubeApiParams(iframe.getAttribute('src'));
+    });
+
+    loadYouTubeIframeApi().then(function (YT) {
+      if (!YT || !YT.Player) return;
+
+      youtubeEmbeds.forEach(function (iframe) {
+        let lastTrackedState = null;
+        const context = getVideoContext(iframe);
+
+        // Listen to real YouTube player state changes instead of fake wrapper clicks.
+        new YT.Player(iframe, {
+          events: {
+            onStateChange: function (event) {
+              if (event.data !== YT.PlayerState.PLAYING || lastTrackedState === YT.PlayerState.PLAYING) {
+                lastTrackedState = event.data;
+                return;
+              }
+
+              lastTrackedState = event.data;
+              pushAnalyticsEvent('riftskin_video_play', {
+                video_context: context,
+                video_title: iframe.getAttribute('title') || 'RIFTSKIN video'
+              });
+            }
+          }
+        });
+      });
+    }).catch(function () {
+      // Ignore YouTube API load failures silently; they should not break the page.
     });
   }
 
