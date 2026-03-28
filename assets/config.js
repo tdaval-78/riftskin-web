@@ -6,10 +6,10 @@ window.RiftSkinConfig = {
   supabaseUrl: "https://jfmrwxmlncvzoremcmbi.supabase.co",
   supabaseAnonKey: "sb_publishable_SP6Tibi0ck1Qy3zSzn_YbQ_uAcTe9aV",
 
-  // Paddle settings (fill these when your Paddle account is ready)
+  // Paddle settings
   paddleEnvironment: "production", // "production" or "sandbox"
-  paddleClientToken: "",
-  paddlePriceId: "",
+  paddleClientToken: "live_686da6df2b1504fcc30dbb8f173",
+  paddlePriceId: "pri_01kmt087zg19v4mgjb8mmpqskx",
   paddleCheckoutUrl: "",
   paddleCustomerPortalUrl: "",
 
