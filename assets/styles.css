@@ -1262,10 +1262,13 @@ body.has-overlay {
   width: min(100%, 440px);
 }
 
-.download-guide-visuals-step3-single .download-guide-shot,
 .download-guide-visuals-step4-single .download-guide-shot,
 .download-guide-visuals-step5-single .download-guide-shot {
   width: min(100%, 440px);
+}
+
+.download-guide-visuals-step3-single .download-guide-shot {
+  width: min(100%, 280px);
 }
 
 .download-guide-shot {
