@@ -1072,7 +1072,19 @@ body.has-overlay {
 }
 
 .pricing-matrix-value-accent {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   color: #f2f7ff;
+}
+
+.pricing-matrix-value-accent::before {
+  content: "✓";
+  flex: 0 0 auto;
+  color: #54d68a;
+  font-size: 1rem;
+  font-weight: 900;
+  line-height: 1;
 }
 
 .pricing-page-notice {
