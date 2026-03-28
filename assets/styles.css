@@ -884,6 +884,86 @@ body[data-page="account"] .section-intro {
   accent-color: var(--accent);
 }
 
+body.has-overlay {
+  overflow: hidden;
+}
+
+.maintenance-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.maintenance-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(4, 7, 12, 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.maintenance-modal {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 520px);
+  padding: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at top, rgba(211, 176, 75, 0.12), transparent 38%),
+    linear-gradient(180deg, rgba(23, 28, 39, 0.98), rgba(11, 14, 20, 0.98));
+  box-shadow: 0 26px 72px rgba(0, 0, 0, 0.44);
+}
+
+.maintenance-modal-kicker {
+  color: rgba(232, 219, 176, 0.88);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.maintenance-modal-title {
+  margin: 10px 0 12px;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  line-height: 1.1;
+}
+
+.maintenance-modal-body {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.maintenance-modal-action {
+  margin-top: 22px;
+  min-width: 128px;
+}
+
+.maintenance-modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.maintenance-modal-close:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
 .pricing-tier-cta-free {
   background: linear-gradient(180deg, #3c78c6, #24518d);
   border-color: rgba(104, 167, 245, 0.4);

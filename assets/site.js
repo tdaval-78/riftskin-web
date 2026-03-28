@@ -57,6 +57,103 @@
     return typeof fallback === 'string' ? fallback : key;
   }
 
+  function getSubscriptionMaintenanceCopy() {
+    const lang = window.RiftSkinI18n && typeof window.RiftSkinI18n.getLanguage === 'function'
+      ? window.RiftSkinI18n.getLanguage()
+      : 'en';
+
+    const copyByLang = {
+      fr: {
+        title: "Abonnement premium en maintenance",
+        body: "L'abonnement premium est temporairement indisponible pendant une maintenance. Utilisez la version gratuite de RIFTSKIN pour le moment.",
+        close: "Fermer"
+      },
+      es: {
+        title: "Suscripcion premium en mantenimiento",
+        body: "La suscripcion premium no esta disponible temporalmente por mantenimiento. Por ahora, utiliza la version gratuita de RIFTSKIN.",
+        close: "Cerrar"
+      },
+      pt: {
+        title: "Assinatura premium em manutencao",
+        body: "A assinatura premium esta temporariamente indisponivel durante a manutencao. Por agora, use a versao gratuita do RIFTSKIN.",
+        close: "Fechar"
+      },
+      zh: {
+        title: "Premium 订阅维护中",
+        body: "Premium 订阅目前因维护暂时不可用。请先使用 RIFTSKIN 免费版。",
+        close: "关闭"
+      },
+      en: {
+        title: "Premium subscription under maintenance",
+        body: "The premium subscription is temporarily unavailable during maintenance. Please use the free RIFTSKIN version for now.",
+        close: "Close"
+      }
+    };
+
+    return copyByLang[lang] || copyByLang.en;
+  }
+
+  function ensureSubscriptionMaintenanceModal() {
+    let overlay = document.querySelector('[data-subscription-maintenance-modal]');
+    if (overlay) return overlay;
+
+    overlay = document.createElement('div');
+    overlay.className = 'maintenance-modal-overlay';
+    overlay.setAttribute('data-subscription-maintenance-modal', '1');
+    overlay.hidden = true;
+    overlay.innerHTML = [
+      '<div class="maintenance-modal-backdrop" data-subscription-maintenance-close></div>',
+      '<div class="maintenance-modal" role="dialog" aria-modal="true" aria-labelledby="subscription-maintenance-title">',
+      '  <button class="maintenance-modal-close" type="button" data-subscription-maintenance-close aria-label="Close">×</button>',
+      '  <div class="maintenance-modal-kicker">RIFTSKIN</div>',
+      '  <h2 class="maintenance-modal-title" id="subscription-maintenance-title"></h2>',
+      '  <p class="maintenance-modal-body"></p>',
+      '  <button class="btn btn-primary maintenance-modal-action" type="button" data-subscription-maintenance-close></button>',
+      '</div>'
+    ].join('');
+
+    document.body.appendChild(overlay);
+
+    overlay.addEventListener('click', function (event) {
+      if (event.target.hasAttribute('data-subscription-maintenance-close')) {
+        closeSubscriptionMaintenanceModal();
+      }
+    });
+
+    return overlay;
+  }
+
+  function syncSubscriptionMaintenanceModalContent() {
+    const overlay = ensureSubscriptionMaintenanceModal();
+    const copy = getSubscriptionMaintenanceCopy();
+    const titleEl = overlay.querySelector('.maintenance-modal-title');
+    const bodyEl = overlay.querySelector('.maintenance-modal-body');
+    const actionEl = overlay.querySelector('.maintenance-modal-action');
+    const closeEl = overlay.querySelector('.maintenance-modal-close');
+
+    if (titleEl) titleEl.textContent = copy.title;
+    if (bodyEl) bodyEl.textContent = copy.body;
+    if (actionEl) actionEl.textContent = copy.close;
+    if (closeEl) closeEl.setAttribute('aria-label', copy.close);
+  }
+
+  function closeSubscriptionMaintenanceModal() {
+    const overlay = document.querySelector('[data-subscription-maintenance-modal]');
+    if (!overlay || overlay.hidden) return;
+    overlay.hidden = true;
+    document.body.classList.remove('has-overlay');
+  }
+
+  function openSubscriptionMaintenanceModal() {
+    syncSubscriptionMaintenanceModalContent();
+    const overlay = ensureSubscriptionMaintenanceModal();
+    overlay.hidden = false;
+    document.body.classList.add('has-overlay');
+
+    const closeButton = overlay.querySelector('.maintenance-modal-close');
+    if (closeButton) closeButton.focus();
+  }
+
   function getPublicServiceStateInfo(state) {
     if (state === 'ok') {
       return {
@@ -196,6 +293,13 @@
     if (publicServiceBadge || publicServicePublished || publicServiceMessage) {
       renderPublicStatusPage(lastPublicStatusRow);
     }
+    syncSubscriptionMaintenanceModalContent();
+  });
+
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape') {
+      closeSubscriptionMaintenanceModal();
+    }
   });
 
   const premiumCtas = Array.from(document.querySelectorAll('[data-home-premium-cta], [data-premium-cta]'));
@@ -254,6 +358,19 @@
 
   const pricingAck = document.querySelector('[data-pricing-ack]');
   const pricingPremiumCta = document.querySelector('[data-premium-cta]');
+
+  premiumCtas.forEach(function (premiumCta) {
+    premiumCta.addEventListener('click', function (event) {
+      if (event.defaultPrevented) return;
+      if (premiumCta === pricingPremiumCta && pricingAck && !pricingAck.checked) return;
+
+      const i18nKey = premiumCta.getAttribute('data-i18n');
+      if (i18nKey !== 'site_pricing_premium_cta') return;
+
+      event.preventDefault();
+      openSubscriptionMaintenanceModal();
+    });
+  });
 
   if (pricingAck && pricingPremiumCta) {
     function syncPricingAckState() {
