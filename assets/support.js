@@ -1,5 +1,6 @@
 (function () {
   const cfg = window.RiftSkinConfig || {};
+  window.dataLayer = window.dataLayer || [];
   const form = document.getElementById('support-form');
   const out = document.getElementById('support-msg');
   const emailInput = form ? form.querySelector('[name="email"]') : null;
@@ -10,6 +11,15 @@
   const t = function (key) { return i18n ? i18n.t(key) : key; };
 
   if (!form) return;
+
+  function pushAnalyticsEvent(eventName, params) {
+    if (!eventName) return;
+    window.dataLayer.push(Object.assign({
+      event: eventName,
+      page_type: document.body.getAttribute('data-page') || 'unknown',
+      page_path: window.location.pathname
+    }, params || {}));
+  }
 
   function formatFileSize(bytes) {
     if (!Number.isFinite(bytes) || bytes <= 0) return '0 B';
@@ -107,6 +117,11 @@
     supportData.append('topic_label', selectedTopicLabel);
     supportData.append('message', message);
 
+    pushAnalyticsEvent('riftskin_support_submit_attempt', {
+      support_topic: topic || 'unknown',
+      attachments_count: attachments.length
+    });
+
     attachments.forEach(function (file) {
       supportData.append('attachments', file, file.name);
     });
@@ -151,9 +166,17 @@
       prefillAccountEmail();
       out.textContent = t('site_support_submit_success');
       out.className = 'msg ok';
+      pushAnalyticsEvent('riftskin_support_submit_success', {
+        support_topic: topic || 'unknown',
+        attachments_count: attachments.length
+      });
     } catch (_err) {
       out.textContent = t('site_support_submit_error');
       out.className = 'msg error';
+      pushAnalyticsEvent('riftskin_support_submit_error', {
+        support_topic: topic || 'unknown',
+        attachments_count: attachments.length
+      });
     }
   });
 })();

@@ -81,6 +81,15 @@
     });
   });
 
+  document.querySelectorAll('a[href="/account.html"]').forEach(function (el) {
+    el.addEventListener('click', function () {
+      pushAnalyticsEvent('riftskin_account_click', {
+        link_text: (el.textContent || '').trim(),
+        link_href: el.getAttribute('href') || ''
+      });
+    });
+  });
+
   function getVideoContext(iframe) {
     if (!iframe) return 'unknown';
     if (iframe.closest('.home-demo-frame')) return 'home_demo';

@@ -1,4 +1,15 @@
 (function () {
+  window.dataLayer = window.dataLayer || [];
+
+  function pushAnalyticsEvent(eventName, params) {
+    if (!eventName) return;
+    window.dataLayer.push(Object.assign({
+      event: eventName,
+      page_type: document.body.getAttribute('data-page') || 'unknown',
+      page_path: window.location.pathname
+    }, params || {}));
+  }
+
   const cfg = window.RiftSkinConfig || {};
   const statusBox = document.querySelector('[data-account-status]');
   const loggedOutView = document.querySelector('[data-logged-out]');
@@ -928,6 +939,7 @@
       msg(resendMsg, '', '');
       if (accountEmailInput) accountEmailInput.value = email;
       msg(out, t('msg_signed_in'), 'ok');
+      pushAnalyticsEvent('riftskin_signin_success');
       await refreshSession();
     });
   }
@@ -967,6 +979,7 @@
       if (accountEmailInput) accountEmailInput.value = email;
       setResendVisibility(true);
       msg(out, t('msg_account_created'), 'ok');
+      pushAnalyticsEvent('riftskin_signup_success');
     });
   }
 
@@ -993,6 +1006,7 @@
       }
 
       msg(redeemMsg, decodeActivationMessage(row.message || '') || t('account_redeem_success'), 'ok');
+      pushAnalyticsEvent('riftskin_activation_key_redeem_success');
       redeemForm.reset();
       const session = await getSession();
       if (session && session.user) {
