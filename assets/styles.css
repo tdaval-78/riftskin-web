@@ -2437,6 +2437,11 @@ body.has-overlay {
   text-wrap: balance;
 }
 
+.home-demo-section .section-intro {
+  max-width: none;
+  white-space: nowrap;
+}
+
 .home-demo-frame {
   position: relative;
   overflow: hidden;
@@ -3263,6 +3268,10 @@ body[data-page="support"] .notice {
   .section {
     padding: 20px;
     border-radius: 22px;
+  }
+
+  .home-demo-section .section-intro {
+    white-space: normal;
   }
 
   .champion-carousel-shell {
