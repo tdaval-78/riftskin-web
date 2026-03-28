@@ -1508,6 +1508,8 @@ body.has-overlay {
 
 .premium-activation-shot-image-settings {
   object-position: center 16%;
+  transform: scale(1.03);
+  transform-origin: center center;
 }
 
 .features-2x2 {
