@@ -1959,17 +1959,7 @@ body.has-overlay {
 }
 
 .status-message-box::before {
-  content: "";
-  position: absolute;
-  inset: 18px auto auto 20px;
-  width: 34px;
-  height: 34px;
-  border-radius: 12px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01)),
-    rgba(24, 32, 45, 0.72);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  opacity: 0.9;
+  content: none;
 }
 
 .status-message-box::after {
