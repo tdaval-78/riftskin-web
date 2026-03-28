@@ -1349,12 +1349,14 @@ body.has-overlay {
 }
 
 .download-guide-shot-image-step3-single {
-  width: 100%;
-  height: 100%;
-  max-width: none;
-  max-height: none;
-  object-fit: cover;
-  object-position: center 54%;
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 74%;
+  max-height: 100%;
+  margin: 0 auto;
+  object-fit: contain;
+  object-position: center center;
   transform: none;
 }
 
