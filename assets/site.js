@@ -114,8 +114,16 @@
 
     document.body.appendChild(overlay);
 
+    overlay.querySelectorAll('[data-subscription-maintenance-close]').forEach(function (el) {
+      el.addEventListener('click', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        closeSubscriptionMaintenanceModal();
+      });
+    });
+
     overlay.addEventListener('click', function (event) {
-      if (event.target instanceof Element && event.target.closest('[data-subscription-maintenance-close]')) {
+      if (event.target === overlay) {
         closeSubscriptionMaintenanceModal();
       }
     });
@@ -141,12 +149,14 @@
     const overlay = document.querySelector('[data-subscription-maintenance-modal]');
     if (!overlay || overlay.hidden) return;
     overlay.hidden = true;
+    overlay.style.display = 'none';
     document.body.classList.remove('has-overlay');
   }
 
   function openSubscriptionMaintenanceModal() {
     syncSubscriptionMaintenanceModalContent();
     const overlay = ensureSubscriptionMaintenanceModal();
+    overlay.style.display = '';
     overlay.hidden = false;
     document.body.classList.add('has-overlay');
 
