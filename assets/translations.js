@@ -2327,8 +2327,8 @@ Object.assign(window.RiftSkinTranslations.fr, {
 
   site_download_title: "Télécharger RIFTSKIN pour Mac",
   site_download_meta_desc: "Téléchargez RIFTSKIN pour Mac et commencez à utiliser vos skins custom sur League of Legends.",
-  site_download_h2: "Télécharger RIFTSKIN pour Mac",
-  site_download_intro: "Téléchargez RIFTSKIN pour Mac et commencez à utiliser vos skins custom sur League of Legends",
+  site_download_h2: "Téléchargez RIFTSKIN pour Mac et commencez à utiliser vos skins custom sur League of Legends",
+  site_download_intro: "",
   site_download_card_1_title: "Téléchargez et installez RIFTSKIN sur Mac",
   site_download_card_1_desc: "Téléchargez l'installeur macOS puis terminez l'installation pour commencer à utiliser vos skins custom sur League of Legends.",
   site_download_cta: "Télécharger pour macOS",
