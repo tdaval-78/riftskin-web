@@ -2334,6 +2334,47 @@ body.has-overlay {
   background: #090c12;
 }
 
+.home-demo-section {
+  background:
+    radial-gradient(circle at 100% 0%, rgba(211, 176, 75, 0.08), transparent 26%),
+    radial-gradient(circle at 0% 100%, rgba(70, 138, 214, 0.08), transparent 24%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01)),
+    var(--panel-strong);
+}
+
+.home-demo-section .section-head h2 {
+  margin: 0 0 12px;
+  font-size: clamp(1.82rem, 2.6vw, 2.7rem);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.home-demo-frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
+    rgba(10, 15, 23, 0.82);
+  box-shadow: var(--shadow-md);
+}
+
+.home-demo-frame::before {
+  content: "";
+  display: block;
+  padding-top: 56.25%;
+}
+
+.home-demo-frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
 .section {
   margin-top: 22px;
   background: var(--panel-strong);
