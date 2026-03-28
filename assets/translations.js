@@ -2204,7 +2204,7 @@ Object.assign(window.RiftSkinTranslations.fr, {
   site_home_premium_li_3: "✅ Possibilité de mettre des champions et des skins en favori",
   site_home_premium_li_4: "✅ Reconnaissance automatique du champion sélectionné durant la phase de pick",
   site_home_manage_cta: "Gérer l'abonnement",
-  site_home_snapshot_kicker: "Simple au début, plus rapide en premium",
+  site_home_snapshot_kicker: "Commencez gratuitement, devenez premium plus tard",
   site_home_side_1_label: "Mode gratuit",
   site_home_side_1_title: "Commencez avec l'essentiel",
   site_home_side_1_desc: "Importez des skins custom compatibles, parcourez les champions, injectez dans League of Legends et gardez un vrai usage du logiciel, avec jusqu'à 5 injections par jour.",
