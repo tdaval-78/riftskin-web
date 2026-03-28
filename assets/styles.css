@@ -516,6 +516,16 @@ body[data-page="account"] .section-intro {
   opacity: 0.9;
 }
 
+.hero-meta .mini-note a {
+  color: #d7b24e;
+  text-decoration-color: rgba(215, 178, 78, 0.38);
+}
+
+.hero-meta .mini-note a:hover {
+  color: #f1d98d;
+  text-decoration-color: rgba(241, 217, 141, 0.62);
+}
+
 .mini-note {
   color: var(--text-tertiary);
   font-size: 0.88rem;
