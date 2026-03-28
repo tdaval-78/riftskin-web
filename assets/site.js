@@ -115,7 +115,7 @@
     document.body.appendChild(overlay);
 
     overlay.addEventListener('click', function (event) {
-      if (event.target.hasAttribute('data-subscription-maintenance-close')) {
+      if (event.target instanceof Element && event.target.closest('[data-subscription-maintenance-close]')) {
         closeSubscriptionMaintenanceModal();
       }
     });
