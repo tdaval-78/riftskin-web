@@ -2353,8 +2353,6 @@ body.has-overlay {
 .home-demo-frame {
   position: relative;
   overflow: hidden;
-  width: min(100%, 1040px);
-  margin: 0 auto;
   border-radius: 28px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background:
