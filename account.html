@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex,nofollow" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self' mailto:; img-src 'self' data: https://jfmrwxmlncvzoremcmbi.supabase.co; style-src 'self' 'unsafe-inline'; script-src 'self' https://cdn.jsdelivr.net https://cdn.paddle.com; connect-src 'self' https://jfmrwxmlncvzoremcmbi.supabase.co https://api.paddle.com https://sandbox-api.paddle.com https://checkout.paddle.com https://sandbox-checkout.paddle.com; frame-src https://checkout.paddle.com https://sandbox-checkout.paddle.com;" />
-  <title data-i18n="site_account_title">RIFTSKIN Account</title>
-  <meta name="description" data-i18n-content="site_account_meta_desc" content="Create a RIFTSKIN web account to manage your premium subscription, billing, and license code. The desktop app itself remains usable for free." />
+  <title data-i18n="site_account_title">RIFTSKIN - Compte</title>
+  <meta name="description" data-i18n-content="site_account_meta_desc" content="Créez un compte web RIFTSKIN pour gérer votre abonnement premium, la facturation et votre code premium. L'application desktop reste utilisable gratuitement." />
   <link rel="stylesheet" href="/assets/styles.css" />
 </head>
 <body data-page="account">
@@ -16,63 +16,63 @@
         <img class="brand-mark" src="/assets/logo.png" alt="RIFTSKIN logo" />
         <span class="brand-copy">
           <span class="brand-wordmark">RIFTSKIN</span>
-          <span class="brand-subtitle" data-i18n="site_brand_tagline">macOS LoL skin manager</span>
+          <span class="brand-subtitle" data-i18n="site_brand_tagline">Injecteur de skins custom pour League of Legends sur macOS</span>
         </span>
       </a>
       <button class="btn btn-ghost burger" data-burger type="button" data-i18n="nav_menu">Menu</button>
       <nav class="nav" data-nav>
-        <a data-link="home" href="/" data-i18n="nav_home">Home</a>
-        <a data-link="download" href="/download.html" data-i18n="nav_download">Download</a>
-        <a data-link="pricing" href="/pricing.html" data-i18n="nav_pricing">Pricing</a>
+        <a data-link="home" href="/" data-i18n="nav_home">Accueil</a>
+        <a data-link="download" href="/download.html" data-i18n="nav_download">Télécharger</a>
+        <a data-link="pricing" href="/pricing.html" data-i18n="nav_pricing">Abonnement</a>
         <a data-link="faq" href="/faq.html" data-i18n="nav_faq">FAQ</a>
         <a data-link="support" href="/support.html" data-i18n="nav_support">Support</a>
         <a data-link="status" href="/status.html" class="nav-status-link">
-          <span data-i18n="nav_status">Status</span>
+          <span data-i18n="nav_status">Statut</span>
           <span class="nav-status-dot" data-site-status-dot aria-hidden="true"></span>
         </a>
-        <a data-link="account" href="/account.html" data-i18n="nav_account">My account</a>
+        <a data-link="account" href="/account.html" data-i18n="nav_account">Mon compte</a>
       </nav>
       <div class="cta-row">
-        <a class="btn btn-primary" href="/download.html" data-i18n="site_home_cta_download">Download for Mac</a>
-        <a class="btn btn-ghost" href="/account.html" data-i18n="nav_account">My account</a>
+        <a class="btn btn-primary" href="/download.html" data-i18n="site_home_cta_download">Télécharger pour Mac</a>
+        <a class="btn btn-ghost" href="/account.html" data-i18n="nav_account">Mon compte</a>
       </div>
     </header>
 
     <section class="section">
       <div class="section-head">
         <div>
-          <h2 data-i18n="site_account_h2">Web account</h2>
-          <p class="section-intro" data-i18n="site_account_intro">Use this page to create your web account, confirm your email, sign in, and manage premium access.</p>
-          <p class="subtle" data-session-summary style="display:none; margin-top:10px;"><span data-i18n="account_connected_as">Signed in as</span> <strong data-session-email>-</strong></p>
+          <h2 data-i18n="site_account_h2">Compte web</h2>
+          <p class="section-intro" data-i18n="site_account_intro">Utilisez cette page pour créer votre compte web, confirmer votre email, vous connecter et gérer l'accès premium.</p>
+          <p class="subtle" data-session-summary style="display:none; margin-top:10px;"><span data-i18n="account_connected_as">Connecté en tant que</span> <strong data-session-email>-</strong></p>
         </div>
       </div>
 
       <div class="grid-2 account-auth-grid" data-logged-out style="margin-top: 12px;">
         <article class="panel account-auth-card">
-          <h3 data-i18n="account_signin_title">Sign in</h3>
+          <h3 data-i18n="account_signin_title">Connexion</h3>
           <form data-signin-form>
             <input type="email" name="email" data-i18n-placeholder="account_email_ph" placeholder="Email" autocomplete="email" data-account-email required />
-            <input type="password" name="password" data-signin-password data-i18n-placeholder="account_password_ph" placeholder="Password" autocomplete="current-password" required />
+            <input type="password" name="password" data-signin-password data-i18n-placeholder="account_password_ph" placeholder="Mot de passe" autocomplete="current-password" required />
             <div class="field-row">
-              <button class="btn btn-primary" type="submit" data-i18n="account_signin_btn">Sign in</button>
-              <button class="btn btn-ghost" type="button" data-forgot data-i18n="account_forgot_btn">Forgot password</button>
+              <button class="btn btn-primary" type="submit" data-i18n="account_signin_btn">Se connecter</button>
+              <button class="btn btn-ghost" type="button" data-forgot data-i18n="account_forgot_btn">Mot de passe oublié</button>
             </div>
             <div class="msg" data-msg></div>
             <div class="msg" data-forgot-msg></div>
             <div class="field-row" data-resend-row style="display:none;">
-              <button class="btn btn-ghost" type="button" data-resend-confirmation data-i18n="account_resend_confirmation_btn">Resend confirmation email</button>
+              <button class="btn btn-ghost" type="button" data-resend-confirmation data-i18n="account_resend_confirmation_btn">Renvoyer l'email de confirmation</button>
             </div>
             <div class="msg" data-resend-msg></div>
           </form>
         </article>
 
         <article class="panel account-auth-card">
-          <h3 data-i18n="site_account_signup_title">Create web account</h3>
+          <h3 data-i18n="site_account_signup_title">Créer un compte web</h3>
           <form data-signup-form>
             <input type="email" name="email" data-i18n-placeholder="account_signup_email_ph" placeholder="Email" autocomplete="email" required />
-            <input type="password" name="password" data-i18n-placeholder="account_signup_password_ph" placeholder="Password (min 8 chars)" minlength="8" autocomplete="new-password" required />
-            <input type="password" name="confirm_password" data-i18n-placeholder="account_signup_confirm_ph" placeholder="Confirm password" minlength="8" autocomplete="new-password" required />
-            <button class="btn btn-primary" type="submit" data-i18n="account_signup_btn">Create account</button>
+            <input type="password" name="password" data-i18n-placeholder="account_signup_password_ph" placeholder="Mot de passe (8 caractères min)" minlength="8" autocomplete="new-password" required />
+            <input type="password" name="confirm_password" data-i18n-placeholder="account_signup_confirm_ph" placeholder="Confirmer le mot de passe" minlength="8" autocomplete="new-password" required />
+            <button class="btn btn-primary" type="submit" data-i18n="account_signup_btn">Créer un compte</button>
             <div class="msg" data-msg></div>
           </form>
         </article>
@@ -80,34 +80,34 @@
 
       <article class="panel" data-logged-in style="display:none; margin-top: 12px;">
         <div class="account-subnav">
-          <a class="btn btn-ghost" href="#account-management" data-i18n="site_account_tab_management">Account management</a>
-          <a class="btn btn-ghost" href="#account-subscription" data-i18n="site_account_tab_subscription">Subscription</a>
-          <button class="btn btn-ghost" type="button" data-signout data-i18n="account_signout">Sign out</button>
+          <a class="btn btn-ghost" href="#account-management" data-i18n="site_account_tab_management">Gestion de compte</a>
+          <a class="btn btn-ghost" href="#account-subscription" data-i18n="site_account_tab_subscription">Abonnement</a>
+          <button class="btn btn-ghost" type="button" data-signout data-i18n="account_signout">Se déconnecter</button>
         </div>
 
         <div class="panel" id="account-management" style="margin-top:12px;">
-          <h3 data-i18n="account_management_title">Account management</h3>
-          <p class="subtle" data-i18n="account_management_intro">Update your login email or password here. Email changes require confirmation from the new address.</p>
+          <h3 data-i18n="account_management_title">Gestion de compte</h3>
+          <p class="subtle" data-i18n="account_management_intro">Mettez à jour ici votre email de connexion ou votre mot de passe. Le changement d'email exige une confirmation depuis la nouvelle adresse.</p>
 
           <div class="grid-2" style="margin-top:12px;">
             <div class="panel">
-              <h3 data-i18n="account_change_email_title">Change email</h3>
-              <p class="subtle" data-i18n="account_change_email_intro">Enter your new email address. We will send a confirmation link to that new address.</p>
+              <h3 data-i18n="account_change_email_title">Changer l'email</h3>
+              <p class="subtle" data-i18n="account_change_email_intro">Saisissez votre nouvelle adresse email. Nous enverrons un lien de confirmation à cette nouvelle adresse.</p>
               <form data-email-change-form style="margin-top:12px;">
-                <input type="email" name="new_email" data-i18n-placeholder="account_new_email_ph" placeholder="New email" autocomplete="email" required />
-                <button class="btn btn-primary" type="submit" data-i18n="account_change_email_btn">Update email</button>
+                <input type="email" name="new_email" data-i18n-placeholder="account_new_email_ph" placeholder="Nouvel email" autocomplete="email" required />
+                <button class="btn btn-primary" type="submit" data-i18n="account_change_email_btn">Mettre à jour l'email</button>
                 <div class="msg" data-email-change-msg></div>
               </form>
             </div>
 
             <div class="panel">
-              <h3 data-i18n="account_change_password_title">Change password</h3>
-              <p class="subtle" data-i18n="account_change_password_intro">Enter your current password, then choose and confirm your new password.</p>
+              <h3 data-i18n="account_change_password_title">Changer le mot de passe</h3>
+              <p class="subtle" data-i18n="account_change_password_intro">Saisissez votre mot de passe actuel, puis choisissez et confirmez votre nouveau mot de passe.</p>
               <form data-password-change-form style="margin-top:12px;">
-                <input type="password" name="current_password" data-i18n-placeholder="account_current_password_ph" placeholder="Current password" autocomplete="current-password" required />
-                <input type="password" name="new_password" data-i18n-placeholder="account_new_password_ph" placeholder="New password (min 8 chars)" minlength="8" autocomplete="new-password" required />
-                <input type="password" name="confirm_password" data-i18n-placeholder="account_new_password_confirm_ph" placeholder="Confirm new password" minlength="8" autocomplete="new-password" required />
-                <button class="btn btn-primary" type="submit" data-i18n="account_change_password_btn">Update password</button>
+                <input type="password" name="current_password" data-i18n-placeholder="account_current_password_ph" placeholder="Mot de passe actuel" autocomplete="current-password" required />
+                <input type="password" name="new_password" data-i18n-placeholder="account_new_password_ph" placeholder="Nouveau mot de passe (8 caractères min)" minlength="8" autocomplete="new-password" required />
+                <input type="password" name="confirm_password" data-i18n-placeholder="account_new_password_confirm_ph" placeholder="Confirmer le nouveau mot de passe" minlength="8" autocomplete="new-password" required />
+                <button class="btn btn-primary" type="submit" data-i18n="account_change_password_btn">Mettre à jour le mot de passe</button>
                 <div class="msg" data-password-change-msg></div>
               </form>
             </div>
@@ -115,48 +115,48 @@
 
           <details class="panel account-danger-panel account-danger-accordion" style="margin-top:12px;">
             <summary class="account-danger-summary">
-              <span data-i18n="account_delete_title">Delete my account and data</span>
+              <span data-i18n="account_delete_title">Supprimer mon compte et mes données</span>
             </summary>
             <div class="account-danger-content">
-              <p class="subtle" data-i18n="account_delete_intro">This permanently deletes your web account and related data. This action is blocked while a premium subscription is still active.</p>
+              <p class="subtle" data-i18n="account_delete_intro">Cela supprime définitivement votre compte web et les données associées. Cette action est bloquée tant qu'un abonnement premium est encore actif.</p>
               <form data-delete-account-form style="margin-top:12px;">
-                <input type="password" name="password" data-i18n-placeholder="account_delete_password_ph" placeholder="Current password" autocomplete="current-password" required />
+                <input type="password" name="password" data-i18n-placeholder="account_delete_password_ph" placeholder="Mot de passe actuel" autocomplete="current-password" required />
                 <input type="text" name="confirmation_text" data-i18n-placeholder="account_delete_confirmation_ph" placeholder="YES, I WANT TO DELETE MY ACCOUNT AND DATA" autocapitalize="characters" spellcheck="false" required />
-                <button class="btn btn-ghost account-danger-btn" type="submit" data-i18n="account_delete_btn">Delete my account and data</button>
+                <button class="btn btn-ghost account-danger-btn" type="submit" data-i18n="account_delete_btn">Supprimer mon compte et mes données</button>
                 <div class="msg" data-delete-account-msg></div>
               </form>
             </div>
           </details>
         </div>
 
-        <h3 id="account-web" data-i18n="site_account_connected_title" style="margin-top:12px;">Connected web account</h3>
+        <h3 id="account-web" data-i18n="site_account_connected_title" style="margin-top:12px;">Compte web connecté</h3>
 
         <div class="panel" id="account-subscription" style="margin-top:12px;">
-          <h3 data-i18n="site_account_premium_title">Premium status</h3>
-          <p class="subtle" data-i18n="site_account_premium_intro">Free mode is always available in the desktop app. Premium unlocks favorites and automatic champion recognition while your subscription stays active.</p>
-          <div class="notice"><span data-i18n="account_access_status_label">Status</span>: <span class="status-badge" data-access-status data-i18n="account_checking">Checking...</span></div>
+          <h3 data-i18n="site_account_premium_title">Statut premium</h3>
+          <p class="subtle" data-i18n="site_account_premium_intro">Le mode gratuit reste toujours disponible dans l'application desktop. Le premium débloque les favoris et la reconnaissance automatique tant que votre abonnement reste actif.</p>
+          <div class="notice"><span data-i18n="account_access_status_label">Statut</span>: <span class="status-badge" data-access-status data-i18n="account_checking">Vérification...</span></div>
           <div class="subtle" data-access-meta style="margin-top:6px;"></div>
 
           <form data-redeem-form style="margin-top:12px;">
             <div class="field-row">
-              <input type="text" name="key" data-i18n-placeholder="account_activation_key_ph" placeholder="Premium code (example: ABCD-EFGH-IJKL-MNOP)" required />
-              <button class="btn btn-primary" type="submit" data-i18n="site_account_attach_code_btn">Attach premium code</button>
+              <input type="text" name="key" data-i18n-placeholder="account_activation_key_ph" placeholder="Code premium (exemple : ABCD-EFGH-IJKL-MNOP)" required />
+              <button class="btn btn-primary" type="submit" data-i18n="site_account_attach_code_btn">Associer un code premium</button>
             </div>
             <div class="msg" data-redeem-msg></div>
           </form>
         </div>
 
         <div class="panel" style="margin-top:12px;">
-          <h3 data-i18n="site_account_codes_title">My premium codes</h3>
-          <p class="subtle" data-i18n="site_account_codes_intro">Use one active premium code inside the desktop app to unlock premium features on a machine.</p>
+          <h3 data-i18n="site_account_codes_title">Mes codes premium</h3>
+          <p class="subtle" data-i18n="site_account_codes_intro">Utilisez un code premium actif dans l'application desktop pour débloquer les fonctions premium sur une machine.</p>
           <div class="keys-table-wrap">
             <table class="keys-table">
               <thead>
                 <tr>
                   <th data-i18n="account_my_key_col_code">Code</th>
-                  <th data-i18n="account_my_key_col_redeemed_at">Redeemed at</th>
-                  <th data-i18n="account_my_key_col_expires">Key expires</th>
-                  <th data-i18n="account_my_key_col_status">Status</th>
+                  <th data-i18n="account_my_key_col_redeemed_at">Activée le</th>
+                  <th data-i18n="account_my_key_col_expires">Expiration de la clé</th>
+                  <th data-i18n="account_my_key_col_status">Statut</th>
                 </tr>
               </thead>
               <tbody data-my-keys-body></tbody>
@@ -166,15 +166,15 @@
         </div>
 
         <div class="panel" data-admin-entry style="display:none; margin-top:12px;">
-          <h3 data-i18n="site_account_admin_title">Admin tools</h3>
-          <p class="subtle" data-i18n="site_account_admin_intro">This authenticated session has admin rights. Open the dedicated admin console to manage desktop status and public service messages.</p>
+          <h3 data-i18n="site_account_admin_title">Outils admin</h3>
+          <p class="subtle" data-i18n="site_account_admin_intro">Cette session authentifiée dispose des droits admin. Ouvrez la console dédiée pour gérer le statut desktop et les messages de service publics.</p>
           <div class="field-row" style="margin-top:12px;">
-            <a class="btn btn-primary" href="/admin.html" data-i18n="site_account_admin_open">Open admin console</a>
+            <a class="btn btn-primary" href="/admin.html" data-i18n="site_account_admin_open">Ouvrir la console admin</a>
           </div>
         </div>
 
         <div class="field-row account-help-row" style="margin-top: 12px;">
-          <a class="btn btn-ghost" href="/support.html" data-i18n="account_need_help">Need help</a>
+          <a class="btn btn-ghost" href="/support.html" data-i18n="account_need_help">Besoin d'aide</a>
         </div>
         <div class="msg" data-session-msg></div>
       </article>

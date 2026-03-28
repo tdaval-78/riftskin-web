@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex,nofollow" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self' mailto:; img-src 'self' data: https://jfmrwxmlncvzoremcmbi.supabase.co; style-src 'self' 'unsafe-inline'; script-src 'self' https://cdn.jsdelivr.net https://cdn.paddle.com; connect-src 'self' https://jfmrwxmlncvzoremcmbi.supabase.co https://api.paddle.com https://sandbox-api.paddle.com https://checkout.paddle.com https://sandbox-checkout.paddle.com; frame-src https://checkout.paddle.com https://sandbox-checkout.paddle.com;" />
-  <title data-i18n="site_admin_title">RIFTSKIN Admin</title>
-  <meta name="description" data-i18n-content="site_admin_meta_desc" content="Manage the public RiftSkin desktop status and service message from the admin console." />
+  <title data-i18n="site_admin_title">RIFTSKIN - Admin</title>
+  <meta name="description" data-i18n-content="site_admin_meta_desc" content="Gérez le statut desktop public de RiftSkin et le message de service depuis la console admin." />
   <link rel="stylesheet" href="/assets/styles.css" />
 </head>
 <body data-page="account">
@@ -16,57 +16,57 @@
         <img class="brand-mark" src="/assets/logo.png" alt="RIFTSKIN logo" />
         <span class="brand-copy">
           <span class="brand-wordmark">RIFTSKIN</span>
-          <span class="brand-subtitle" data-i18n="site_brand_tagline">macOS LoL skin manager</span>
+          <span class="brand-subtitle" data-i18n="site_brand_tagline">Injecteur de skins custom pour League of Legends sur macOS</span>
         </span>
       </a>
       <button class="btn btn-ghost burger" data-burger type="button" data-i18n="nav_menu">Menu</button>
       <nav class="nav" data-nav>
-        <a data-link="home" href="/" data-i18n="nav_home">Home</a>
-        <a data-link="download" href="/download.html" data-i18n="nav_download">Download</a>
-        <a data-link="pricing" href="/pricing.html" data-i18n="nav_pricing">Pricing</a>
+        <a data-link="home" href="/" data-i18n="nav_home">Accueil</a>
+        <a data-link="download" href="/download.html" data-i18n="nav_download">Télécharger</a>
+        <a data-link="pricing" href="/pricing.html" data-i18n="nav_pricing">Abonnement</a>
         <a data-link="faq" href="/faq.html" data-i18n="nav_faq">FAQ</a>
         <a data-link="support" href="/support.html" data-i18n="nav_support">Support</a>
         <a data-link="status" href="/status.html" class="nav-status-link">
-          <span data-i18n="nav_status">Status</span>
+          <span data-i18n="nav_status">Statut</span>
           <span class="nav-status-dot" data-site-status-dot aria-hidden="true"></span>
         </a>
-        <a data-link="account" href="/account.html" data-i18n="nav_account">My account</a>
+        <a data-link="account" href="/account.html" data-i18n="nav_account">Mon compte</a>
       </nav>
       <div class="cta-row">
-        <a class="btn btn-primary" href="/download.html" data-i18n="site_home_cta_download">Download for Mac</a>
-        <a class="btn btn-ghost" href="/account.html" data-i18n="nav_account">My account</a>
+        <a class="btn btn-primary" href="/download.html" data-i18n="site_home_cta_download">Télécharger pour Mac</a>
+        <a class="btn btn-ghost" href="/account.html" data-i18n="nav_account">Mon compte</a>
       </div>
     </header>
 
     <section class="section">
       <div class="section-head">
         <div>
-          <h2 data-i18n="site_admin_h2">Desktop admin console</h2>
-          <p class="section-intro" data-i18n="site_admin_intro">Manage the public ETAT status shown in the RiftSkin app and on the website.</p>
+          <h2 data-i18n="site_admin_h2">Console admin desktop</h2>
+          <p class="section-intro" data-i18n="site_admin_intro">Gérez le statut ÉTAT public affiché dans l'application RiftSkin et sur le site.</p>
         </div>
-        <a class="btn btn-ghost" href="/account.html" data-i18n="site_admin_back_account">Back to my account</a>
+        <a class="btn btn-ghost" href="/account.html" data-i18n="site_admin_back_account">Retour à mon compte</a>
       </div>
 
-      <div class="notice"><span data-i18n="account_status_label">Session status</span>: <span class="status-badge" data-admin-session-status data-i18n="account_checking">Checking...</span></div>
+      <div class="notice"><span data-i18n="account_status_label">Statut de session</span>: <span class="status-badge" data-admin-session-status data-i18n="account_checking">Vérification...</span></div>
 
       <article class="panel admin-gate-card" data-admin-guard style="margin-top: 12px;">
-        <h3 data-admin-guard-title data-i18n="site_admin_guard_title">Admin access required</h3>
-        <p class="subtle" data-admin-guard-message data-i18n="site_admin_guard_auth">Sign in on your account page with the admin account to access this console.</p>
+        <h3 data-admin-guard-title data-i18n="site_admin_guard_title">Accès admin requis</h3>
+        <p class="subtle" data-admin-guard-message data-i18n="site_admin_guard_auth">Connectez-vous sur votre page compte avec le compte admin pour accéder à cette console.</p>
         <div class="field-row" style="margin-top: 12px;">
-          <a class="btn btn-primary" href="/account.html" data-i18n="site_admin_back_account">Back to my account</a>
+          <a class="btn btn-primary" href="/account.html" data-i18n="site_admin_back_account">Retour à mon compte</a>
         </div>
       </article>
 
       <article class="panel admin-console" data-admin-content style="display:none; margin-top: 12px;">
         <div class="admin-console-head">
           <div>
-            <h3 data-i18n="admin_console_title">Admin console</h3>
-            <p class="subtle"><span data-i18n="site_admin_connected_as">Connected as</span> <strong data-admin-email>-</strong></p>
-            <p class="subtle" data-i18n="site_admin_status_intro">Update the desktop injection state and the public service message shown both in the app and on the website.</p>
+            <h3 data-i18n="admin_console_title">Console admin</h3>
+            <p class="subtle"><span data-i18n="site_admin_connected_as">Connecté en tant que</span> <strong data-admin-email>-</strong></p>
+            <p class="subtle" data-i18n="site_admin_status_intro">Mettez à jour l'état d'injection desktop et le message de service public affichés à la fois dans l'application et sur le site.</p>
           </div>
           <div class="admin-console-actions">
-            <a class="btn btn-ghost" href="/account.html" data-i18n="site_admin_back_account">Back to my account</a>
-            <button class="btn btn-ghost" type="button" data-admin-refresh data-i18n="admin_console_refresh">Refresh</button>
+            <a class="btn btn-ghost" href="/account.html" data-i18n="site_admin_back_account">Retour à mon compte</a>
+            <button class="btn btn-ghost" type="button" data-admin-refresh data-i18n="admin_console_refresh">Actualiser</button>
           </div>
         </div>
 
@@ -82,29 +82,29 @@
           <form data-admin-service-form>
             <div class="field-row">
               <select name="injection_state">
-                <option value="ok">Operational / green</option>
+                <option value="ok">Opérationnel / vert</option>
                 <option value="maintenance">Maintenance / orange</option>
               </select>
               <select name="service_message_template" data-admin-service-template>
-                <option value="__custom__">Manual message</option>
-                <option value="ok_general">EN example: service fully operational</option>
-                <option value="ok_update_deployed">EN example: compatibility update deployed</option>
-                <option value="maintenance_patch">EN example: patch in progress after Riot update</option>
-                <option value="maintenance_testing">EN example: final testing before release</option>
+                <option value="__custom__">Message manuel</option>
+                <option value="ok_general">Exemple EN : service totalement opérationnel</option>
+                <option value="ok_update_deployed">Exemple EN : mise à jour de compatibilité déployée</option>
+                <option value="maintenance_patch">Exemple EN : patch en cours après une mise à jour Riot</option>
+                <option value="maintenance_testing">Exemple EN : tests finaux avant publication</option>
               </select>
             </div>
             <div class="notice admin-service-live-block">
-              <p class="subtle admin-service-help">Selecting a template automatically fills the English message and the recommended state. You can still edit the text manually.</p>
-              <p class="subtle admin-service-live-message"><strong>EN:</strong> <span data-admin-service-template-preview>Select a template or write your own message.</span></p>
-              <p class="subtle admin-service-live-message"><strong>FR:</strong> <span data-admin-service-template-translation>Select a template or write your own message.</span></p>
+              <p class="subtle admin-service-help">La sélection d'un modèle remplit automatiquement le message anglais et l'état recommandé. Vous pouvez toujours modifier le texte manuellement.</p>
+              <p class="subtle admin-service-live-message"><strong>EN :</strong> <span data-admin-service-template-preview>Sélectionnez un modèle ou écrivez votre propre message.</span></p>
+              <p class="subtle admin-service-live-message"><strong>FR :</strong> <span data-admin-service-template-translation>Sélectionnez un modèle ou écrivez votre propre message.</span></p>
             </div>
             <textarea
               name="service_message"
-              placeholder="Write the public message shown in the ETAT panel inside the desktop app and on the website status page."
+              placeholder="Rédigez le message public affiché dans l'onglet ÉTAT de l'application desktop et sur la page Statut du site."
             ></textarea>
-            <p class="subtle admin-service-help">The latest League of Legends patch is still fetched automatically by the desktop app at launch and when the user clicks Refresh.</p>
+            <p class="subtle admin-service-help">Le dernier patch League of Legends est toujours récupéré automatiquement par l'application desktop au lancement et quand l'utilisateur clique sur Actualiser.</p>
             <div class="field-row">
-              <button class="btn btn-primary" type="submit">Publish desktop status</button>
+              <button class="btn btn-primary" type="submit">Publier le statut desktop</button>
             </div>
             <div class="msg" data-admin-service-msg></div>
           </form>
