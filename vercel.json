@@ -1,0 +1,15 @@
+{
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.riftskin.com"
+        }
+      ],
+      "destination": "https://riftskin.com/$1",
+      "permanent": true
+    }
+  ]
+}
