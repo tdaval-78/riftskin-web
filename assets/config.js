@@ -14,8 +14,8 @@ window.RiftSkinConfig = {
   stripeBillingReturnUrl: "/account.html",
   subscriptionMaintenanceEnabled: false,
   downloadMaintenanceEnabled: false,
-  privateAccessEnabled: true,
-  privateAccessAllowedEmails: ["tdaval2@icloud.com"],
+  privateAccessEnabled: false,
+  privateAccessAllowedEmails: [],
 
   // Paddle settings
   paddleEnvironment: "production", // "production" or "sandbox"
