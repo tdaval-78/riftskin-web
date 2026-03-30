@@ -396,7 +396,8 @@ async function sendCancellationAcknowledgedEmail(params: {
       <p style="margin:0 0 14px;">${cycleEnd
         ? `Your Premium access stays active until <strong>${escapeHtml(cycleEnd)}</strong>.`
         : "Your Premium access stays active until the end of the period you already paid for."}</p>
-      <p style="margin:0 0 18px;">Your license stays the same during that time and remains available in your RIFTSKIN account.</p>
+      <p style="margin:0 0 14px;">No new charge will be made at the next monthly renewal.</p>
+      <p style="margin:0 0 18px;">Your license stays the same during that time and remains available in your RIFTSKIN account, but Premium features will stop automatically at the end date above.</p>
       <div style="margin:0 0 18px;">${renderEmailButton("Manage subscription", "https://riftskin.com/account.html")}</div>
       <div style="padding:14px 16px;background:#0b1323;border:1px solid #22314d;border-radius:16px;color:#93a4bf;">
         VAT not applicable, article 293 B of the French CGI.
@@ -409,7 +410,8 @@ async function sendCancellationAcknowledgedEmail(params: {
     "",
     "Your cancellation request has been confirmed.",
     cycleEnd ? `Your Premium access stays active until ${cycleEnd}.` : "Your Premium access stays active until the end of the paid period.",
-    "Your license stays the same during that time and remains available in your RIFTSKIN account.",
+    "No new charge will be made at the next monthly renewal.",
+    "Your license stays the same during that time and remains available in your RIFTSKIN account, but Premium features will stop automatically at the end date above.",
     "VAT not applicable, article 293 B of the French CGI.",
   ].join("\n")
   return sendBillingEmail({
@@ -429,6 +431,7 @@ async function sendSubscriptionExpiredEmail(params: {
     title: "Your Premium access has expired",
     lead: "Your RIFTSKIN Premium subscription has now ended.",
     bodyHtml: `
+      <p style="margin:0 0 14px;">Your Premium license is no longer active and no longer unlocks Premium features in the desktop app.</p>
       <p style="margin:0 0 14px;">Your web account remains available, and you can subscribe again at any time to reactivate your license and Premium features.</p>
       <p style="margin:0 0 18px;">Free mode still works inside the desktop app.</p>
       <div style="margin:0 0 18px;">${renderEmailButton("Subscribe again", "https://riftskin.com/pricing.html")}</div>
@@ -442,6 +445,7 @@ async function sendSubscriptionExpiredEmail(params: {
     "RIFTSKIN Premium subscription ended",
     "",
     "Your Premium subscription has now ended and Premium access has expired.",
+    "Your Premium license is no longer active and no longer unlocks Premium features in the desktop app.",
     "Your web account remains available, and you can subscribe again at any time to reactivate your license.",
     "VAT not applicable, article 293 B of the French CGI.",
   ].join("\n")
