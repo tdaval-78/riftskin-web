@@ -152,8 +152,22 @@ async function ensureActivationKey(adminClient: any, params: {
 }) {
   const note = `${legacyBillingNotePrefix}${params.subscriptionId}]`
   const active = !params.accessEndsAt || new Date(params.accessEndsAt).getTime() > Date.now()
+  let targetKeyId = params.existingKeyId || null
 
-  if (params.existingKeyId) {
+  if (!targetKeyId) {
+    const existingByNote = await adminClient
+      .from("activation_keys")
+      .select("id")
+      .eq("note", note)
+      .order("id", { ascending: false })
+      .limit(1)
+      .maybeSingle()
+
+    if (existingByNote.error) throw existingByNote.error
+    targetKeyId = existingByNote.data?.id || null
+  }
+
+  if (targetKeyId) {
     const { data, error } = await adminClient
       .from("activation_keys")
       .update({
@@ -162,7 +176,7 @@ async function ensureActivationKey(adminClient: any, params: {
         expires_at: params.accessEndsAt,
         is_active: active,
       })
-      .eq("id", params.existingKeyId)
+      .eq("id", targetKeyId)
       .select("id, code, expires_at, is_active")
       .single()
 
