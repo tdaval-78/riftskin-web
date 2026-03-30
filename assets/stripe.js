@@ -135,7 +135,11 @@
       event.preventDefault();
 
       const currentKey = btn.getAttribute('data-i18n');
-      if (currentKey === 'site_home_manage_cta' || currentKey === 'site_pricing_manage_cta') {
+      if (
+        currentKey === 'site_home_manage_cta' ||
+        currentKey === 'site_pricing_manage_cta' ||
+        currentKey === 'account_manage_sub'
+      ) {
         openPortal();
         return;
       }
