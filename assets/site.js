@@ -230,6 +230,42 @@
     return copyByLang[lang] || copyByLang.en;
   }
 
+  function getDownloadMaintenanceCopy() {
+    const lang = window.RiftSkinI18n && typeof window.RiftSkinI18n.getLanguage === 'function'
+      ? window.RiftSkinI18n.getLanguage()
+      : 'en';
+
+    const copyByLang = {
+      fr: {
+        title: "RIFTSKIN en cours de maintenance",
+        body: "RIFTSKIN est temporairement indisponible pendant une maintenance. Il sera de nouveau disponible dans moins d'une semaine.",
+        close: "Fermer"
+      },
+      es: {
+        title: "RIFTSKIN en mantenimiento",
+        body: "RIFTSKIN no esta disponible temporalmente por mantenimiento. Volvera en menos de una semana.",
+        close: "Cerrar"
+      },
+      pt: {
+        title: "RIFTSKIN em manutencao",
+        body: "O RIFTSKIN esta temporariamente indisponivel durante a manutencao. Estara de volta em menos de uma semana.",
+        close: "Fechar"
+      },
+      zh: {
+        title: "RIFTSKIN 维护中",
+        body: "RIFTSKIN 目前因维护暂时不可用，预计将在一周内恢复。",
+        close: "关闭"
+      },
+      en: {
+        title: "RIFTSKIN is under maintenance",
+        body: "RIFTSKIN is temporarily unavailable during maintenance. It will be back in less than a week.",
+        close: "Close"
+      }
+    };
+
+    return copyByLang[lang] || copyByLang.en;
+  }
+
   function ensureSubscriptionMaintenanceModal() {
     let overlay = document.querySelector('[data-subscription-maintenance-modal]');
     if (overlay) return overlay;
@@ -292,6 +328,31 @@
 
   function openSubscriptionMaintenanceModal() {
     syncSubscriptionMaintenanceModalContent();
+    const overlay = ensureSubscriptionMaintenanceModal();
+    overlay.style.display = '';
+    overlay.hidden = false;
+    document.body.classList.add('has-overlay');
+
+    const closeButton = overlay.querySelector('.maintenance-modal-close');
+    if (closeButton) closeButton.focus();
+  }
+
+  function syncDownloadMaintenanceModalContent() {
+    const overlay = ensureSubscriptionMaintenanceModal();
+    const copy = getDownloadMaintenanceCopy();
+    const titleEl = overlay.querySelector('.maintenance-modal-title');
+    const bodyEl = overlay.querySelector('.maintenance-modal-body');
+    const actionEl = overlay.querySelector('.maintenance-modal-action');
+    const closeEl = overlay.querySelector('.maintenance-modal-close');
+
+    if (titleEl) titleEl.textContent = copy.title;
+    if (bodyEl) bodyEl.textContent = copy.body;
+    if (actionEl) actionEl.textContent = copy.close;
+    if (closeEl) closeEl.setAttribute('aria-label', copy.close);
+  }
+
+  function openDownloadMaintenanceModal() {
+    syncDownloadMaintenanceModalContent();
     const overlay = ensureSubscriptionMaintenanceModal();
     overlay.style.display = '';
     overlay.hidden = false;
@@ -516,6 +577,14 @@
 
       event.preventDefault();
       openSubscriptionMaintenanceModal();
+    });
+  });
+
+  document.querySelectorAll('[data-download-installer], [data-download-windows], [data-download-direct], a[href="/download.html"]').forEach(function (downloadCta) {
+    downloadCta.addEventListener('click', function (event) {
+      if (event.defaultPrevented) return;
+      event.preventDefault();
+      openDownloadMaintenanceModal();
     });
   });
 
