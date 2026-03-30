@@ -105,6 +105,11 @@ function isAccessActive(status: string, endsAt: string | null) {
   return false
 }
 
+function isCancellationScheduled(raw: unknown) {
+  const record = raw && typeof raw === "object" ? raw as Record<string, unknown> : {}
+  return record.cancel_at_period_end === true || !!record.cancel_at
+}
+
 async function stripeRequest(path: string, apiKey: string) {
   const response = await fetch(`https://api.stripe.com${path}`, {
     headers: {
@@ -523,6 +528,8 @@ async function buildSubscriptionSnapshot(eventType: string, payload: Record<stri
     activatedAt: unixToIso(subscription.start_date),
     trialingAt: unixToIso(subscription.trial_start),
     pausedAt: unixToIso(((subscription.pause_collection || {}) as Record<string, unknown>).resumes_at),
+    cancelAtPeriodEnd: subscription.cancel_at_period_end === true,
+    cancelAt: unixToIso(subscription.cancel_at),
     raw: subscription,
   }
 }
@@ -600,6 +607,7 @@ Deno.serve(async (req) => {
     const existingNotificationState = getNotificationState(existing.data?.raw)
     const existingActive = isAccessActive(String(existing.data?.status || ""), existing.data?.current_period_ends_at ? String(existing.data.current_period_ends_at) : null)
     const active = isAccessActive(snapshot.status, snapshot.currentPeriodEndsAt)
+    const cancellationScheduled = isCancellationScheduled(snapshot.raw)
     const activationKey = await ensureActivationKey(adminClient, {
       adminUserId: keyOwnerUserId,
       subscriptionId: snapshot.subscriptionId,
@@ -612,7 +620,7 @@ Deno.serve(async (req) => {
     const nextNotificationState: Record<string, unknown> = { ...existingNotificationState }
 
     if (
-      ["canceled", "cancelled"].includes(snapshot.status) &&
+      (["canceled", "cancelled"].includes(snapshot.status) || cancellationScheduled) &&
       active &&
       existingNotificationState.cancellation_period_end !== snapshot.currentPeriodEndsAt
     ) {
