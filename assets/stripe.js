@@ -1,9 +1,11 @@
 (function () {
   const cfg = window.RiftSkinConfig || {};
   const authStorage = window.localStorage || window.sessionStorage;
+  const pageStorage = window.sessionStorage;
   const alertEls = document.querySelectorAll('[data-checkout-alert]');
   const subscribeBtns = Array.from(document.querySelectorAll('[data-subscribe], [data-premium-cta]'));
   const portalBtns = Array.from(document.querySelectorAll('[data-open-billing-portal]'));
+  const PENDING_CHECKOUT_KEY = 'riftskin_stripe_checkout_pending';
 
   function t(key, fallback) {
     if (window.RiftSkinI18n && typeof window.RiftSkinI18n.t === 'function') {
@@ -19,6 +21,16 @@
       el.className = 'alert msg ' + (kind || '');
       el.style.display = text ? 'block' : 'none';
     });
+  }
+
+  function markCheckoutPending() {
+    if (!pageStorage) return;
+    pageStorage.setItem(PENDING_CHECKOUT_KEY, '1');
+  }
+
+  function clearCheckoutPending() {
+    if (!pageStorage) return;
+    pageStorage.removeItem(PENDING_CHECKOUT_KEY);
   }
 
   function createSupabaseClient() {
@@ -104,6 +116,7 @@
         throw new Error(t('msg_checkout_open_failed', 'Unable to open checkout.'));
       }
 
+      markCheckoutPending();
       window.location.href = data.url;
     } catch (err) {
       const message = (err && err.message) ? err.message : t('msg_checkout_open_failed', 'Unable to open checkout.');
@@ -158,6 +171,7 @@
       try {
         const data = await invokeFunction('stripe-reconcile-subscription', {});
         if (data && data.ok) {
+          clearCheckoutPending();
           const url = new URL(window.location.href);
           url.searchParams.delete('checkout');
           window.location.replace(url.toString());
@@ -207,9 +221,11 @@
   const params = new URLSearchParams(window.location.search);
   const checkoutState = params.get('checkout');
   if (checkoutState === 'success') {
+    markCheckoutPending();
     setAlert('Payment received. Your premium access is being activated. If the key does not appear within a minute, refresh the page.', 'ok');
     reconcileSubscription();
   } else if (checkoutState === 'canceled') {
+    clearCheckoutPending();
     setAlert('Checkout canceled.', '');
   } else if (checkoutState === 'signin') {
     setAlert('Sign in or create your account first to continue with Stripe checkout.', '');

@@ -438,6 +438,9 @@
   }
 
   const authStorage = window.localStorage || window.sessionStorage;
+  const pageStorage = window.sessionStorage;
+  const PENDING_CHECKOUT_KEY = 'riftskin_stripe_checkout_pending';
+  let reconcileInFlight = false;
   const privateAccessEnabled = !!cfg.privateAccessEnabled;
   const privateAllowedEmails = Array.isArray(cfg.privateAccessAllowedEmails)
     ? cfg.privateAccessAllowedEmails.map(function (email) { return String(email || '').trim().toLowerCase(); }).filter(Boolean)
@@ -459,6 +462,33 @@
   async function getSession() {
     const { data } = await supabaseClient.auth.getSession();
     return data ? data.session : null;
+  }
+
+  function hasPendingStripeCheckout() {
+    return !!(pageStorage && pageStorage.getItem(PENDING_CHECKOUT_KEY) === '1');
+  }
+
+  function clearPendingStripeCheckout() {
+    if (!pageStorage) return;
+    pageStorage.removeItem(PENDING_CHECKOUT_KEY);
+  }
+
+  async function tryStripeReconcile(userId) {
+    if (reconcileInFlight || !hasPendingStripeCheckout()) return false;
+    reconcileInFlight = true;
+    try {
+      const result = await supabaseClient.functions.invoke('stripe-reconcile-subscription', { body: {} });
+      if (result.error || !result.data || result.data.ok !== true) {
+        return false;
+      }
+      clearPendingStripeCheckout();
+      await loadMyKeys(userId);
+      return true;
+    } catch (_err) {
+      return false;
+    } finally {
+      reconcileInFlight = false;
+    }
   }
 
   async function refreshSession() {
@@ -501,6 +531,7 @@
       }
 
       if (row.is_admin) {
+        clearPendingStripeCheckout();
         setBillingUi(true);
         setAccessBadge('Admin permanent access', 'ok');
         if (accessMeta) accessMeta.textContent = 'This account has permanent premium access.';
@@ -508,6 +539,7 @@
       }
 
       if (row.access_granted && (row.access_source === 'activation_key' || row.access_source === 'admin_grant')) {
+        clearPendingStripeCheckout();
         setBillingUi(true);
         setAccessBadge('Premium active', 'ok');
         if (accessMeta) {
@@ -523,6 +555,13 @@
         setAccessBadge('Premium inactive', 'error');
         if (accessMeta) accessMeta.textContent = 'Your premium code is no longer active. The desktop app free mode stays available.';
         return;
+      }
+
+      if (hasPendingStripeCheckout()) {
+        const reconciled = await tryStripeReconcile(userId);
+        if (reconciled) {
+          return refreshAccessStatus(userId);
+        }
       }
 
       setBillingUi(false);
