@@ -1,5 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 import { createClient } from "npm:@supabase/supabase-js@2"
+import { escapeHtml, renderEmailButton, renderEmailLayout } from "../_shared/email-template.ts"
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -334,36 +335,41 @@ async function sendPremiumKeyEmail(params: {
 }) {
   const cycleEnd = formatParisDate(params.currentPeriodEndsAt)
 
-  const html = `
-    <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111827;">
-      <h2 style="margin:0 0 12px;">Bienvenue sur RIFTSKIN Premium</h2>
-      <p>Votre paiement a bien ete confirme.</p>
-      <p><strong>Votre licence Premium :</strong></p>
-      <div style="font-size:28px;font-weight:700;letter-spacing:1px;background:#0f172a;color:#f8fafc;border-radius:14px;padding:18px 20px;display:inline-block;">
-        ${params.activationKeyCode}
+  const html = renderEmailLayout({
+    previewText: `Your RIFTSKIN Premium license is ready: ${params.activationKeyCode}`,
+    eyebrow: "Premium active",
+    title: "Your RIFTSKIN Premium license",
+    lead: "Your payment has been confirmed and your Premium subscription is now active.",
+    bodyHtml: `
+      <div style="margin:0 0 18px;padding:18px 20px;background:#111c31;border:1px solid #22314d;border-radius:18px;">
+        <div style="font-size:12px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#c6a756;margin:0 0 8px;">Your license</div>
+        <div style="font-size:28px;line-height:1.2;font-weight:800;letter-spacing:1.5px;color:#ffffff;">${escapeHtml(params.activationKeyCode)}</div>
       </div>
-      <p style="margin-top:18px;">Cette meme licence reste valable tant que votre abonnement est actif.</p>
-      ${cycleEnd ? `<p>Fin de la periode de facturation en cours : <strong>${cycleEnd}</strong></p>` : ""}
-      <p><strong>TVA non applicable, article 293 B du CGI.</strong></p>
-      <p>Vous pouvez aussi retrouver cette licence dans votre compte RIFTSKIN, onglet abonnement / licence, puis la renseigner dans l'application desktop.</p>
-      <p style="margin-top:20px;">Besoin d'aide ? Repondez a cet email ou contactez le support RIFTSKIN.</p>
-    </div>
-  `.trim()
+      <p style="margin:0 0 14px;">This same license remains valid for as long as your subscription stays active. You can keep using it in the desktop app without changing it every month.</p>
+      ${cycleEnd ? `<p style="margin:0 0 14px;">Next billing date: <strong>${escapeHtml(cycleEnd)}</strong></p>` : ""}
+      <p style="margin:0 0 18px;">You can also find this license in your RIFTSKIN account under <strong>Subscriptions</strong>.</p>
+      <div style="margin:0 0 18px;">${renderEmailButton("Open my account", "https://riftskin.com/account.html")}</div>
+      <div style="padding:14px 16px;background:#0b1323;border:1px solid #22314d;border-radius:16px;color:#93a4bf;">
+        VAT not applicable, article 293 B of the French CGI.
+      </div>
+    `,
+    footerNote: "You can reply directly to this email if you need help.",
+  })
 
   const text = [
-    "Bienvenue sur RIFTSKIN Premium",
+    "Welcome to RIFTSKIN Premium",
     "",
-    "Votre paiement a bien ete confirme.",
-    `Votre licence Premium : ${params.activationKeyCode}`,
-    "Cette meme licence reste valable tant que votre abonnement est actif.",
-    cycleEnd ? `Fin de la periode de facturation en cours : ${cycleEnd}` : "",
-    "TVA non applicable, article 293 B du CGI.",
-    "Vous pouvez aussi retrouver cette licence dans votre compte RIFTSKIN et la renseigner dans l'application desktop.",
+    "Your payment has been confirmed.",
+    `Your Premium license: ${params.activationKeyCode}`,
+    "This same license remains valid for as long as your subscription stays active.",
+    cycleEnd ? `Next billing date: ${cycleEnd}` : "",
+    "VAT not applicable, article 293 B of the French CGI.",
+    "You can also find this license in your RIFTSKIN account and use it inside the desktop app.",
   ].filter(Boolean).join("\n")
 
   return sendBillingEmail({
     toEmail: params.toEmail,
-    subject: "Votre licence RIFTSKIN Premium",
+    subject: "Your RIFTSKIN Premium license",
     html,
     text,
   })
@@ -374,26 +380,36 @@ async function sendCancellationAcknowledgedEmail(params: {
   currentPeriodEndsAt: string | null
 }) {
   const cycleEnd = formatParisDate(params.currentPeriodEndsAt)
-  const html = `
-    <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111827;">
-      <h2 style="margin:0 0 12px;">Annulation de votre abonnement RIFTSKIN Premium</h2>
-      <p>Votre demande d'annulation a bien ete prise en compte.</p>
-      ${cycleEnd ? `<p>Votre acces premium reste actif jusqu'au <strong>${cycleEnd}</strong>.</p>` : "<p>Votre acces premium reste actif jusqu'a la fin de la periode deja reglee.</p>"}
-      <p>Votre licence reste la meme pendant cette periode et reste disponible dans votre compte RIFTSKIN.</p>
-      <p><strong>TVA non applicable, article 293 B du CGI.</strong></p>
-    </div>
-  `.trim()
+  const html = renderEmailLayout({
+    previewText: cycleEnd
+      ? `Cancellation confirmed. Your access stays active until ${cycleEnd}.`
+      : "Cancellation confirmed. Your access stays active until the end of the paid period.",
+    eyebrow: "Subscription",
+    title: "Cancellation confirmed",
+    lead: "Your RIFTSKIN Premium subscription will no longer renew automatically.",
+    bodyHtml: `
+      <p style="margin:0 0 14px;">${cycleEnd
+        ? `Your Premium access stays active until <strong>${escapeHtml(cycleEnd)}</strong>.`
+        : "Your Premium access stays active until the end of the period you already paid for."}</p>
+      <p style="margin:0 0 18px;">Your license stays the same during that time and remains available in your RIFTSKIN account.</p>
+      <div style="margin:0 0 18px;">${renderEmailButton("Manage subscription", "https://riftskin.com/account.html")}</div>
+      <div style="padding:14px 16px;background:#0b1323;border:1px solid #22314d;border-radius:16px;color:#93a4bf;">
+        VAT not applicable, article 293 B of the French CGI.
+      </div>
+    `,
+    footerNote: "If this cancellation was not requested by you, contact RIFTSKIN support immediately.",
+  })
   const text = [
-    "Annulation de votre abonnement RIFTSKIN Premium",
+    "RIFTSKIN Premium cancellation",
     "",
-    "Votre demande d'annulation a bien ete prise en compte.",
-    cycleEnd ? `Votre acces premium reste actif jusqu'au ${cycleEnd}.` : "Votre acces premium reste actif jusqu'a la fin de la periode deja reglee.",
-    "Votre licence reste la meme pendant cette periode et reste disponible dans votre compte RIFTSKIN.",
-    "TVA non applicable, article 293 B du CGI.",
+    "Your cancellation request has been confirmed.",
+    cycleEnd ? `Your Premium access stays active until ${cycleEnd}.` : "Your Premium access stays active until the end of the paid period.",
+    "Your license stays the same during that time and remains available in your RIFTSKIN account.",
+    "VAT not applicable, article 293 B of the French CGI.",
   ].join("\n")
   return sendBillingEmail({
     toEmail: params.toEmail,
-    subject: "Annulation prise en compte - RIFTSKIN Premium",
+    subject: "Cancellation confirmed - RIFTSKIN Premium",
     html,
     text,
   })
@@ -402,24 +418,31 @@ async function sendCancellationAcknowledgedEmail(params: {
 async function sendSubscriptionExpiredEmail(params: {
   toEmail: string
 }) {
-  const html = `
-    <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111827;">
-      <h2 style="margin:0 0 12px;">Abonnement RIFTSKIN Premium termine</h2>
-      <p>Votre abonnement premium est maintenant termine et l'acces premium a expire.</p>
-      <p>Votre compte web reste disponible, et vous pourrez vous reabonner a tout moment pour reactiver votre licence.</p>
-      <p><strong>TVA non applicable, article 293 B du CGI.</strong></p>
-    </div>
-  `.trim()
+  const html = renderEmailLayout({
+    previewText: "Your Premium subscription has ended. Your account remains available for a future reactivation.",
+    eyebrow: "Subscription",
+    title: "Your Premium access has expired",
+    lead: "Your RIFTSKIN Premium subscription has now ended.",
+    bodyHtml: `
+      <p style="margin:0 0 14px;">Your web account remains available, and you can subscribe again at any time to reactivate your license and Premium features.</p>
+      <p style="margin:0 0 18px;">Free mode still works inside the desktop app.</p>
+      <div style="margin:0 0 18px;">${renderEmailButton("Subscribe again", "https://riftskin.com/pricing.html")}</div>
+      <div style="padding:14px 16px;background:#0b1323;border:1px solid #22314d;border-radius:16px;color:#93a4bf;">
+        VAT not applicable, article 293 B of the French CGI.
+      </div>
+    `,
+    footerNote: "You can always check your license and subscription status from your RIFTSKIN account.",
+  })
   const text = [
-    "Abonnement RIFTSKIN Premium termine",
+    "RIFTSKIN Premium subscription ended",
     "",
-    "Votre abonnement premium est maintenant termine et l'acces premium a expire.",
-    "Votre compte web reste disponible, et vous pourrez vous reabonner a tout moment pour reactiver votre licence.",
-    "TVA non applicable, article 293 B du CGI.",
+    "Your Premium subscription has now ended and Premium access has expired.",
+    "Your web account remains available, and you can subscribe again at any time to reactivate your license.",
+    "VAT not applicable, article 293 B of the French CGI.",
   ].join("\n")
   return sendBillingEmail({
     toEmail: params.toEmail,
-    subject: "Abonnement termine - RIFTSKIN Premium",
+    subject: "Subscription ended - RIFTSKIN Premium",
     html,
     text,
   })

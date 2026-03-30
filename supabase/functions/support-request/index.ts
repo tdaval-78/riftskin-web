@@ -1,5 +1,6 @@
-import "@supabase/functions-js/edge-runtime.d.ts"
+import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 import { createClient } from "npm:@supabase/supabase-js@2"
+import { escapeHtml, renderEmailLayout } from "../_shared/email-template.ts"
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -51,7 +52,7 @@ function isAllowedFile(file: File) {
 async function ensureBucket(client: any) {
   const { data: buckets, error: listError } = await client.storage.listBuckets()
   if (listError) throw listError
-  const exists = (buckets || []).some((bucket) => bucket.name === bucketName)
+  const exists = (buckets || []).some((bucket: any) => bucket.name === bucketName)
   if (exists) return
 
   const { error: createError } = await client.storage.createBucket(bucketName, {
@@ -102,25 +103,36 @@ async function sendSupportEmail(params: {
         const size = String(attachment.size || "")
         const signedUrl = String(attachment.signed_url || "")
         const sizeSuffix = size ? ` (${size} bytes)` : ""
-        if (!signedUrl) return `<li>${name}${sizeSuffix}</li>`
-        return `<li><a href="${signedUrl}">${name}</a>${sizeSuffix}</li>`
+        if (!signedUrl) return `<li style="margin:0 0 8px;">${escapeHtml(name)}${escapeHtml(sizeSuffix)}</li>`
+        return `<li style="margin:0 0 8px;"><a href="${escapeHtml(signedUrl)}" style="color:#e5edf8;text-decoration:none;">${escapeHtml(name)}</a>${escapeHtml(sizeSuffix)}</li>`
       }).join("")
-    : "<li>No attachment</li>"
+    : "<li style=\"margin:0;\">No attachment</li>"
 
-  const html = `
-    <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111827;">
-      <h2 style="margin:0 0 16px;">New RIFTSKIN support request</h2>
-      <p><strong>Request ID:</strong> ${params.requestId}</p>
-      <p><strong>Sent at:</strong> ${params.createdAt}</p>
-      <p><strong>Name:</strong> ${params.name}</p>
-      <p><strong>Email:</strong> ${params.email}</p>
-      <p><strong>Topic:</strong> ${params.topicLabel}</p>
-      <p><strong>Message:</strong></p>
-      <div style="white-space:pre-wrap;background:#f3f4f6;border-radius:12px;padding:14px;">${params.message}</div>
-      <p style="margin-top:18px;"><strong>Attachments:</strong></p>
-      <ul>${attachmentItems}</ul>
-    </div>
-  `.trim()
+  const html = renderEmailLayout({
+    previewText: `New RIFTSKIN support ticket: ${params.topicLabel}`,
+    eyebrow: "Support",
+    title: "New support ticket",
+    lead: `${params.name} sent a request from the RIFTSKIN website.`,
+    bodyHtml: `
+      <div style="margin:0 0 18px;padding:18px 20px;background:#111c31;border:1px solid #22314d;border-radius:18px;">
+        <div style="font-size:12px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#c6a756;margin:0 0 10px;">Ticket</div>
+        <div style="margin:0 0 6px;"><strong>ID:</strong> ${escapeHtml(params.requestId)}</div>
+        <div style="margin:0 0 6px;"><strong>Sent at:</strong> ${escapeHtml(params.createdAt)}</div>
+        <div style="margin:0 0 6px;"><strong>Name:</strong> ${escapeHtml(params.name)}</div>
+        <div style="margin:0 0 6px;"><strong>Email:</strong> ${escapeHtml(params.email)}</div>
+        <div><strong>Topic:</strong> ${escapeHtml(params.topicLabel)}</div>
+      </div>
+      <div style="margin:0 0 18px;">
+        <div style="font-size:12px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#c6a756;margin:0 0 10px;">Message</div>
+        <div style="white-space:pre-wrap;padding:16px 18px;background:#0b1323;border:1px solid #22314d;border-radius:16px;">${escapeHtml(params.message)}</div>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#c6a756;margin:0 0 10px;">Attachments</div>
+        <ul style="margin:0;padding-left:18px;color:#93a4bf;">${attachmentItems}</ul>
+      </div>
+    `,
+    footerNote: "This message was sent from the RIFTSKIN website support form.",
+  })
 
   const textAttachments = params.attachments.length
     ? params.attachments.map((attachment) => {
