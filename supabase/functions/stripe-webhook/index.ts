@@ -252,10 +252,18 @@ async function upsertSubscriptionRow(adminClient: any, params: Record<string, un
   return data
 }
 
-async function sendPremiumKeyEmail(params: {
+function formatParisDate(value: string | null) {
+  if (!value) return null
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return value
+  return date.toLocaleString("fr-FR", { dateStyle: "long", timeStyle: "short", timeZone: "Europe/Paris" })
+}
+
+async function sendBillingEmail(params: {
   toEmail: string
-  activationKeyCode: string
-  currentPeriodEndsAt: string | null
+  subject: string
+  html: string
+  text: string
 }) {
   const resendApiKey = Deno.env.get("RESEND_API_KEY")
   if (!resendApiKey) {
@@ -266,9 +274,38 @@ async function sendPremiumKeyEmail(params: {
     || Deno.env.get("SUPPORT_FROM_EMAIL")
     || "RIFTSKIN Billing <onboarding@resend.dev>"
   const replyToEmail = Deno.env.get("SUPPORT_TO_EMAIL") || "support@riftskin.com"
-  const cycleEnd = params.currentPeriodEndsAt
-    ? new Date(params.currentPeriodEndsAt).toLocaleString("fr-FR", { dateStyle: "long", timeStyle: "short", timeZone: "Europe/Paris" })
-    : null
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${resendApiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: fromEmail,
+      to: [params.toEmail],
+      reply_to: replyToEmail,
+      subject: params.subject,
+      html: params.html,
+      text: params.text,
+    }),
+  })
+
+  if (!response.ok) {
+    const errorText = await response.text()
+    throw new Error(`resend_error:${response.status}:${errorText}`)
+  }
+
+  const payload = await response.json().catch(() => ({}))
+  return { sent: true, id: payload.id || null }
+}
+
+async function sendPremiumKeyEmail(params: {
+  toEmail: string
+  activationKeyCode: string
+  currentPeriodEndsAt: string | null
+}) {
+  const cycleEnd = formatParisDate(params.currentPeriodEndsAt)
 
   const html = `
     <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111827;">
@@ -297,29 +334,74 @@ async function sendPremiumKeyEmail(params: {
     "Vous pouvez aussi retrouver cette licence dans votre compte RIFTSKIN et la renseigner dans l'application desktop.",
   ].filter(Boolean).join("\n")
 
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${resendApiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from: fromEmail,
-      to: [params.toEmail],
-      reply_to: replyToEmail,
-      subject: "Votre licence RIFTSKIN Premium",
-      html,
-      text,
-    }),
+  return sendBillingEmail({
+    toEmail: params.toEmail,
+    subject: "Votre licence RIFTSKIN Premium",
+    html,
+    text,
   })
+}
 
-  if (!response.ok) {
-    const errorText = await response.text()
-    throw new Error(`resend_error:${response.status}:${errorText}`)
-  }
+async function sendCancellationAcknowledgedEmail(params: {
+  toEmail: string
+  currentPeriodEndsAt: string | null
+}) {
+  const cycleEnd = formatParisDate(params.currentPeriodEndsAt)
+  const html = `
+    <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111827;">
+      <h2 style="margin:0 0 12px;">Annulation de votre abonnement RIFTSKIN Premium</h2>
+      <p>Votre demande d'annulation a bien ete prise en compte.</p>
+      ${cycleEnd ? `<p>Votre acces premium reste actif jusqu'au <strong>${cycleEnd}</strong>.</p>` : "<p>Votre acces premium reste actif jusqu'a la fin de la periode deja reglee.</p>"}
+      <p>Votre licence reste la meme pendant cette periode et reste disponible dans votre compte RIFTSKIN.</p>
+      <p><strong>TVA non applicable, article 293 B du CGI.</strong></p>
+    </div>
+  `.trim()
+  const text = [
+    "Annulation de votre abonnement RIFTSKIN Premium",
+    "",
+    "Votre demande d'annulation a bien ete prise en compte.",
+    cycleEnd ? `Votre acces premium reste actif jusqu'au ${cycleEnd}.` : "Votre acces premium reste actif jusqu'a la fin de la periode deja reglee.",
+    "Votre licence reste la meme pendant cette periode et reste disponible dans votre compte RIFTSKIN.",
+    "TVA non applicable, article 293 B du CGI.",
+  ].join("\n")
+  return sendBillingEmail({
+    toEmail: params.toEmail,
+    subject: "Annulation prise en compte - RIFTSKIN Premium",
+    html,
+    text,
+  })
+}
 
-  const payload = await response.json().catch(() => ({}))
-  return { sent: true, id: payload.id || null }
+async function sendSubscriptionExpiredEmail(params: {
+  toEmail: string
+}) {
+  const html = `
+    <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111827;">
+      <h2 style="margin:0 0 12px;">Abonnement RIFTSKIN Premium termine</h2>
+      <p>Votre abonnement premium est maintenant termine et l'acces premium a expire.</p>
+      <p>Votre compte web reste disponible, et vous pourrez vous reabonner a tout moment pour reactiver votre licence.</p>
+      <p><strong>TVA non applicable, article 293 B du CGI.</strong></p>
+    </div>
+  `.trim()
+  const text = [
+    "Abonnement RIFTSKIN Premium termine",
+    "",
+    "Votre abonnement premium est maintenant termine et l'acces premium a expire.",
+    "Votre compte web reste disponible, et vous pourrez vous reabonner a tout moment pour reactiver votre licence.",
+    "TVA non applicable, article 293 B du CGI.",
+  ].join("\n")
+  return sendBillingEmail({
+    toEmail: params.toEmail,
+    subject: "Abonnement termine - RIFTSKIN Premium",
+    html,
+    text,
+  })
+}
+
+function getNotificationState(raw: unknown) {
+  const record = raw && typeof raw === "object" ? raw as Record<string, unknown> : {}
+  const existing = record._riftskin_notifications
+  return existing && typeof existing === "object" ? existing as Record<string, unknown> : {}
 }
 
 async function getCustomerEmail(customerId: string | null, apiKey: string) {
@@ -443,7 +525,7 @@ Deno.serve(async (req) => {
 
     const existing = await adminClient
       .from("stripe_subscriptions")
-      .select("id, activation_key_id, last_event_id")
+      .select("id, activation_key_id, last_event_id, raw, status, current_period_ends_at")
       .eq("stripe_subscription_id", snapshot.subscriptionId)
       .maybeSingle()
 
@@ -456,6 +538,8 @@ Deno.serve(async (req) => {
       return json({ ok: true, ignored: true, eventType, reason: "duplicate_event", subscriptionId: snapshot.subscriptionId })
     }
 
+    const existingNotificationState = getNotificationState(existing.data?.raw)
+    const existingActive = isAccessActive(String(existing.data?.status || ""), existing.data?.current_period_ends_at ? String(existing.data.current_period_ends_at) : null)
     const active = isAccessActive(snapshot.status, snapshot.currentPeriodEndsAt)
     const activationKey = await ensureActivationKey(adminClient, {
       adminUserId,
@@ -464,6 +548,37 @@ Deno.serve(async (req) => {
       accessEndsAt: snapshot.currentPeriodEndsAt,
       existingKeyId: existing.data?.activation_key_id || null,
     })
+
+    let statusEmail = null
+    const nextNotificationState: Record<string, unknown> = { ...existingNotificationState }
+
+    if (
+      ["canceled", "cancelled"].includes(snapshot.status) &&
+      active &&
+      existingNotificationState.cancellation_period_end !== snapshot.currentPeriodEndsAt
+    ) {
+      statusEmail = await sendCancellationAcknowledgedEmail({
+        toEmail: snapshot.customerEmail,
+        currentPeriodEndsAt: snapshot.currentPeriodEndsAt,
+      })
+      nextNotificationState.cancellation_period_end = snapshot.currentPeriodEndsAt
+    }
+
+    if (
+      existingActive &&
+      !active &&
+      existingNotificationState.expired_event_id !== eventId
+    ) {
+      statusEmail = await sendSubscriptionExpiredEmail({
+        toEmail: snapshot.customerEmail,
+      })
+      nextNotificationState.expired_event_id = eventId
+    }
+
+    const rawWithNotifications = {
+      ...(snapshot.raw && typeof snapshot.raw === "object" ? snapshot.raw as Record<string, unknown> : {}),
+      _riftskin_notifications: nextNotificationState,
+    }
 
     const saved = await upsertSubscriptionRow(adminClient, {
       stripe_subscription_id: snapshot.subscriptionId,
@@ -482,7 +597,7 @@ Deno.serve(async (req) => {
       last_event_id: String(payload.id || "").trim() || null,
       last_event_type: eventType,
       last_event_at: new Date().toISOString(),
-      raw: snapshot.raw,
+      raw: rawWithNotifications,
       updated_at: new Date().toISOString(),
     })
 
@@ -510,6 +625,7 @@ Deno.serve(async (req) => {
       active,
       billingRowId: saved.id,
       emailReceipt,
+      statusEmail,
     })
   } catch (error) {
     return json({
