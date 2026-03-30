@@ -47,6 +47,10 @@ async function stripeRequest(path: string, apiKey: string, body?: URLSearchParam
   return payload
 }
 
+function billingFooter() {
+  return "TVA non applicable, article 293 B du CGI"
+}
+
 async function findExistingCustomerId(adminClient: any, email: string) {
   const { data, error } = await adminClient
     .from("stripe_subscriptions")
@@ -107,10 +111,15 @@ Deno.serve(async (req) => {
     if (!customerId) {
       const customer = await stripeRequest("/v1/customers", stripeSecretKey, new URLSearchParams({
         email: userEmail,
+        "invoice_settings[footer]": billingFooter(),
         "metadata[supabase_user_id]": userId,
         "metadata[app]": "riftskin",
       }))
       customerId = customer.id
+    } else {
+      await stripeRequest(`/v1/customers/${customerId}`, stripeSecretKey, new URLSearchParams({
+        "invoice_settings[footer]": billingFooter(),
+      }))
     }
 
     const params = new URLSearchParams({
@@ -122,7 +131,7 @@ Deno.serve(async (req) => {
       "line_items[0][quantity]": "1",
       "allow_promotion_codes": "true",
       submit_type: "subscribe",
-      "custom_text[after_submit][message]": "After payment, your premium key stays available in your RiftSkin account and will also be sent by email.",
+      "custom_text[after_submit][message]": "After payment, your premium key stays available in your RiftSkin account and will also be sent by email. VAT non applicable, article 293 B du CGI.",
       "metadata[supabase_user_id]": userId,
       "metadata[email]": userEmail,
       "metadata[source]": "riftskin-web",

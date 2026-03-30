@@ -280,6 +280,7 @@ async function sendPremiumKeyEmail(params: {
       </div>
       <p style="margin-top:18px;">Cette meme licence reste valable tant que votre abonnement est actif.</p>
       ${cycleEnd ? `<p>Fin de la periode de facturation en cours : <strong>${cycleEnd}</strong></p>` : ""}
+      <p><strong>TVA non applicable, article 293 B du CGI.</strong></p>
       <p>Vous pouvez aussi retrouver cette licence dans votre compte RIFTSKIN, onglet abonnement / licence, puis la renseigner dans l'application desktop.</p>
       <p style="margin-top:20px;">Besoin d'aide ? Repondez a cet email ou contactez le support RIFTSKIN.</p>
     </div>
@@ -292,6 +293,7 @@ async function sendPremiumKeyEmail(params: {
     `Votre licence Premium : ${params.activationKeyCode}`,
     "Cette meme licence reste valable tant que votre abonnement est actif.",
     cycleEnd ? `Fin de la periode de facturation en cours : ${cycleEnd}` : "",
+    "TVA non applicable, article 293 B du CGI.",
     "Vous pouvez aussi retrouver cette licence dans votre compte RIFTSKIN et la renseigner dans l'application desktop.",
   ].filter(Boolean).join("\n")
 

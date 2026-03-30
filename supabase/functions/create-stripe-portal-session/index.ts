@@ -47,6 +47,10 @@ async function stripeRequest(path: string, apiKey: string, body?: URLSearchParam
   return payload
 }
 
+function billingFooter() {
+  return "TVA non applicable, article 293 B du CGI"
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders })
@@ -98,6 +102,10 @@ Deno.serve(async (req) => {
     if (!subscription?.stripe_customer_id) {
       return json({ error: "no_billing_subscription" }, 400)
     }
+
+    await stripeRequest(`/v1/customers/${subscription.stripe_customer_id}`, stripeSecretKey, new URLSearchParams({
+      "invoice_settings[footer]": billingFooter(),
+    }))
 
     const body = await req.json().catch(() => ({}))
     const returnUrl = String(body.returnUrl || "").trim() || "https://riftskin.com/account.html"
