@@ -1,4 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2"
+import { escapeHtml, renderEmailButton, renderEmailLayout } from "../_shared/email-template.ts"
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -57,6 +58,127 @@ function getNotificationState(raw: unknown) {
 function isCancellationScheduled(raw: unknown) {
   const record = raw && typeof raw === "object" ? raw as Record<string, unknown> : {}
   return record.cancel_at_period_end === true || !!record.cancel_at
+}
+
+function formatParisDate(value: string | null) {
+  if (!value) return null
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return value
+  return date.toLocaleString("fr-FR", { dateStyle: "long", timeStyle: "short", timeZone: "Europe/Paris" })
+}
+
+async function sendBillingEmail(params: {
+  toEmail: string
+  subject: string
+  html: string
+  text: string
+}) {
+  const resendApiKey = Deno.env.get("RESEND_API_KEY")
+  if (!resendApiKey) {
+    return { sent: false, reason: "missing_resend_api_key" }
+  }
+
+  const fromEmail = Deno.env.get("BILLING_FROM_EMAIL")
+    || Deno.env.get("SUPPORT_FROM_EMAIL")
+    || "RIFTSKIN <no-reply@riftskin.com>"
+  const replyToEmail = Deno.env.get("SUPPORT_TO_EMAIL") || "support@riftskin.com"
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${resendApiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: fromEmail,
+      to: [params.toEmail],
+      reply_to: replyToEmail,
+      subject: params.subject,
+      html: params.html,
+      text: params.text,
+    }),
+  })
+
+  if (!response.ok) {
+    const errorText = await response.text()
+    throw new Error(`resend_error:${response.status}:${errorText}`)
+  }
+
+  const payload = await response.json().catch(() => ({}))
+  return { sent: true, id: payload.id || null }
+}
+
+async function sendCancellationAcknowledgedEmail(params: {
+  toEmail: string
+  currentPeriodEndsAt: string | null
+}) {
+  const cycleEnd = formatParisDate(params.currentPeriodEndsAt)
+  const html = renderEmailLayout({
+    previewText: cycleEnd
+      ? `Cancellation confirmed. Your access stays active until ${cycleEnd}.`
+      : "Cancellation confirmed. Your access stays active until the end of the paid period.",
+    eyebrow: "Subscription",
+    title: "Cancellation confirmed",
+    lead: "Your RIFTSKIN Premium subscription will no longer renew automatically.",
+    bodyHtml: `
+      <p style="margin:0 0 14px;">${cycleEnd
+        ? `Your Premium access stays active until <strong>${escapeHtml(cycleEnd)}</strong>.`
+        : "Your Premium access stays active until the end of the period you already paid for."}</p>
+      <p style="margin:0 0 14px;">No new charge will be made at the next monthly renewal.</p>
+      <p style="margin:0 0 18px;">Your license stays the same during that time and remains available in your RIFTSKIN account, but Premium features will stop automatically at the end date above.</p>
+      <div style="margin:0 0 18px;">${renderEmailButton("Manage subscription", "https://riftskin.com/account.html")}</div>
+    `,
+    footerNote: "If this cancellation was not requested by you, contact RIFTSKIN support immediately.",
+  })
+
+  const text = [
+    "RIFTSKIN Premium cancellation",
+    "",
+    "Your cancellation request has been confirmed.",
+    cycleEnd ? `Your Premium access stays active until ${cycleEnd}.` : "Your Premium access stays active until the end of the paid period.",
+    "No new charge will be made at the next monthly renewal.",
+    "Your license stays the same during that time and remains available in your RIFTSKIN account, but Premium features will stop automatically at the end date above.",
+  ].join("\n")
+
+  return sendBillingEmail({
+    toEmail: params.toEmail,
+    subject: "Cancellation confirmed - RIFTSKIN Premium",
+    html,
+    text,
+  })
+}
+
+async function sendSubscriptionExpiredEmail(params: {
+  toEmail: string
+}) {
+  const html = renderEmailLayout({
+    previewText: "Your Premium subscription has ended. Your account remains available for a future reactivation.",
+    eyebrow: "Subscription",
+    title: "Your Premium access has expired",
+    lead: "Your RIFTSKIN Premium subscription has now ended.",
+    bodyHtml: `
+      <p style="margin:0 0 14px;">Your Premium license is no longer active and no longer unlocks Premium features in the desktop app.</p>
+      <p style="margin:0 0 14px;">Your web account remains available, and you can subscribe again at any time to reactivate your license and Premium features.</p>
+      <p style="margin:0 0 18px;">Free mode still works inside the desktop app.</p>
+      <div style="margin:0 0 18px;">${renderEmailButton("Subscribe again", "https://riftskin.com/pricing.html")}</div>
+    `,
+    footerNote: "You can always check your license and subscription status from your RIFTSKIN account.",
+  })
+
+  const text = [
+    "RIFTSKIN Premium subscription ended",
+    "",
+    "Your Premium subscription has now ended and Premium access has expired.",
+    "Your Premium license is no longer active and no longer unlocks Premium features in the desktop app.",
+    "Your web account remains available, and you can subscribe again at any time to reactivate your license.",
+  ].join("\n")
+
+  return sendBillingEmail({
+    toEmail: params.toEmail,
+    subject: "Subscription ended - RIFTSKIN Premium",
+    html,
+    text,
+  })
 }
 
 Deno.serve(async (req) => {
@@ -121,6 +243,39 @@ Deno.serve(async (req) => {
     const active = isAccessActive(status, currentPeriodEndsAt)
     const raw = data.raw && typeof data.raw === "object" ? data.raw as Record<string, unknown> : {}
     const notificationState = getNotificationState(raw)
+    let notificationEmail = null
+    const nextNotificationState: Record<string, unknown> = { ...notificationState }
+
+    if (cancellationScheduled && active && notificationState.cancellation_period_end !== currentPeriodEndsAt) {
+      notificationEmail = await sendCancellationAcknowledgedEmail({
+        toEmail: targetEmail,
+        currentPeriodEndsAt,
+      })
+      nextNotificationState.cancellation_period_end = currentPeriodEndsAt
+    } else if (!active && notificationState.expired_period_end !== currentPeriodEndsAt) {
+      notificationEmail = await sendSubscriptionExpiredEmail({
+        toEmail: targetEmail,
+      })
+      nextNotificationState.expired_period_end = currentPeriodEndsAt
+    }
+
+    if (JSON.stringify(nextNotificationState) !== JSON.stringify(notificationState)) {
+      const nextRaw = {
+        ...raw,
+        _riftskin_notifications: nextNotificationState,
+      }
+      const { error: updateError } = await adminClient
+        .from("stripe_subscriptions")
+        .update({
+          raw: nextRaw,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", data.id)
+
+      if (updateError) {
+        return json({ error: "update_subscription_failed", detail: updateError.message }, 500)
+      }
+    }
 
     return json({
       ok: true,
@@ -138,8 +293,9 @@ Deno.serve(async (req) => {
         cancelAtPeriodEnd: raw.cancel_at_period_end === true,
         activationKeyId: data.activation_key_id,
         updatedAt: data.updated_at,
-        notifications: notificationState,
+        notifications: nextNotificationState,
       },
+      notificationEmail,
     })
   } catch (error) {
     return json({
