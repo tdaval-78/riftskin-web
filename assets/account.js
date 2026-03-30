@@ -34,6 +34,7 @@
   const deleteAccountMsg = document.querySelector('[data-delete-account-msg]');
   const myKeysBody = document.querySelector('[data-my-keys-body]');
   const myKeysMsg = document.querySelector('[data-my-keys-msg]');
+  const myKeysDateHeader = document.querySelector('[data-my-keys-date-header]');
   const adminEntry = document.querySelector('[data-admin-entry]');
 
   const adminPanel = document.querySelector('[data-admin-only]');
@@ -441,6 +442,7 @@
   const pageStorage = window.sessionStorage;
   const PENDING_CHECKOUT_KEY = 'riftskin_stripe_checkout_pending';
   let reconcileInFlight = false;
+  let latestSubscriptionSummary = null;
   const privateAccessEnabled = !!cfg.privateAccessEnabled;
   const privateAllowedEmails = Array.isArray(cfg.privateAccessAllowedEmails)
     ? cfg.privateAccessAllowedEmails.map(function (email) { return String(email || '').trim().toLowerCase(); }).filter(Boolean)
@@ -471,6 +473,33 @@
   function clearPendingStripeCheckout() {
     if (!pageStorage) return;
     pageStorage.removeItem(PENDING_CHECKOUT_KEY);
+  }
+
+  function setMyKeysDateHeader(summary) {
+    if (!myKeysDateHeader) return;
+    const key = summary && summary.cancellationScheduled
+      ? 'account_my_key_col_end'
+      : 'account_my_key_col_expires';
+    myKeysDateHeader.setAttribute('data-i18n', key);
+    myKeysDateHeader.textContent = t(key);
+  }
+
+  async function loadSubscriptionSummary() {
+    try {
+      const result = await supabaseClient.functions.invoke('account-subscription-summary', { body: {} });
+      if (result.error || !result.data || result.data.ok !== true) {
+        latestSubscriptionSummary = null;
+        setMyKeysDateHeader(null);
+        return null;
+      }
+      latestSubscriptionSummary = result.data.subscription || null;
+      setMyKeysDateHeader(latestSubscriptionSummary);
+      return latestSubscriptionSummary;
+    } catch (_err) {
+      latestSubscriptionSummary = null;
+      setMyKeysDateHeader(null);
+      return null;
+    }
   }
 
   async function tryStripeReconcile(userId) {
@@ -511,6 +540,7 @@
     if (!userId) return;
 
     try {
+      const subscriptionSummary = await loadSubscriptionSummary();
       const { data, error } = await supabaseClient.rpc('get_client_access_state', {
         p_trial_days: cfg.trialDays || 7
       });
@@ -541,6 +571,15 @@
       if (row.access_granted && (row.access_source === 'activation_key' || row.access_source === 'admin_grant')) {
         clearPendingStripeCheckout();
         setBillingUi(true);
+        if (subscriptionSummary && subscriptionSummary.cancellationScheduled) {
+          setAccessBadge(t('account_subscription_canceled_badge'), 'warning');
+          if (accessMeta) {
+            accessMeta.textContent = fillTemplate(t('account_subscription_canceled_meta'), {
+              date: formatDate(subscriptionSummary.currentPeriodEndsAt || row.access_expires_at || '')
+            });
+          }
+          return;
+        }
         setAccessBadge('Premium active', 'ok');
         if (accessMeta) {
           accessMeta.textContent = fillTemplate('Premium is active. Your key stays the same while the subscription remains active. Current billing period ends on {date}.', {
@@ -914,6 +953,7 @@
   async function loadMyKeys(userId) {
     if (!myKeysBody) return;
     const requestId = ++latestMyKeysRequest;
+    setMyKeysDateHeader(latestSubscriptionSummary);
     myKeysBody.replaceChildren();
     if (myKeysMsg) msg(myKeysMsg, '');
     if (!userId) return;
@@ -956,6 +996,7 @@
 
     rows.forEach(function (row) {
       const keyObj = row.activation_keys || {};
+      const cancellationScheduled = !!(latestSubscriptionSummary && latestSubscriptionSummary.cancellationScheduled && keyObj.is_active !== false);
       const tr = document.createElement('tr');
 
       const tdCode = document.createElement('td');
@@ -967,11 +1008,15 @@
       tr.appendChild(tdRedeemed);
 
       const tdExpires = document.createElement('td');
-      tdExpires.textContent = keyObj.expires_at ? formatDate(keyObj.expires_at) : t('account_my_key_subscription_active');
+      tdExpires.textContent = cancellationScheduled
+        ? formatDate(latestSubscriptionSummary.currentPeriodEndsAt || keyObj.expires_at || '')
+        : (keyObj.expires_at ? formatDate(keyObj.expires_at) : t('account_my_key_subscription_active'));
       tr.appendChild(tdExpires);
 
       const tdStatus = document.createElement('td');
-      tdStatus.textContent = keyObj.is_active === false ? t('admin_key_state_inactive') : t('admin_state_active');
+      tdStatus.textContent = keyObj.is_active === false
+        ? t('admin_key_state_inactive')
+        : (cancellationScheduled ? t('account_subscription_canceled_table_status') : t('admin_state_active'));
       tr.appendChild(tdStatus);
 
       myKeysBody.appendChild(tr);

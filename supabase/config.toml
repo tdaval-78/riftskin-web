@@ -56,3 +56,8 @@ entrypoint = "./functions/desktop-activate-license/index.ts"
 enabled = true
 verify_jwt = true
 entrypoint = "./functions/stripe-reconcile-subscription/index.ts"
+
+[functions.account-subscription-summary]
+enabled = true
+verify_jwt = true
+entrypoint = "./functions/account-subscription-summary/index.ts"

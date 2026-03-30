@@ -57,6 +57,17 @@ function isAccessActive(status: string, endsAt: string | null) {
   return false
 }
 
+function isCancellationScheduled(raw: unknown) {
+  const record = raw && typeof raw === "object" ? raw as Record<string, unknown> : {}
+  return record.cancel_at_period_end === true || !!record.cancel_at
+}
+
+function getNotificationState(raw: unknown) {
+  const record = raw && typeof raw === "object" ? raw as Record<string, unknown> : {}
+  const existing = record._riftskin_notifications
+  return existing && typeof existing === "object" ? existing as Record<string, unknown> : {}
+}
+
 async function stripeRequest(path: string, apiKey: string) {
   const response = await fetch(`https://api.stripe.com${path}`, {
     headers: {
@@ -365,6 +376,87 @@ async function sendPremiumKeyEmail(params: {
   })
 }
 
+async function sendCancellationAcknowledgedEmail(params: {
+  toEmail: string
+  currentPeriodEndsAt: string | null
+}) {
+  const cycleEnd = formatParisDate(params.currentPeriodEndsAt)
+  const html = renderEmailLayout({
+    previewText: cycleEnd
+      ? `Cancellation confirmed. Your access stays active until ${cycleEnd}.`
+      : "Cancellation confirmed. Your access stays active until the end of the paid period.",
+    eyebrow: "Subscription",
+    title: "Cancellation confirmed",
+    lead: "Your RIFTSKIN Premium subscription will no longer renew automatically.",
+    bodyHtml: `
+      <p style="margin:0 0 14px;">${cycleEnd
+        ? `Your Premium access stays active until <strong>${escapeHtml(cycleEnd)}</strong>.`
+        : "Your Premium access stays active until the end of the period you already paid for."}</p>
+      <p style="margin:0 0 14px;">No new charge will be made at the next monthly renewal.</p>
+      <p style="margin:0 0 18px;">Your license stays the same during that time and remains available in your RIFTSKIN account, but Premium features will stop automatically at the end date above.</p>
+      <div style="margin:0 0 18px;">${renderEmailButton("Manage subscription", "https://riftskin.com/account.html")}</div>
+      <div style="padding:14px 16px;background:#0b1323;border:1px solid #22314d;border-radius:16px;color:#93a4bf;">
+        VAT not applicable, article 293 B of the French CGI.
+      </div>
+    `,
+    footerNote: "If this cancellation was not requested by you, contact RIFTSKIN support immediately.",
+  })
+
+  const text = [
+    "RIFTSKIN Premium cancellation",
+    "",
+    "Your cancellation request has been confirmed.",
+    cycleEnd ? `Your Premium access stays active until ${cycleEnd}.` : "Your Premium access stays active until the end of the paid period.",
+    "No new charge will be made at the next monthly renewal.",
+    "Your license stays the same during that time and remains available in your RIFTSKIN account, but Premium features will stop automatically at the end date above.",
+    "VAT not applicable, article 293 B of the French CGI.",
+  ].join("\n")
+
+  return sendBillingEmail({
+    toEmail: params.toEmail,
+    subject: "Cancellation confirmed - RIFTSKIN Premium",
+    html,
+    text,
+  })
+}
+
+async function sendSubscriptionExpiredEmail(params: {
+  toEmail: string
+}) {
+  const html = renderEmailLayout({
+    previewText: "Your Premium subscription has ended. Your account remains available for a future reactivation.",
+    eyebrow: "Subscription",
+    title: "Your Premium access has expired",
+    lead: "Your RIFTSKIN Premium subscription has now ended.",
+    bodyHtml: `
+      <p style="margin:0 0 14px;">Your Premium license is no longer active and no longer unlocks Premium features in the desktop app.</p>
+      <p style="margin:0 0 14px;">Your web account remains available, and you can subscribe again at any time to reactivate your license and Premium features.</p>
+      <p style="margin:0 0 18px;">Free mode still works inside the desktop app.</p>
+      <div style="margin:0 0 18px;">${renderEmailButton("Subscribe again", "https://riftskin.com/pricing.html")}</div>
+      <div style="padding:14px 16px;background:#0b1323;border:1px solid #22314d;border-radius:16px;color:#93a4bf;">
+        VAT not applicable, article 293 B of the French CGI.
+      </div>
+    `,
+    footerNote: "You can always check your license and subscription status from your RIFTSKIN account.",
+  })
+
+  const text = [
+    "RIFTSKIN Premium subscription ended",
+    "",
+    "Your Premium subscription has now ended and Premium access has expired.",
+    "Your Premium license is no longer active and no longer unlocks Premium features in the desktop app.",
+    "Your web account remains available, and you can subscribe again at any time to reactivate your license.",
+    "VAT not applicable, article 293 B of the French CGI.",
+  ].join("\n")
+
+  return sendBillingEmail({
+    toEmail: params.toEmail,
+    subject: "Subscription ended - RIFTSKIN Premium",
+    html,
+    text,
+  })
+}
+
 async function getCustomerEmail(customerId: string | null, apiKey: string) {
   if (!customerId) return null
   const customer = await stripeRequest(`/v1/customers/${customerId}`, apiKey)
@@ -412,6 +504,8 @@ function buildSubscriptionSnapshotFromSubscription(subscription: Record<string, 
     activatedAt: unixToIso(subscription.start_date),
     trialingAt: unixToIso(subscription.trial_start),
     pausedAt: unixToIso(((subscription.pause_collection || {}) as Record<string, unknown>).resumes_at),
+    cancelAtPeriodEnd: subscription.cancel_at_period_end === true,
+    cancelAt: unixToIso(subscription.cancel_at),
     raw: subscription,
   }
 }
@@ -486,7 +580,7 @@ Deno.serve(async (req) => {
 
     const existing = await adminClient
       .from("stripe_subscriptions")
-      .select("id, activation_key_id, raw")
+      .select("id, activation_key_id, raw, status, current_period_ends_at")
       .eq("stripe_subscription_id", snapshot.subscriptionId)
       .maybeSingle()
 
@@ -494,7 +588,10 @@ Deno.serve(async (req) => {
       return json({ error: "load_subscription_failed", detail: existing.error.message }, 500)
     }
 
+    const existingNotificationState = getNotificationState(existing.data?.raw)
+    const existingActive = isAccessActive(String(existing.data?.status || ""), existing.data?.current_period_ends_at ? String(existing.data.current_period_ends_at) : null)
     const active = isAccessActive(snapshot.status, snapshot.currentPeriodEndsAt)
+    const cancellationScheduled = isCancellationScheduled(snapshot.raw)
     const activationKey = await ensureActivationKey(adminClient, {
       adminUserId: keyOwnerUserId,
       subscriptionId: snapshot.subscriptionId,
@@ -502,6 +599,37 @@ Deno.serve(async (req) => {
       accessEndsAt: snapshot.currentPeriodEndsAt,
       existingKeyId: existing.data?.activation_key_id || null,
     })
+
+    let statusEmail = null
+    const nextNotificationState: Record<string, unknown> = { ...existingNotificationState }
+
+    if (
+      cancellationScheduled &&
+      active &&
+      existingNotificationState.cancellation_period_end !== snapshot.currentPeriodEndsAt
+    ) {
+      statusEmail = await sendCancellationAcknowledgedEmail({
+        toEmail: snapshot.customerEmail,
+        currentPeriodEndsAt: snapshot.currentPeriodEndsAt,
+      })
+      nextNotificationState.cancellation_period_end = snapshot.currentPeriodEndsAt
+    }
+
+    if (
+      existingActive &&
+      !active &&
+      existingNotificationState.expired_period_end !== snapshot.currentPeriodEndsAt
+    ) {
+      statusEmail = await sendSubscriptionExpiredEmail({
+        toEmail: snapshot.customerEmail,
+      })
+      nextNotificationState.expired_period_end = snapshot.currentPeriodEndsAt
+    }
+
+    const rawWithNotifications = {
+      ...(snapshot.raw && typeof snapshot.raw === "object" ? snapshot.raw as Record<string, unknown> : {}),
+      _riftskin_notifications: nextNotificationState,
+    }
 
     const saved = await upsertSubscriptionRow(adminClient, {
       stripe_subscription_id: snapshot.subscriptionId,
@@ -520,7 +648,7 @@ Deno.serve(async (req) => {
       last_event_id: null,
       last_event_type: "manual_reconcile",
       last_event_at: new Date().toISOString(),
-      raw: snapshot.raw,
+      raw: rawWithNotifications,
       updated_at: new Date().toISOString(),
     })
 
@@ -537,7 +665,7 @@ Deno.serve(async (req) => {
     }
 
     let emailReceipt = null
-    if (active) {
+    if (active && (!existing.data?.id || !existingActive)) {
       emailReceipt = await sendPremiumKeyEmail({
         toEmail: snapshot.customerEmail,
         activationKeyCode: activationKey.code,
@@ -553,6 +681,7 @@ Deno.serve(async (req) => {
       active,
       billingRowId: saved.id,
       emailReceipt,
+      statusEmail,
     })
   } catch (error) {
     return json({

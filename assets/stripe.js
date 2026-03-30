@@ -143,7 +143,7 @@
     setAlert('');
     try {
       const data = await invokeFunction('create-stripe-portal-session', {
-        returnUrl: absoluteUrl(cfg.stripeBillingReturnUrl, '/account.html')
+        returnUrl: absoluteUrl(cfg.stripeBillingReturnUrl, '/account.html?billing=return')
       });
 
       if (!data.url) {
@@ -191,6 +191,23 @@
     return false;
   }
 
+  async function reconcileBillingReturn() {
+    if (!supabaseClient) return false;
+    const session = await waitForSession(6, 1000);
+    if (!session || !session.user) return false;
+
+    try {
+      const data = await invokeFunction('stripe-reconcile-subscription', {});
+      if (!data || data.ok !== true) return false;
+      const url = new URL(window.location.href);
+      url.searchParams.delete('billing');
+      window.location.replace(url.toString());
+      return true;
+    } catch (_err) {
+      return false;
+    }
+  }
+
   subscribeBtns.forEach(function (btn) {
     btn.addEventListener('click', function (event) {
       if (event.defaultPrevented) return;
@@ -220,6 +237,7 @@
 
   const params = new URLSearchParams(window.location.search);
   const checkoutState = params.get('checkout');
+  const billingState = params.get('billing');
   if (checkoutState === 'success') {
     markCheckoutPending();
     setAlert('Payment received. Your premium access is being activated. If the key does not appear within a minute, refresh the page.', 'ok');
@@ -229,5 +247,8 @@
     setAlert('Checkout canceled.', '');
   } else if (checkoutState === 'signin') {
     setAlert('Sign in or create your account first to continue with Stripe checkout.', '');
+  } else if (billingState === 'return') {
+    setAlert('Refreshing your subscription status...', '');
+    reconcileBillingReturn();
   }
 })();
