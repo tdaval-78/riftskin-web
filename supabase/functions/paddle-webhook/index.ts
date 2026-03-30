@@ -144,6 +144,18 @@ async function ensureActivationKey(adminClient: any, params: {
 }) {
   const note = `${paddleNotePrefix}${params.subscriptionId}]`
   const active = !params.accessEndsAt || new Date(params.accessEndsAt).getTime() > Date.now()
+  const loadByNote = async () => {
+    const existingByNote = await adminClient
+      .from("activation_keys")
+      .select("id, code, expires_at, is_active")
+      .eq("note", note)
+      .order("id", { ascending: false })
+      .limit(1)
+      .maybeSingle()
+
+    if (existingByNote.error) throw existingByNote.error
+    return existingByNote.data || null
+  }
 
   if (params.existingKeyId) {
     const { data, error } = await adminClient
@@ -180,7 +192,15 @@ async function ensureActivationKey(adminClient: any, params: {
     .select("id, code, expires_at, is_active")
     .single()
 
-  if (error) throw error
+  if (error) {
+    if (error.code === "23505") {
+      const existingByNote = await loadByNote()
+      if (existingByNote) {
+        return existingByNote
+      }
+    }
+    throw error
+  }
   return data
 }
 

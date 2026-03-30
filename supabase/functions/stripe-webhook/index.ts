@@ -154,17 +154,22 @@ async function ensureActivationKey(adminClient: any, params: {
   const active = !params.accessEndsAt || new Date(params.accessEndsAt).getTime() > Date.now()
   let targetKeyId = params.existingKeyId || null
 
-  if (!targetKeyId) {
+  const loadByNote = async () => {
     const existingByNote = await adminClient
       .from("activation_keys")
-      .select("id")
+      .select("id, code, expires_at, is_active")
       .eq("note", note)
       .order("id", { ascending: false })
       .limit(1)
       .maybeSingle()
 
     if (existingByNote.error) throw existingByNote.error
-    targetKeyId = existingByNote.data?.id || null
+    return existingByNote.data || null
+  }
+
+  if (!targetKeyId) {
+    const existingByNote = await loadByNote()
+    targetKeyId = existingByNote?.id || null
   }
 
   if (targetKeyId) {
@@ -202,7 +207,15 @@ async function ensureActivationKey(adminClient: any, params: {
     .select("id, code, expires_at, is_active")
     .single()
 
-  if (error) throw error
+  if (error) {
+    if (error.code === "23505") {
+      const existingByNote = await loadByNote()
+      if (existingByNote) {
+        return existingByNote
+      }
+    }
+    throw error
+  }
   return data
 }
 
