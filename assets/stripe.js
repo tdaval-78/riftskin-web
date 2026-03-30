@@ -155,7 +155,7 @@
   const params = new URLSearchParams(window.location.search);
   const checkoutState = params.get('checkout');
   if (checkoutState === 'success') {
-    setAlert('Checkout completed. Your premium access will appear after Stripe webhook sync.', 'ok');
+    setAlert('Payment confirmed. Your premium key is available in your account and is also being sent by email.', 'ok');
   } else if (checkoutState === 'canceled') {
     setAlert('Checkout canceled.', '');
   } else if (checkoutState === 'signin') {

@@ -100,7 +100,7 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json().catch(() => ({}))
-    const successUrl = String(body.successUrl || "").trim() || "https://riftskin.com/account.html?checkout=success"
+    const successUrl = String(body.successUrl || "").trim() || "https://riftskin.com/account.html?checkout=success#account-subscription"
     const cancelUrl = String(body.cancelUrl || "").trim() || "https://riftskin.com/pricing.html?checkout=canceled"
 
     let customerId = await findExistingCustomerId(adminClient, userEmail)
@@ -121,6 +121,8 @@ Deno.serve(async (req) => {
       "line_items[0][price]": stripePriceId,
       "line_items[0][quantity]": "1",
       "allow_promotion_codes": "true",
+      submit_type: "subscribe",
+      "custom_text[after_submit][message]": "After payment, your premium key stays available in your RiftSkin account and will also be sent by email.",
       "metadata[supabase_user_id]": userId,
       "metadata[email]": userEmail,
       "metadata[source]": "riftskin-web",

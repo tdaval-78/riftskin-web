@@ -252,6 +252,74 @@ async function upsertSubscriptionRow(adminClient: any, params: Record<string, un
   return data
 }
 
+async function sendPremiumKeyEmail(params: {
+  toEmail: string
+  activationKeyCode: string
+  currentPeriodEndsAt: string | null
+}) {
+  const resendApiKey = Deno.env.get("RESEND_API_KEY")
+  if (!resendApiKey) {
+    return { sent: false, reason: "missing_resend_api_key" }
+  }
+
+  const fromEmail = Deno.env.get("BILLING_FROM_EMAIL")
+    || Deno.env.get("SUPPORT_FROM_EMAIL")
+    || "RIFTSKIN Billing <onboarding@resend.dev>"
+  const replyToEmail = Deno.env.get("SUPPORT_TO_EMAIL") || "support@riftskin.com"
+  const cycleEnd = params.currentPeriodEndsAt
+    ? new Date(params.currentPeriodEndsAt).toLocaleString("fr-FR", { dateStyle: "long", timeStyle: "short", timeZone: "Europe/Paris" })
+    : null
+
+  const html = `
+    <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111827;">
+      <h2 style="margin:0 0 12px;">Bienvenue sur RIFTSKIN Premium</h2>
+      <p>Votre paiement a bien ete confirme.</p>
+      <p><strong>Votre licence Premium :</strong></p>
+      <div style="font-size:28px;font-weight:700;letter-spacing:1px;background:#0f172a;color:#f8fafc;border-radius:14px;padding:18px 20px;display:inline-block;">
+        ${params.activationKeyCode}
+      </div>
+      <p style="margin-top:18px;">Cette meme licence reste valable tant que votre abonnement est actif.</p>
+      ${cycleEnd ? `<p>Fin de la periode de facturation en cours : <strong>${cycleEnd}</strong></p>` : ""}
+      <p>Vous pouvez aussi retrouver cette licence dans votre compte RIFTSKIN, onglet abonnement / licence, puis la renseigner dans l'application desktop.</p>
+      <p style="margin-top:20px;">Besoin d'aide ? Repondez a cet email ou contactez le support RIFTSKIN.</p>
+    </div>
+  `.trim()
+
+  const text = [
+    "Bienvenue sur RIFTSKIN Premium",
+    "",
+    "Votre paiement a bien ete confirme.",
+    `Votre licence Premium : ${params.activationKeyCode}`,
+    "Cette meme licence reste valable tant que votre abonnement est actif.",
+    cycleEnd ? `Fin de la periode de facturation en cours : ${cycleEnd}` : "",
+    "Vous pouvez aussi retrouver cette licence dans votre compte RIFTSKIN et la renseigner dans l'application desktop.",
+  ].filter(Boolean).join("\n")
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${resendApiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: fromEmail,
+      to: [params.toEmail],
+      reply_to: replyToEmail,
+      subject: "Votre licence RIFTSKIN Premium",
+      html,
+      text,
+    }),
+  })
+
+  if (!response.ok) {
+    const errorText = await response.text()
+    throw new Error(`resend_error:${response.status}:${errorText}`)
+  }
+
+  const payload = await response.json().catch(() => ({}))
+  return { sent: true, id: payload.id || null }
+}
+
 async function getCustomerEmail(customerId: string | null, apiKey: string) {
   if (!customerId) return null
   const customer = await stripeRequest(`/v1/customers/${customerId}`, apiKey)
@@ -373,12 +441,17 @@ Deno.serve(async (req) => {
 
     const existing = await adminClient
       .from("stripe_subscriptions")
-      .select("id, activation_key_id")
+      .select("id, activation_key_id, last_event_id")
       .eq("stripe_subscription_id", snapshot.subscriptionId)
       .maybeSingle()
 
     if (existing.error) {
       return json({ error: "load_subscription_failed", detail: existing.error.message }, 500)
+    }
+
+    const eventId = String(payload.id || "").trim() || null
+    if (eventId && existing.data?.last_event_id === eventId) {
+      return json({ ok: true, ignored: true, eventType, reason: "duplicate_event", subscriptionId: snapshot.subscriptionId })
     }
 
     const active = isAccessActive(snapshot.status, snapshot.currentPeriodEndsAt)
@@ -417,6 +490,15 @@ Deno.serve(async (req) => {
       await ensureUserAccess(adminClient, userId, activationKey.id, snapshot.currentPeriodEndsAt, active)
     }
 
+    let emailReceipt = null
+    if (eventType === "checkout.session.completed" && active) {
+      emailReceipt = await sendPremiumKeyEmail({
+        toEmail: snapshot.customerEmail,
+        activationKeyCode: activationKey.code,
+        currentPeriodEndsAt: snapshot.currentPeriodEndsAt,
+      })
+    }
+
     return json({
       ok: true,
       eventType,
@@ -425,6 +507,7 @@ Deno.serve(async (req) => {
       activationKeyCode: activationKey.code,
       active,
       billingRowId: saved.id,
+      emailReceipt,
     })
   } catch (error) {
     return json({
