@@ -32,8 +32,6 @@
   const passwordChangeMsg = document.querySelector('[data-password-change-msg]');
   const deleteAccountForm = document.querySelector('[data-delete-account-form]');
   const deleteAccountMsg = document.querySelector('[data-delete-account-msg]');
-  const redeemForm = document.querySelector('[data-redeem-form]');
-  const redeemMsg = document.querySelector('[data-redeem-msg]');
   const myKeysBody = document.querySelector('[data-my-keys-body]');
   const myKeysMsg = document.querySelector('[data-my-keys-msg]');
   const adminEntry = document.querySelector('[data-admin-entry]');
@@ -150,13 +148,6 @@
     billingPortalBtns.forEach(function (btn) {
       btn.style.display = 'none';
     });
-
-    if (redeemForm) {
-      redeemForm.style.display = hasActiveSubscription ? 'none' : '';
-    }
-    if (redeemMsg && hasActiveSubscription) {
-      msg(redeemMsg, '', '');
-    }
   }
 
   function resetAccountManagementUi() {
@@ -1052,39 +1043,6 @@
       setResendVisibility(true);
       msg(out, t('msg_account_created'), 'ok');
       pushAnalyticsEvent('riftskin_signup_success');
-    });
-  }
-
-  if (redeemForm) {
-    redeemForm.addEventListener('submit', async function (e) {
-      e.preventDefault();
-      msg(redeemMsg, t('account_redeeming_key'));
-      const raw = (redeemForm.querySelector('[name="key"]').value || '').trim();
-      if (!raw) {
-        msg(redeemMsg, t('account_enter_key_first'), 'error');
-        return;
-      }
-
-      const { data, error } = await supabaseClient.rpc('redeem_activation_key', { p_code: raw });
-      if (error) {
-        msg(redeemMsg, error.message || t('account_redeem_failed'), 'error');
-        return;
-      }
-
-      const row = safeArray(data)[0] || {};
-      if (!row.success) {
-        msg(redeemMsg, decodeActivationMessage(row.message || '') || t('account_redeem_invalid'), 'error');
-        return;
-      }
-
-      msg(redeemMsg, decodeActivationMessage(row.message || '') || t('account_redeem_success'), 'ok');
-      pushAnalyticsEvent('riftskin_activation_key_redeem_success');
-      redeemForm.reset();
-      const session = await getSession();
-      if (session && session.user) {
-        await refreshAccessStatus(session.user.id);
-        await loadMyKeys(session.user.id);
-      }
     });
   }
 
