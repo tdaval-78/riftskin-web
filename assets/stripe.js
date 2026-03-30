@@ -1,5 +1,6 @@
 (function () {
   const cfg = window.RiftSkinConfig || {};
+  const authStorage = window.localStorage || window.sessionStorage;
   const alertEls = document.querySelectorAll('[data-checkout-alert]');
   const subscribeBtns = Array.from(document.querySelectorAll('[data-subscribe], [data-premium-cta]'));
   const portalBtns = Array.from(document.querySelectorAll('[data-open-billing-portal]'));
@@ -24,7 +25,7 @@
     if (!window.supabase || !cfg.supabaseUrl || !cfg.supabaseAnonKey) return null;
     return window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey, {
       auth: {
-        storage: window.sessionStorage,
+        storage: authStorage,
         persistSession: true,
         autoRefreshToken: true,
         detectSessionInUrl: false

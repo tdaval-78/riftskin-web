@@ -424,9 +424,11 @@
     return;
   }
 
+  const authStorage = window.localStorage || window.sessionStorage;
+
   const supabaseClient = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey, {
     auth: {
-      storage: window.sessionStorage,
+      storage: authStorage,
       persistSession: true,
       autoRefreshToken: true,
       detectSessionInUrl: false

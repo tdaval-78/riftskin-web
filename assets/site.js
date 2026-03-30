@@ -20,6 +20,7 @@
   if (yearEl) yearEl.textContent = String(new Date().getFullYear());
 
   const cfg = window.RiftSkinConfig || {};
+  const authStorage = window.localStorage || window.sessionStorage;
   window.dataLayer = window.dataLayer || [];
 
   function pushAnalyticsEvent(eventName, params) {
@@ -534,7 +535,7 @@
     try {
       const supabaseClient = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey, {
         auth: {
-          storage: window.sessionStorage,
+          storage: authStorage,
           persistSession: true,
           autoRefreshToken: true,
           detectSessionInUrl: false
