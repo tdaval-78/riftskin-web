@@ -447,10 +447,17 @@ async function buildSubscriptionSnapshot(eventType: string, payload: Record<stri
     subscription.current_period_start,
     firstItem.current_period_start,
   ))
-  const currentPeriodEndsAt = unixToIso(firstNonEmpty(
-    subscription.current_period_end,
-    firstItem.current_period_end,
-  ))
+  const currentPeriodEndsAt = eventType === "customer.subscription.deleted"
+    ? unixToIso(firstNonEmpty(
+      subscription.ended_at,
+      subscription.canceled_at,
+      subscription.current_period_end,
+      firstItem.current_period_end,
+    ))
+    : unixToIso(firstNonEmpty(
+      subscription.current_period_end,
+      firstItem.current_period_end,
+    ))
 
   return {
     ignored: false,
