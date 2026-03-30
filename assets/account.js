@@ -24,6 +24,8 @@
 
   const accessStatus = document.querySelector('[data-access-status]');
   const accessMeta = document.querySelector('[data-access-meta]');
+  const subscribeBtns = Array.from(document.querySelectorAll('[data-subscribe]'));
+  const billingPortalBtns = Array.from(document.querySelectorAll('[data-open-billing-portal]'));
   const emailChangeForm = document.querySelector('[data-email-change-form]');
   const emailChangeMsg = document.querySelector('[data-email-change-msg]');
   const passwordChangeForm = document.querySelector('[data-password-change-form]');
@@ -136,6 +138,25 @@
     if (!accessStatus) return;
     accessStatus.textContent = text;
     accessStatus.className = 'status-badge ' + (kind || '');
+  }
+
+  function setBillingUi(hasActiveSubscription) {
+    subscribeBtns.forEach(function (btn) {
+      const nextKey = hasActiveSubscription ? 'account_manage_sub' : 'site_pricing_premium_cta';
+      btn.setAttribute('data-i18n', nextKey);
+      btn.textContent = t(nextKey);
+    });
+
+    billingPortalBtns.forEach(function (btn) {
+      btn.style.display = 'none';
+    });
+
+    if (redeemForm) {
+      redeemForm.style.display = hasActiveSubscription ? 'none' : '';
+    }
+    if (redeemMsg && hasActiveSubscription) {
+      msg(redeemMsg, '', '');
+    }
   }
 
   function resetAccountManagementUi() {
@@ -416,6 +437,7 @@
     if (myKeysMsg) msg(myKeysMsg, '');
     if (adminEntry) adminEntry.style.display = 'none';
     if (adminPanel) adminPanel.style.display = 'none';
+    setBillingUi(false);
   }
 
   if (!window.supabase || !cfg.supabaseUrl || !cfg.supabaseAnonKey) {
@@ -473,6 +495,7 @@
       });
 
       if (error) {
+        setBillingUi(false);
         setAccessBadge(t('admin_unavailable'), 'error');
         if (accessMeta) accessMeta.textContent = error.message || t('admin_access_table_unavailable');
         return;
@@ -480,21 +503,24 @@
 
       const row = safeArray(data)[0] || null;
       if (!row) {
+        setBillingUi(false);
         setAccessBadge(t('admin_unavailable'), 'error');
         if (accessMeta) accessMeta.textContent = t('admin_unexpected_error');
         return;
       }
 
       if (row.is_admin) {
+        setBillingUi(true);
         setAccessBadge('Admin permanent access', 'ok');
         if (accessMeta) accessMeta.textContent = 'This account has permanent premium access.';
         return;
       }
 
       if (row.access_granted && (row.access_source === 'activation_key' || row.access_source === 'admin_grant')) {
+        setBillingUi(true);
         setAccessBadge('Premium active', 'ok');
         if (accessMeta) {
-          accessMeta.textContent = fillTemplate('Premium remains active until {date}.', {
+          accessMeta.textContent = fillTemplate('Premium is active. Your key stays the same while the subscription remains active. Current billing period ends on {date}.', {
             date: formatDate(row.access_expires_at || '')
           });
         }
@@ -502,14 +528,17 @@
       }
 
       if (row.access_source === 'expired') {
+        setBillingUi(false);
         setAccessBadge('Premium inactive', 'error');
         if (accessMeta) accessMeta.textContent = 'Your premium code is no longer active. The desktop app free mode stays available.';
         return;
       }
 
+      setBillingUi(false);
       setAccessBadge('Free mode only', '');
       if (accessMeta) accessMeta.textContent = 'No active premium subscription is attached right now. The desktop app still remains usable for free.';
     } catch (err) {
+      setBillingUi(false);
       setAccessBadge(t('admin_unavailable'), 'error');
       if (accessMeta) accessMeta.textContent = (err && err.message) ? err.message : t('admin_unexpected_error');
     }
@@ -850,25 +879,41 @@
     await loadAdminServiceStatus();
   }
 
+  let latestMyKeysRequest = 0;
+
   async function loadMyKeys(userId) {
     if (!myKeysBody) return;
+    const requestId = ++latestMyKeysRequest;
     myKeysBody.replaceChildren();
     if (myKeysMsg) msg(myKeysMsg, '');
     if (!userId) return;
 
     const { data, error } = await supabaseClient
       .from('key_redemptions')
-      .select('redeemed_at, activation_keys(code, expires_at, is_active)')
+      .select('id, redeemed_at, activation_keys(id, code, expires_at, is_active)')
       .eq('user_id', userId)
       .order('redeemed_at', { ascending: false })
       .limit(20);
+
+    if (requestId !== latestMyKeysRequest) return;
 
     if (error) {
       if (myKeysMsg) msg(myKeysMsg, error.message || t('account_my_key_load_failed'), 'error');
       return;
     }
 
-    const rows = safeArray(data);
+    const seen = new Set();
+    const rows = safeArray(data).filter(function (row) {
+      const keyObj = row.activation_keys || {};
+      const uniqueKey = [
+        keyObj.id || keyObj.code || '-',
+        row.redeemed_at || '-'
+      ].join(':');
+      if (seen.has(uniqueKey)) return false;
+      seen.add(uniqueKey);
+      return true;
+    });
+
     if (!rows.length) {
       const tr = document.createElement('tr');
       const td = document.createElement('td');
@@ -892,7 +937,7 @@
       tr.appendChild(tdRedeemed);
 
       const tdExpires = document.createElement('td');
-      tdExpires.textContent = keyObj.expires_at ? formatDate(keyObj.expires_at) : t('admin_no_expiry');
+      tdExpires.textContent = keyObj.expires_at ? formatDate(keyObj.expires_at) : t('account_my_key_subscription_active');
       tr.appendChild(tdExpires);
 
       const tdStatus = document.createElement('td');
