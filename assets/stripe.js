@@ -41,6 +41,25 @@
     return result && result.data ? result.data.session : null;
   }
 
+  function delay(ms) {
+    return new Promise(function (resolve) {
+      window.setTimeout(resolve, ms);
+    });
+  }
+
+  async function waitForSession(maxAttempts, waitMs) {
+    let attempt = 0;
+    while (attempt < maxAttempts) {
+      const session = await getSession();
+      if (session && session.user) return session;
+      attempt += 1;
+      if (attempt < maxAttempts) {
+        await delay(waitMs);
+      }
+    }
+    return null;
+  }
+
   function absoluteUrl(path, fallbackPath) {
     const target = path || fallbackPath || '/account.html';
     return new URL(target, window.location.origin).toString();
@@ -131,20 +150,30 @@
 
   async function reconcileSubscription() {
     if (!supabaseClient) return false;
-    const session = await getSession();
+    const session = await waitForSession(6, 1000);
     if (!session || !session.user) return false;
 
-    try {
-      const data = await invokeFunction('stripe-reconcile-subscription', {});
-      if (data && data.ok) {
-        const url = new URL(window.location.href);
-        url.searchParams.delete('checkout');
-        window.location.replace(url.toString());
-        return true;
+    let attempt = 0;
+    while (attempt < 6) {
+      try {
+        const data = await invokeFunction('stripe-reconcile-subscription', {});
+        if (data && data.ok) {
+          const url = new URL(window.location.href);
+          url.searchParams.delete('checkout');
+          window.location.replace(url.toString());
+          return true;
+        }
+      } catch (_err) {
+        // Leave the processing message visible while retries are still in progress.
       }
-    } catch (_err) {
-      // Leave the processing message visible; the page can still be refreshed manually.
+
+      attempt += 1;
+      if (attempt < 6) {
+        await delay(5000);
+      }
     }
+
+    setAlert('Payment received but premium activation is still pending. Refresh the page in a few seconds. If it still does not appear, contact support.', 'warning');
     return false;
   }
 
