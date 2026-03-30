@@ -95,7 +95,7 @@ async function sendSupportEmail(params: {
   }
 
   const supportToEmail = Deno.env.get("SUPPORT_TO_EMAIL") || "support@riftskin.com"
-  const supportFromEmail = Deno.env.get("SUPPORT_FROM_EMAIL") || "RIFTSKIN Support <onboarding@resend.dev>"
+  const supportFromEmail = Deno.env.get("SUPPORT_FROM_EMAIL") || "RIFTSKIN <no-reply@riftskin.com>"
 
   const attachmentItems = params.attachments.length
     ? params.attachments.map((attachment) => {

@@ -49,7 +49,7 @@ async function sendAuthEmail(params: {
 
   const fromEmail = Deno.env.get("SUPPORT_FROM_EMAIL")
     || Deno.env.get("BILLING_FROM_EMAIL")
-    || "RIFTSKIN <onboarding@resend.dev>"
+    || "RIFTSKIN <no-reply@riftskin.com>"
   const replyToEmail = Deno.env.get("SUPPORT_TO_EMAIL") || "support@riftskin.com"
 
   const response = await fetch("https://api.resend.com/emails", {
