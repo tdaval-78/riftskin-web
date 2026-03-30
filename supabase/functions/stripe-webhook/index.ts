@@ -8,7 +8,7 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 }
 
-const legacyBillingNotePrefix = "[paddle-subscription:"
+const legacyBillingNotePrefixes = ["[stripe-subscription:", "[paddle-subscription:"]
 
 function json(data: Record<string, unknown>, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -126,17 +126,23 @@ async function stripeRequest(path: string, apiKey: string) {
 }
 
 async function findUserIdByEmail(adminClient: any, email: string) {
-  if (!email) return null
+  const normalized = normalizeEmail(email)
+  let page = 1
 
-  const { data, error } = await adminClient
-    .schema("auth")
-    .from("users")
-    .select("id")
-    .ilike("email", email)
-    .limit(1)
+  while (page <= 10) {
+    const { data, error } = await adminClient.auth.admin.listUsers({
+      page,
+      perPage: 200,
+    })
+    if (error) throw error
+    const users = Array.isArray(data?.users) ? data.users : []
+    const match = users.find((user: any) => normalizeEmail(user.email) === normalized)
+    if (match) return match.id
+    if (users.length < 200) break
+    page += 1
+  }
 
-  if (error) throw error
-  return data?.[0]?.id || null
+  return null
 }
 
 async function getAppAdminId(adminClient: any) {
@@ -156,21 +162,24 @@ async function ensureActivationKey(adminClient: any, params: {
   accessEndsAt: string | null
   existingKeyId?: number | null
 }) {
-  const note = `${legacyBillingNotePrefix}${params.subscriptionId}]`
+  const canonicalNote = `${legacyBillingNotePrefixes[0]}${params.subscriptionId}]`
   const active = !params.accessEndsAt || new Date(params.accessEndsAt).getTime() > Date.now()
   let targetKeyId = params.existingKeyId || null
 
   const loadByNote = async () => {
-    const existingByNote = await adminClient
-      .from("activation_keys")
-      .select("id, code, expires_at, is_active")
-      .eq("note", note)
-      .order("id", { ascending: false })
-      .limit(1)
-      .maybeSingle()
+    for (const prefix of legacyBillingNotePrefixes) {
+      const existingByNote = await adminClient
+        .from("activation_keys")
+        .select("id, code, expires_at, is_active")
+        .eq("note", `${prefix}${params.subscriptionId}]`)
+        .order("id", { ascending: false })
+        .limit(1)
+        .maybeSingle()
 
-    if (existingByNote.error) throw existingByNote.error
-    return existingByNote.data || null
+      if (existingByNote.error) throw existingByNote.error
+      if (existingByNote.data) return existingByNote.data
+    }
+    return null
   }
 
   if (!targetKeyId) {
@@ -183,7 +192,7 @@ async function ensureActivationKey(adminClient: any, params: {
       .from("activation_keys")
       .update({
         created_for_email: params.customerEmail,
-        note,
+        note: canonicalNote,
         expires_at: params.accessEndsAt,
         is_active: active,
       })
@@ -202,7 +211,7 @@ async function ensureActivationKey(adminClient: any, params: {
       code,
       created_by: params.adminUserId,
       created_for_email: params.customerEmail,
-      note,
+      note: canonicalNote,
       max_uses: 1,
       grant_months: 1,
       grant_days: 30,
@@ -223,6 +232,49 @@ async function ensureActivationKey(adminClient: any, params: {
     throw error
   }
   return data
+}
+
+async function syncLegacyDesktopLicense(adminClient: any, params: {
+  activationKeyCode: string
+  accessEndsAt: string | null
+  active: boolean
+  subscriptionId: string
+}) {
+  const { data: existing, error: loadError } = await adminClient
+    .from("license_keys")
+    .select("id")
+    .eq("license_key", params.activationKeyCode)
+    .limit(1)
+    .maybeSingle()
+
+  if (loadError) throw loadError
+
+  const payload = {
+    license_key: params.activationKeyCode,
+    license_type: "premium",
+    source: "manual",
+    is_active: params.active,
+    expires_at: params.accessEndsAt,
+    notes: `[stripe-subscription:${params.subscriptionId}]`,
+  }
+
+  if (existing?.id) {
+    const { error } = await adminClient
+      .from("license_keys")
+      .update(payload)
+      .eq("id", existing.id)
+    if (error) throw error
+    return existing.id
+  }
+
+  const { data, error } = await adminClient
+    .from("license_keys")
+    .insert(payload)
+    .select("id")
+    .single()
+
+  if (error) throw error
+  return data?.id || null
 }
 
 async function ensureUserAccess(adminClient: any, userId: string, keyId: number, accessEndsAt: string | null, active: boolean) {
@@ -670,6 +722,13 @@ Deno.serve(async (req) => {
       last_event_at: new Date().toISOString(),
       raw: rawWithNotifications,
       updated_at: new Date().toISOString(),
+    })
+
+    await syncLegacyDesktopLicense(adminClient, {
+      activationKeyCode: activationKey.code,
+      accessEndsAt: snapshot.currentPeriodEndsAt,
+      active,
+      subscriptionId: snapshot.subscriptionId,
     })
 
     if (userId) {

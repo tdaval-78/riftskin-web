@@ -65,6 +65,12 @@ async function findExistingCustomerId(adminClient: any, email: string) {
   return data?.stripe_customer_id || null
 }
 
+async function findStripeCustomerIdByEmail(apiKey: string, email: string) {
+  const payload = await stripeRequest(`/v1/customers?email=${encodeURIComponent(email)}&limit=10`, apiKey)
+  const rows = Array.isArray(payload.data) ? payload.data : []
+  return String(rows[0]?.id || "").trim() || null
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders })
@@ -108,6 +114,9 @@ Deno.serve(async (req) => {
     const cancelUrl = String(body.cancelUrl || "").trim() || "https://riftskin.com/pricing.html?checkout=canceled"
 
     let customerId = await findExistingCustomerId(adminClient, userEmail)
+    if (!customerId) {
+      customerId = await findStripeCustomerIdByEmail(stripeSecretKey, userEmail)
+    }
     if (!customerId) {
       const customer = await stripeRequest("/v1/customers", stripeSecretKey, new URLSearchParams({
         email: userEmail,

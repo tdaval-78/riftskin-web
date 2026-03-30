@@ -51,6 +51,12 @@ function billingFooter() {
   return "TVA non applicable, article 293 B du CGI"
 }
 
+async function findCustomerIdByEmail(apiKey: string, email: string) {
+  const payload = await stripeRequest(`/v1/customers?email=${encodeURIComponent(email)}&limit=10`, apiKey)
+  const rows = Array.isArray(payload.data) ? payload.data : []
+  return String(rows[0]?.id || "").trim() || null
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders })
@@ -99,18 +105,17 @@ Deno.serve(async (req) => {
     if (subscriptionError) {
       return json({ error: "load_subscription_failed", detail: subscriptionError.message }, 500)
     }
-    if (!subscription?.stripe_customer_id) {
-      return json({ error: "no_billing_subscription" }, 400)
-    }
+    const customerId = subscription?.stripe_customer_id || await findCustomerIdByEmail(stripeSecretKey, userEmail)
+    if (!customerId) return json({ error: "no_billing_subscription" }, 400)
 
-    await stripeRequest(`/v1/customers/${subscription.stripe_customer_id}`, stripeSecretKey, new URLSearchParams({
+    await stripeRequest(`/v1/customers/${customerId}`, stripeSecretKey, new URLSearchParams({
       "invoice_settings[footer]": billingFooter(),
     }))
 
     const body = await req.json().catch(() => ({}))
     const returnUrl = String(body.returnUrl || "").trim() || "https://riftskin.com/account.html"
     const portalSession = await stripeRequest("/v1/billing_portal/sessions", stripeSecretKey, new URLSearchParams({
-      customer: subscription.stripe_customer_id,
+      customer: customerId,
       return_url: returnUrl,
     }))
 
