@@ -383,7 +383,7 @@ window.RiftSkinTranslations = {
     msg_signed_out: "Signed out.",
     msg_portal_missing: "Customer portal URL is not configured yet.",
 
-    msg_checkout_not_configured: "Checkout is not configured yet. Add your Paddle token/price in assets/config.js.",
+    msg_checkout_not_configured: "Checkout is not configured yet. Add your Stripe price and backend keys first.",
     msg_checkout_script_failed: "Unable to load Paddle checkout script.",
     msg_checkout_open_failed: "Unable to open checkout.",
 
@@ -798,7 +798,7 @@ window.RiftSkinTranslations = {
     msg_signed_out: "Deconnecte.",
     msg_portal_missing: "L'URL du portail client n'est pas configuree.",
 
-    msg_checkout_not_configured: "Le checkout n'est pas configure. Ajoutez les infos Paddle dans assets/config.js.",
+    msg_checkout_not_configured: "Le checkout n'est pas configure. Ajoutez d'abord le prix Stripe et les cles backend.",
     msg_checkout_script_failed: "Impossible de charger le script Paddle checkout.",
     msg_checkout_open_failed: "Impossible d'ouvrir le checkout.",
 
@@ -1118,7 +1118,7 @@ window.RiftSkinTranslations = {
     msg_signed_out: "Sesion cerrada.",
     msg_portal_missing: "La URL del portal de clientes no esta configurada.",
 
-    msg_checkout_not_configured: "Checkout no configurado. Agrega token/precio Paddle en assets/config.js.",
+    msg_checkout_not_configured: "Checkout no configurado. Agrega primero el precio de Stripe y las claves backend.",
     msg_checkout_script_failed: "No se pudo cargar el script de Paddle.",
     msg_checkout_open_failed: "No se pudo abrir el checkout.",
 
@@ -1438,7 +1438,7 @@ window.RiftSkinTranslations = {
     msg_signed_out: "Sessao encerrada.",
     msg_portal_missing: "URL do portal do cliente nao configurada.",
 
-    msg_checkout_not_configured: "Checkout nao configurado. Adicione token/preco Paddle em assets/config.js.",
+    msg_checkout_not_configured: "Checkout nao configurado. Adicione primeiro o preco Stripe e as chaves do backend.",
     msg_checkout_script_failed: "Nao foi possivel carregar script Paddle.",
     msg_checkout_open_failed: "Nao foi possivel abrir checkout.",
 
@@ -1758,7 +1758,7 @@ window.RiftSkinTranslations = {
     msg_signed_out: "已退出登录。",
     msg_portal_missing: "客户门户 URL 尚未配置。",
 
-    msg_checkout_not_configured: "结算尚未配置，请在 assets/config.js 填写 Paddle 参数。",
+    msg_checkout_not_configured: "结算尚未配置，请先填写 Stripe 价格和后端密钥。",
     msg_checkout_script_failed: "无法加载 Paddle 结算脚本。",
     msg_checkout_open_failed: "无法打开结算页面。",
 
@@ -1910,7 +1910,7 @@ Object.assign(window.RiftSkinTranslations.en, {
   site_pricing_premium_li_3: "Automatic champion recognition during pick phase",
   site_pricing_premium_li_4: "Premium code valid while your subscription is active",
   site_pricing_premium_cta: "Subscribe now",
-  site_pricing_notice: "Checkout uses Paddle. After purchase, manage your subscription from your web account and use your premium code inside the desktop app.",
+  site_pricing_notice: "Checkout uses Stripe. After purchase, manage your subscription from your web account and use your premium code inside the desktop app.",
   site_pricing_compare_kicker: "Compare",
   site_pricing_compare_title: "Choose the mode that fits how often you use RIFTSKIN.",
   site_pricing_compare_desc: "Free already covers the core workflow. Premium is for regular use without the daily cap.",
@@ -2295,7 +2295,7 @@ Object.assign(window.RiftSkinTranslations.fr, {
   site_pricing_premium_li_3: "Reconnaissance automatique du champion pendant la phase de pick",
   site_pricing_premium_li_4: "Code premium valable tant que votre abonnement est actif",
   site_pricing_premium_cta: "S'abonner",
-  site_pricing_notice: "Le paiement passe par Paddle. Après achat, vous gérez votre abonnement depuis votre compte web et vous utilisez votre code premium dans l'application desktop.",
+  site_pricing_notice: "Le paiement passe par Stripe. Après achat, vous gérez votre abonnement depuis votre compte web et vous utilisez votre code premium dans l'application desktop.",
   site_pricing_compare_kicker: "Comparer",
   site_pricing_compare_title: "Gratuit ou premium : choisissez selon votre rythme.",
   site_pricing_compare_desc: "Le gratuit couvre déjà le cœur du workflow avec 5 injections par jour. Le premium retire cette limite et ajoute les favoris ainsi que la reconnaissance automatique.",
@@ -2628,7 +2628,7 @@ Object.assign(window.RiftSkinTranslations.es, {
   site_pricing_premium_li_3: "Reconocimiento automatico durante la seleccion",
   site_pricing_premium_li_4: "Codigo premium valido mientras tu suscripcion siga activa",
   site_pricing_premium_cta: "Suscribirse ahora",
-  site_pricing_notice: "El pago usa Paddle. Tras la compra, gestiona tu suscripcion desde tu cuenta web y usa tu codigo premium dentro de la app.",
+  site_pricing_notice: "El pago usa Stripe. Tras la compra, gestiona tu suscripcion desde tu cuenta web y usa tu codigo premium dentro de la app.",
   site_pricing_benefits_h2: "Que cambia premium dentro de la app",
   site_pricing_feat_1_title: "Reconocimiento automatico",
   site_pricing_feat_1_desc: "Los usuarios premium pueden abrir la vista de reconocimiento automatico y reaccionar mas rapido durante la seleccion de campeon.",
@@ -2795,7 +2795,7 @@ Object.assign(window.RiftSkinTranslations.pt, {
   site_pricing_premium_li_3: "Reconhecimento automatico durante o pick",
   site_pricing_premium_li_4: "Codigo premium valido enquanto a assinatura estiver ativa",
   site_pricing_premium_cta: "Assinar agora",
-  site_pricing_notice: "O pagamento usa Paddle. Depois da compra, gira a tua assinatura na conta web e usa o codigo premium dentro da app desktop.",
+  site_pricing_notice: "O pagamento usa Stripe. Depois da compra, gira a tua assinatura na conta web e usa o codigo premium dentro da app desktop.",
   site_pricing_benefits_h2: "O que o premium muda na app",
   site_pricing_feat_1_title: "Reconhecimento automatico",
   site_pricing_feat_1_desc: "Os utilizadores premium podem abrir a vista de reconhecimento automatico e reagir mais depressa durante a champion select.",
@@ -2962,7 +2962,7 @@ Object.assign(window.RiftSkinTranslations.zh, {
   site_pricing_premium_li_3: "选人阶段自动识别",
   site_pricing_premium_li_4: "只要订阅有效，Premium 代码就有效",
   site_pricing_premium_cta: "立即订阅",
-  site_pricing_notice: "支付使用 Paddle。购买后，你可以在网页账户中管理订阅，并在桌面应用中使用 Premium 代码。",
+  site_pricing_notice: "支付使用 Stripe。购买后，你可以在网页账户中管理订阅，并在桌面应用中使用 Premium 代码。",
   site_pricing_benefits_h2: "Premium 在应用中带来什么变化",
   site_pricing_feat_1_title: "自动识别",
   site_pricing_feat_1_desc: "Premium 用户可以打开自动识别视图，并在英雄选择阶段更快作出反应。",

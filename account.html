@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex,nofollow" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self' mailto:; img-src 'self' data: https://www.google-analytics.com https://jfmrwxmlncvzoremcmbi.supabase.co; style-src 'self' 'unsafe-inline'; script-src 'self' https://cdn.jsdelivr.net https://cdn.paddle.com https://www.googletagmanager.com; connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://analytics.google.com https://jfmrwxmlncvzoremcmbi.supabase.co https://api.paddle.com https://sandbox-api.paddle.com https://checkout.paddle.com https://sandbox-checkout.paddle.com; frame-src https://checkout.paddle.com https://sandbox-checkout.paddle.com https://www.googletagmanager.com;" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self' mailto:; img-src 'self' data: https://www.google-analytics.com https://jfmrwxmlncvzoremcmbi.supabase.co; style-src 'self' 'unsafe-inline'; script-src 'self' https://cdn.jsdelivr.net https://www.googletagmanager.com; connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://analytics.google.com https://jfmrwxmlncvzoremcmbi.supabase.co; frame-src https://www.googletagmanager.com;" />
   <title data-i18n="site_account_title">RIFTSKIN - Compte</title>
   <meta name="description" data-i18n-content="site_account_meta_desc" content="Créez un compte web RIFTSKIN pour gérer votre abonnement premium, la facturation et votre code premium. L'application desktop reste utilisable gratuitement." />
   <link rel="stylesheet" href="/assets/styles.css" />
@@ -142,6 +142,12 @@
           <p class="subtle" data-i18n="site_account_premium_intro">Le mode gratuit reste toujours disponible dans l'application desktop. Le premium débloque les favoris et la reconnaissance automatique tant que votre abonnement reste actif.</p>
           <div class="notice"><span data-i18n="account_access_status_label">Statut</span>: <span class="status-badge" data-access-status data-i18n="account_checking">Vérification...</span></div>
           <div class="subtle" data-access-meta style="margin-top:6px;"></div>
+          <div class="msg" data-checkout-alert style="display:none; margin-top:12px;"></div>
+
+          <div class="field-row" style="margin-top:12px;">
+            <button class="btn btn-primary" type="button" data-subscribe data-i18n="site_pricing_premium_cta">S'abonner</button>
+            <button class="btn btn-ghost" type="button" data-open-billing-portal data-i18n="account_open_portal">Ouvrir le portail de facturation</button>
+          </div>
 
           <form data-redeem-form style="margin-top:12px;">
             <div class="field-row">
@@ -204,6 +210,7 @@
   <script src="/assets/translations.js"></script>
   <script src="/assets/i18n.js"></script>
   <script src="/assets/site.js"></script>
+  <script src="/assets/stripe.js"></script>
   <script src="/assets/account.js"></script>
 </body>
 </html>

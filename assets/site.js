@@ -574,6 +574,7 @@
 
       const i18nKey = premiumCta.getAttribute('data-i18n');
       if (i18nKey !== 'site_pricing_premium_cta') return;
+      if (cfg.billingProvider === 'stripe') return;
 
       event.preventDefault();
       openSubscriptionMaintenanceModal();

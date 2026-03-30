@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self' mailto:; img-src 'self' data: https://www.google-analytics.com https://jfmrwxmlncvzoremcmbi.supabase.co; style-src 'self' 'unsafe-inline'; script-src 'self' https://cdn.jsdelivr.net https://cdn.paddle.com https://www.googletagmanager.com; connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://analytics.google.com https://jfmrwxmlncvzoremcmbi.supabase.co https://api.paddle.com https://sandbox-api.paddle.com https://checkout.paddle.com https://sandbox-checkout.paddle.com; frame-src https://checkout.paddle.com https://sandbox-checkout.paddle.com https://www.googletagmanager.com;" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self' mailto:; img-src 'self' data: https://www.google-analytics.com https://jfmrwxmlncvzoremcmbi.supabase.co; style-src 'self' 'unsafe-inline'; script-src 'self' https://cdn.jsdelivr.net https://www.googletagmanager.com; connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://analytics.google.com https://jfmrwxmlncvzoremcmbi.supabase.co; frame-src https://www.googletagmanager.com;" />
   <title data-i18n="site_pricing_title">Prix RIFTSKIN - Gratuit et Premium</title>
   <meta name="description" data-i18n-content="site_pricing_meta_desc" content="Consultez l'abonnement RIFTSKIN et comparez le mode gratuit avec le premium pour utiliser vos skins custom LoL sur Mac avec plus de confort." />
   <link rel="canonical" href="https://riftskin.com/pricing.html" />
@@ -128,6 +128,7 @@
         </div>
       </div>
 
+      <div class="msg" data-checkout-alert style="display:none;"></div>
       <div class="notice pricing-page-notice" data-i18n="site_pricing_notice">Le paiement passe par Paddle. Après achat, vous gérez votre abonnement depuis votre compte web et vous utilisez votre code premium dans l'application desktop.</div>
     </section>
 
@@ -206,5 +207,6 @@
   <script src="/assets/translations.js"></script>
   <script src="/assets/i18n.js"></script>
   <script src="/assets/site.js"></script>
+  <script src="/assets/stripe.js"></script>
 </body>
 </html>

@@ -6,6 +6,13 @@ window.RiftSkinConfig = {
   supabaseUrl: "https://jfmrwxmlncvzoremcmbi.supabase.co",
   supabaseAnonKey: "sb_publishable_SP6Tibi0ck1Qy3zSzn_YbQ_uAcTe9aV",
 
+  billingProvider: "stripe",
+  stripeEnvironment: "test",
+  stripePriceId: "price_1TGi4REJ00CrmjiEqYx971oz",
+  stripeCheckoutSuccessUrl: "/account.html?checkout=success",
+  stripeCheckoutCancelUrl: "/pricing.html?checkout=canceled",
+  stripeBillingReturnUrl: "/account.html",
+
   // Paddle settings
   paddleEnvironment: "production", // "production" or "sandbox"
   paddleClientToken: "live_686da6df2b1504fcc30dbb8f173",
