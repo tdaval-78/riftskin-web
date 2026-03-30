@@ -425,6 +425,14 @@
   }
 
   const authStorage = window.localStorage || window.sessionStorage;
+  const privateAccessEnabled = !!cfg.privateAccessEnabled;
+  const privateAllowedEmails = Array.isArray(cfg.privateAccessAllowedEmails)
+    ? cfg.privateAccessAllowedEmails.map(function (email) { return String(email || '').trim().toLowerCase(); }).filter(Boolean)
+    : [];
+
+  function isPrivateEmailAllowed(email) {
+    return privateAllowedEmails.indexOf(String(email || '').trim().toLowerCase()) !== -1;
+  }
 
   const supabaseClient = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey, {
     auth: {
@@ -923,6 +931,11 @@
       const password = signInForm.querySelector('[name="password"]').value;
       const out = signInForm.querySelector('[data-msg]');
 
+      if (privateAccessEnabled && privateAllowedEmails.length && !isPrivateEmailAllowed(email)) {
+        msg(out, "Acces prive temporaire. Cette adresse email n'est pas autorisee pendant les tests Stripe.", 'error');
+        return;
+      }
+
       msg(out, t('msg_signing_in'));
       const { error } = await supabaseClient.auth.signInWithPassword({ email: email, password: password });
       if (error) {
@@ -950,10 +963,16 @@
   if (signUpForm) {
     signUpForm.addEventListener('submit', async function (e) {
       e.preventDefault();
+      const out = signUpForm.querySelector('[data-msg]');
+
+      if (privateAccessEnabled && privateAllowedEmails.length) {
+        msg(out, "Creation de compte desactivee pendant les tests Stripe.", 'error');
+        return;
+      }
+
       const email = signUpForm.querySelector('[name="email"]').value.trim();
       const password = signUpForm.querySelector('[name="password"]').value;
       const confirm = signUpForm.querySelector('[name="confirm_password"]').value;
-      const out = signUpForm.querySelector('[data-msg]');
 
       if (password.length < 8) {
         msg(out, t('msg_password_len'), 'error');

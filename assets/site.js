@@ -22,6 +22,114 @@
   const cfg = window.RiftSkinConfig || {};
   const authStorage = window.localStorage || window.sessionStorage;
   window.dataLayer = window.dataLayer || [];
+  const privateAccessEnabled = !!cfg.privateAccessEnabled;
+  const privateAllowedEmails = Array.isArray(cfg.privateAccessAllowedEmails)
+    ? cfg.privateAccessAllowedEmails.map(function (email) {
+      return String(email || '').trim().toLowerCase();
+    }).filter(Boolean)
+    : [];
+
+  function isPrivateModeActive() {
+    return privateAccessEnabled && privateAllowedEmails.length > 0;
+  }
+
+  function isPrivateEmailAllowed(email) {
+    return privateAllowedEmails.indexOf(String(email || '').trim().toLowerCase()) !== -1;
+  }
+
+  function setPrivateVisibility(hidden) {
+    document.documentElement.style.visibility = hidden ? 'hidden' : '';
+  }
+
+  function renderPrivateSiteLock() {
+    const wrap = document.querySelector('.site-wrap');
+    if (!wrap) return;
+
+    wrap.innerHTML = [
+      '<section class="section" style="min-height:70vh;display:flex;align-items:center;justify-content:center;">',
+      '  <div class="panel" style="max-width:720px;width:100%;text-align:center;">',
+      '    <div class="maintenance-modal-kicker">RIFTSKIN</div>',
+      '    <h2 style="margin-bottom:12px;">Acces prive temporaire</h2>',
+      '    <p class="section-intro" style="margin:0 auto 16px;">Le site public est verrouille pendant les tests Stripe. Seul le compte autorise peut acceder a l interface pour le moment.</p>',
+      '    <div class="notice" style="margin-bottom:16px;">Connectez-vous avec l adresse autorisee sur la page compte pour continuer.</div>',
+      '    <div class="field-row" style="justify-content:center;">',
+      '      <a class="btn btn-primary" href="/account.html">Ouvrir la page compte</a>',
+      '    </div>',
+      '  </div>',
+      '</section>'
+    ].join('');
+  }
+
+  function restrictAccountPageForPrivateMode() {
+    const signupForm = document.querySelector('[data-signup-form]');
+    const signupCard = signupForm ? signupForm.closest('.account-auth-card') : null;
+    if (signupCard) {
+      signupCard.style.display = 'none';
+    }
+
+    const intro = document.querySelector('[data-i18n="site_account_intro"]');
+    if (intro) {
+      intro.textContent = 'Acces prive temporaire. Seule l adresse autorisee peut se connecter pendant les tests Stripe.';
+    }
+
+    const loggedOut = document.querySelector('[data-logged-out]');
+    if (loggedOut && !document.querySelector('[data-private-access-msg]')) {
+      const notice = document.createElement('div');
+      notice.className = 'notice';
+      notice.setAttribute('data-private-access-msg', '1');
+      notice.style.marginTop = '12px';
+      notice.textContent = 'Creation de compte desactivee pendant les tests. Connectez-vous uniquement avec l adresse autorisee.';
+      loggedOut.insertAdjacentElement('beforebegin', notice);
+    }
+  }
+
+  async function enforcePrivateAccess() {
+    if (!isPrivateModeActive()) return;
+
+    setPrivateVisibility(true);
+    try {
+      if (!window.supabase || !cfg.supabaseUrl || !cfg.supabaseAnonKey) {
+        if (document.body.getAttribute('data-page') === 'account') restrictAccountPageForPrivateMode();
+        else renderPrivateSiteLock();
+        return;
+      }
+
+      const supabaseClient = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey, {
+        auth: {
+          storage: authStorage,
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: false
+        }
+      });
+
+      const sessionResult = await supabaseClient.auth.getSession();
+      const session = sessionResult && sessionResult.data ? sessionResult.data.session : null;
+      const userEmail = session && session.user ? session.user.email : '';
+
+      if (isPrivateEmailAllowed(userEmail)) return;
+
+      if (session && session.user) {
+        await supabaseClient.auth.signOut();
+      }
+
+      if (document.body.getAttribute('data-page') === 'account') {
+        restrictAccountPageForPrivateMode();
+        return;
+      }
+
+      renderPrivateSiteLock();
+    } catch (_err) {
+      if (document.body.getAttribute('data-page') === 'account') restrictAccountPageForPrivateMode();
+      else renderPrivateSiteLock();
+    } finally {
+      setPrivateVisibility(false);
+    }
+  }
+
+  if (isPrivateModeActive()) {
+    setPrivateVisibility(true);
+  }
 
   function pushAnalyticsEvent(eventName, params) {
     if (!eventName) return;
@@ -875,4 +983,6 @@
       el.classList.add('is-visible');
     });
   }
+
+  enforcePrivateAccess();
 })();
