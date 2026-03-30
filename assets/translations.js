@@ -207,7 +207,7 @@ window.RiftSkinTranslations = {
     account_my_key_intro: "If a key was attached to your account by admin, you will see it here.",
     account_my_key_col_code: "Code",
     account_my_key_col_redeemed_at: "Redeemed at",
-    account_my_key_col_expires: "Current billing period ends",
+    account_my_key_col_expires: "Next billing date",
     account_my_key_col_status: "Status",
     account_my_key_empty: "No key attached yet.",
     account_my_key_load_failed: "Could not load your keys.",
@@ -623,7 +623,7 @@ window.RiftSkinTranslations = {
     account_my_key_intro: "Si une cle a ete attachee a votre compte par un admin, elle apparait ici.",
     account_my_key_col_code: "Code",
     account_my_key_col_redeemed_at: "Activee le",
-    account_my_key_col_expires: "Fin de la periode en cours",
+    account_my_key_col_expires: "Prochaine facturation",
     account_my_key_col_status: "Statut",
     account_my_key_empty: "Aucune cle attachee pour le moment.",
     account_my_key_load_failed: "Impossible de charger vos cles.",
@@ -1039,7 +1039,7 @@ window.RiftSkinTranslations = {
     account_my_key_intro: "Si un admin adjunto una clave a tu cuenta, la veras aqui.",
     account_my_key_col_code: "Codigo",
     account_my_key_col_redeemed_at: "Canjeada el",
-    account_my_key_col_expires: "Fin del periodo actual",
+    account_my_key_col_expires: "Proxima facturacion",
     account_my_key_col_status: "Estado",
     account_my_key_empty: "Todavia no hay ninguna clave adjunta.",
     account_my_key_load_failed: "No se pudieron cargar tus claves.",
@@ -1360,7 +1360,7 @@ window.RiftSkinTranslations = {
     account_my_key_intro: "Se uma chave foi vinculada a sua conta por um admin, ela aparecera aqui.",
     account_my_key_col_code: "Codigo",
     account_my_key_col_redeemed_at: "Ativada em",
-    account_my_key_col_expires: "Fim do periodo atual",
+    account_my_key_col_expires: "Proxima cobranca",
     account_my_key_col_status: "Status",
     account_my_key_empty: "Nenhuma chave vinculada ainda.",
     account_my_key_load_failed: "Nao foi possivel carregar suas chaves.",
@@ -1681,7 +1681,7 @@ window.RiftSkinTranslations = {
     account_my_key_intro: "如果管理员已给你的账户绑定激活码，你会在这里看到。",
     account_my_key_col_code: "代码",
     account_my_key_col_redeemed_at: "激活时间",
-    account_my_key_col_expires: "当前计费周期结束",
+    account_my_key_col_expires: "下次扣费时间",
     account_my_key_col_status: "状态",
     account_my_key_empty: "还没有绑定任何激活码。",
     account_my_key_load_failed: "无法加载你的激活码。",
@@ -2177,7 +2177,7 @@ Object.assign(window.RiftSkinTranslations.en, {
   site_account_premium_intro: "Free mode is always available in the desktop app. Premium unlocks favourites and automatic champion recognition while your subscription stays active.",
   site_account_attach_code_btn: "Attach premium code",
   site_account_codes_title: "My premium codes",
-  site_account_codes_intro: "Use one active premium code inside the desktop app to unlock premium features on a machine."
+  site_account_codes_intro: "Your license stays the same while the subscription remains active. Use it inside the desktop app to unlock premium features."
 });
 
 Object.assign(window.RiftSkinTranslations.fr, {
@@ -2562,7 +2562,7 @@ Object.assign(window.RiftSkinTranslations.fr, {
   site_account_premium_intro: "Le mode gratuit reste toujours disponible dans l'application desktop. Le premium débloque les favoris et la reconnaissance automatique tant que votre abonnement reste actif.",
   site_account_attach_code_btn: "Associer un code premium",
   site_account_codes_title: "Mes codes premium",
-  site_account_codes_intro: "Utilisez un code premium actif dans l'application desktop pour débloquer les fonctions premium sur une machine."
+  site_account_codes_intro: "Votre licence reste la meme tant que l'abonnement est actif. Utilisez-la dans l'application desktop pour debloquer les fonctions premium."
 });
 
 Object.assign(window.RiftSkinTranslations.es, {
@@ -2729,7 +2729,7 @@ Object.assign(window.RiftSkinTranslations.es, {
   site_account_premium_intro: "El modo gratuito siempre sigue disponible en la app de escritorio. Premium desbloquea favoritos y reconocimiento automatico mientras tu suscripcion siga activa.",
   site_account_attach_code_btn: "Vincular codigo premium",
   site_account_codes_title: "Mis codigos premium",
-  site_account_codes_intro: "Usa un codigo premium activo dentro de la app de escritorio para desbloquear las funciones premium en una maquina."
+  site_account_codes_intro: "Tu licencia sigue siendo la misma mientras la suscripcion siga activa. Usala en la aplicacion de escritorio para desbloquear las funciones premium."
 });
 
 Object.assign(window.RiftSkinTranslations.pt, {
@@ -2896,7 +2896,7 @@ Object.assign(window.RiftSkinTranslations.pt, {
   site_account_premium_intro: "O modo gratuito continua sempre disponivel na app desktop. O premium desbloqueia favoritos e reconhecimento automatico enquanto a sua assinatura permanecer ativa.",
   site_account_attach_code_btn: "Associar codigo premium",
   site_account_codes_title: "Os meus codigos premium",
-  site_account_codes_intro: "Use um codigo premium ativo dentro da app desktop para desbloquear os recursos premium numa maquina."
+  site_account_codes_intro: "A sua licenca permanece a mesma enquanto a assinatura estiver ativa. Use-a na aplicacao desktop para desbloquear os recursos premium."
 });
 
 Object.assign(window.RiftSkinTranslations.zh, {
@@ -3063,5 +3063,5 @@ Object.assign(window.RiftSkinTranslations.zh, {
   site_account_premium_intro: "免费模式始终可在桌面应用中使用。Premium 在订阅有效期间解锁收藏与自动识别。",
   site_account_attach_code_btn: "绑定 Premium 代码",
   site_account_codes_title: "我的 Premium 代码",
-  site_account_codes_intro: "在桌面应用中使用一个有效的 Premium 代码，即可在某台机器上解锁 Premium 功能。"
+  site_account_codes_intro: "只要订阅保持有效，你的许可证就会保持不变。请在桌面应用中使用它来解锁 Premium 功能。"
 });
