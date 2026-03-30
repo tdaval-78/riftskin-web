@@ -16,6 +16,19 @@ function json(data: Record<string, unknown>, status = 200) {
   })
 }
 
+function decodeJwtPayload(token: string) {
+  const parts = token.split(".")
+  if (parts.length < 2) return null
+  const normalized = parts[1].replace(/-/g, "+").replace(/_/g, "/")
+  const padded = normalized + "=".repeat((4 - (normalized.length % 4 || 4)) % 4)
+  try {
+    const jsonPayload = new TextDecoder().decode(Uint8Array.from(atob(padded), (char) => char.charCodeAt(0)))
+    return JSON.parse(jsonPayload) as Record<string, unknown>
+  } catch {
+    return null
+  }
+}
+
 async function stripeRequest(path: string, apiKey: string, body?: URLSearchParams) {
   const response = await fetch(`https://api.stripe.com${path}`, {
     method: body ? "POST" : "GET",
@@ -46,12 +59,11 @@ Deno.serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")
-    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")
     const stripeSecretKey = Deno.env.get("STRIPE_SECRET_KEY")
     const authHeader = req.headers.get("Authorization") || ""
     const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : ""
 
-    if (!supabaseUrl || !serviceRoleKey || !anonKey) {
+    if (!supabaseUrl || !serviceRoleKey) {
       return json({ error: "missing_supabase_env" }, 500)
     }
     if (!stripeSecretKey) {
@@ -65,16 +77,16 @@ Deno.serve(async (req) => {
       auth: { persistSession: false },
     })
 
-    const { data: userData, error: userError } = await adminClient.auth.getUser(token)
-    const user = userData.user
-    if (userError || !user || !user.email) {
+    const claims = decodeJwtPayload(token)
+    const userEmail = String(claims?.email || "").trim().toLowerCase()
+    if (!userEmail) {
       return json({ error: "not_authenticated" }, 401)
     }
 
     const { data: subscription, error: subscriptionError } = await adminClient
       .from("stripe_subscriptions")
       .select("stripe_customer_id")
-      .eq("customer_email", user.email)
+      .eq("customer_email", userEmail)
       .not("stripe_customer_id", "is", null)
       .order("updated_at", { ascending: false })
       .limit(1)

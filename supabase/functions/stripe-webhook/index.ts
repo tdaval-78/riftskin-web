@@ -78,6 +78,20 @@ function normalizeEmail(value: unknown) {
   return String(value || "").trim().toLowerCase()
 }
 
+function unixToIso(value: unknown) {
+  const parsed = Number(value || 0)
+  if (!parsed) return null
+  const date = new Date(parsed * 1000)
+  return Number.isNaN(date.getTime()) ? null : date.toISOString()
+}
+
+function firstNonEmpty<T>(...values: Array<T | null | undefined>) {
+  for (const value of values) {
+    if (value !== null && value !== undefined && value !== "") return value
+  }
+  return null
+}
+
 function getHeader(req: Request, name: string) {
   return req.headers.get(name) || req.headers.get(name.toLowerCase()) || ""
 }
@@ -277,12 +291,14 @@ async function buildSubscriptionSnapshot(eventType: string, payload: Record<stri
     normalizeEmail(subscription.metadata && (subscription.metadata as Record<string, unknown>).email) ||
     await getCustomerEmail(customerId, apiKey)
 
-  const currentPeriodStartsAt = subscription.current_period_start
-    ? new Date(Number(subscription.current_period_start) * 1000).toISOString()
-    : null
-  const currentPeriodEndsAt = subscription.current_period_end
-    ? new Date(Number(subscription.current_period_end) * 1000).toISOString()
-    : null
+  const currentPeriodStartsAt = unixToIso(firstNonEmpty(
+    subscription.current_period_start,
+    firstItem.current_period_start,
+  ))
+  const currentPeriodEndsAt = unixToIso(firstNonEmpty(
+    subscription.current_period_end,
+    firstItem.current_period_end,
+  ))
 
   return {
     ignored: false,
@@ -294,10 +310,10 @@ async function buildSubscriptionSnapshot(eventType: string, payload: Record<stri
     productId: typeof product === "string" ? product : String((product as Record<string, unknown> | null)?.id || "").trim() || null,
     currentPeriodStartsAt,
     currentPeriodEndsAt,
-    canceledAt: toIsoOrNull(subscription.canceled_at ? new Date(Number(subscription.canceled_at) * 1000).toISOString() : null),
-    activatedAt: toIsoOrNull(subscription.start_date ? new Date(Number(subscription.start_date) * 1000).toISOString() : null),
-    trialingAt: toIsoOrNull(subscription.trial_start ? new Date(Number(subscription.trial_start) * 1000).toISOString() : null),
-    pausedAt: toIsoOrNull(((subscription.pause_collection || {}) as Record<string, unknown>).resumes_at ? new Date(Number(((subscription.pause_collection || {}) as Record<string, unknown>).resumes_at) * 1000).toISOString() : null),
+    canceledAt: unixToIso(subscription.canceled_at),
+    activatedAt: unixToIso(subscription.start_date),
+    trialingAt: unixToIso(subscription.trial_start),
+    pausedAt: unixToIso(((subscription.pause_collection || {}) as Record<string, unknown>).resumes_at),
     raw: subscription,
   }
 }

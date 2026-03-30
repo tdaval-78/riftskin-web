@@ -16,6 +16,19 @@ function json(data: Record<string, unknown>, status = 200) {
   })
 }
 
+function decodeJwtPayload(token: string) {
+  const parts = token.split(".")
+  if (parts.length < 2) return null
+  const normalized = parts[1].replace(/-/g, "+").replace(/_/g, "/")
+  const padded = normalized + "=".repeat((4 - (normalized.length % 4 || 4)) % 4)
+  try {
+    const jsonPayload = new TextDecoder().decode(Uint8Array.from(atob(padded), (char) => char.charCodeAt(0)))
+    return JSON.parse(jsonPayload) as Record<string, unknown>
+  } catch {
+    return null
+  }
+}
+
 async function stripeRequest(path: string, apiKey: string, body?: URLSearchParams) {
   const response = await fetch(`https://api.stripe.com${path}`, {
     method: body ? "POST" : "GET",
@@ -60,13 +73,12 @@ Deno.serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")
-    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")
     const stripeSecretKey = Deno.env.get("STRIPE_SECRET_KEY")
     const stripePriceId = Deno.env.get("STRIPE_PRICE_ID")
     const authHeader = req.headers.get("Authorization") || ""
     const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : ""
 
-    if (!supabaseUrl || !serviceRoleKey || !anonKey) {
+    if (!supabaseUrl || !serviceRoleKey) {
       return json({ error: "missing_supabase_env" }, 500)
     }
     if (!stripeSecretKey || !stripePriceId) {
@@ -80,9 +92,10 @@ Deno.serve(async (req) => {
       auth: { persistSession: false },
     })
 
-    const { data: userData, error: userError } = await adminClient.auth.getUser(token)
-    const user = userData.user
-    if (userError || !user || !user.email) {
+    const claims = decodeJwtPayload(token)
+    const userId = String(claims?.sub || "").trim()
+    const userEmail = String(claims?.email || "").trim().toLowerCase()
+    if (!userId || !userEmail) {
       return json({ error: "not_authenticated" }, 401)
     }
 
@@ -90,12 +103,11 @@ Deno.serve(async (req) => {
     const successUrl = String(body.successUrl || "").trim() || "https://riftskin.com/account.html?checkout=success"
     const cancelUrl = String(body.cancelUrl || "").trim() || "https://riftskin.com/pricing.html?checkout=canceled"
 
-    let customerId = await findExistingCustomerId(adminClient, user.email)
+    let customerId = await findExistingCustomerId(adminClient, userEmail)
     if (!customerId) {
       const customer = await stripeRequest("/v1/customers", stripeSecretKey, new URLSearchParams({
-        email: user.email,
-        name: (user.user_metadata?.full_name || user.email) as string,
-        "metadata[supabase_user_id]": user.id,
+        email: userEmail,
+        "metadata[supabase_user_id]": userId,
         "metadata[app]": "riftskin",
       }))
       customerId = customer.id
@@ -109,11 +121,11 @@ Deno.serve(async (req) => {
       "line_items[0][price]": stripePriceId,
       "line_items[0][quantity]": "1",
       "allow_promotion_codes": "true",
-      "metadata[supabase_user_id]": user.id,
-      "metadata[email]": user.email,
+      "metadata[supabase_user_id]": userId,
+      "metadata[email]": userEmail,
       "metadata[source]": "riftskin-web",
-      "subscription_data[metadata][supabase_user_id]": user.id,
-      "subscription_data[metadata][email]": user.email,
+      "subscription_data[metadata][supabase_user_id]": userId,
+      "subscription_data[metadata][email]": userEmail,
       "subscription_data[metadata][source]": "riftskin-web",
     })
 

@@ -18,10 +18,12 @@ entrypoint = "./functions/paddle-webhook/index.ts"
 
 [functions.create-stripe-checkout-session]
 enabled = true
+verify_jwt = false
 entrypoint = "./functions/create-stripe-checkout-session/index.ts"
 
 [functions.create-stripe-portal-session]
 enabled = true
+verify_jwt = false
 entrypoint = "./functions/create-stripe-portal-session/index.ts"
 
 [functions.stripe-webhook]
