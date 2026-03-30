@@ -1042,6 +1042,21 @@
         return;
       }
 
+      const confirmationResult = await supabaseClient.functions.invoke('auth-send-confirmation', {
+        body: {
+          email: email,
+          redirectTo: authCallbackUrl()
+        }
+      });
+
+      if (confirmationResult.error || !confirmationResult.data || confirmationResult.data.ok !== true) {
+        const message = confirmationResult.error && confirmationResult.error.message
+          ? confirmationResult.error.message
+          : (confirmationResult.data && (confirmationResult.data.message || confirmationResult.data.error)) || t('msg_confirmation_resend_failed');
+        msg(out, message, 'error');
+        return;
+      }
+
       if (accountEmailInput) accountEmailInput.value = email;
       setResendVisibility(true);
       msg(out, t('msg_account_created'), 'ok');
@@ -1095,12 +1110,16 @@
 
       setForgotMode(true);
       msg(out, t('msg_sending_reset'));
-      const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-        redirectTo: authCallbackUrl()
+      const { data, error } = await supabaseClient.functions.invoke('auth-password-reset', {
+        body: {
+          email: email,
+          redirectTo: authCallbackUrl()
+        }
       });
 
-      if (error) {
-        msg(out, error.message || t('msg_reset_failed'), 'error');
+      if (error || !data || data.ok !== true) {
+        const message = error && error.message ? error.message : (data && (data.message || data.error)) || t('msg_reset_failed');
+        msg(out, message, 'error');
         return;
       }
 
@@ -1117,16 +1136,16 @@
       }
 
       msg(resendMsg, t('msg_sending_confirmation'), '');
-      const { error } = await supabaseClient.auth.resend({
-        type: 'signup',
-        email: email,
-        options: {
-          emailRedirectTo: authCallbackUrl()
+      const { data, error } = await supabaseClient.functions.invoke('auth-send-confirmation', {
+        body: {
+          email: email,
+          redirectTo: authCallbackUrl()
         }
       });
 
-      if (error) {
-        msg(resendMsg, error.message || t('msg_confirmation_resend_failed'), 'error');
+      if (error || !data || data.ok !== true) {
+        const message = error && error.message ? error.message : (data && (data.message || data.error)) || t('msg_confirmation_resend_failed');
+        msg(resendMsg, message, 'error');
         return;
       }
 
