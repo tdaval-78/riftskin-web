@@ -1057,6 +1057,12 @@
         return;
       }
 
+      if (confirmationResult.data.reason === 'already_confirmed') {
+        setResendVisibility(false);
+        msg(out, t('msg_account_exists'), 'error');
+        return;
+      }
+
       if (accountEmailInput) accountEmailInput.value = email;
       setResendVisibility(true);
       msg(out, t('msg_account_created'), 'ok');
