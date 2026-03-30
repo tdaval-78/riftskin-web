@@ -12,6 +12,8 @@ window.RiftSkinConfig = {
   stripeCheckoutSuccessUrl: "/account.html?checkout=success",
   stripeCheckoutCancelUrl: "/pricing.html?checkout=canceled",
   stripeBillingReturnUrl: "/account.html",
+  subscriptionMaintenanceEnabled: false,
+  downloadMaintenanceEnabled: false,
 
   // Paddle settings
   paddleEnvironment: "production", // "production" or "sandbox"

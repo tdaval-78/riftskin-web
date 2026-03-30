@@ -575,6 +575,7 @@
       const i18nKey = premiumCta.getAttribute('data-i18n');
       if (i18nKey !== 'site_pricing_premium_cta') return;
       if (cfg.billingProvider === 'stripe') return;
+      if (!cfg.subscriptionMaintenanceEnabled) return;
 
       event.preventDefault();
       openSubscriptionMaintenanceModal();
@@ -584,6 +585,7 @@
   document.querySelectorAll('[data-download-installer], [data-download-windows], [data-download-direct], a[href="/download.html"]').forEach(function (downloadCta) {
     downloadCta.addEventListener('click', function (event) {
       if (event.defaultPrevented) return;
+      if (!cfg.downloadMaintenanceEnabled) return;
       event.preventDefault();
       openDownloadMaintenanceModal();
     });
