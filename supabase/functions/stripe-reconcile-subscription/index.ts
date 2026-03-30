@@ -4,11 +4,9 @@ import { escapeHtml, renderEmailButton, renderEmailLayout } from "../_shared/ema
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, stripe-signature",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 }
-
-const legacyBillingNotePrefix = "[paddle-subscription:"
 
 function json(data: Record<string, unknown>, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -20,59 +18,17 @@ function json(data: Record<string, unknown>, status = 200) {
   })
 }
 
-function toIsoOrNull(value: unknown) {
-  if (!value) return null
-  const date = new Date(String(value))
-  return Number.isNaN(date.getTime()) ? null : date.toISOString()
-}
-
-function parseStripeSignature(header: string) {
-  const values = header
-    .split(",")
-    .map((part) => part.trim())
-    .filter(Boolean)
-    .reduce<Record<string, string[]>>((acc, part) => {
-      const [key, ...rest] = part.split("=")
-      if (!key || !rest.length) return acc
-      acc[key] = acc[key] || []
-      acc[key].push(rest.join("="))
-      return acc
-    }, {})
-
-  return {
-    timestamp: values.t?.[0] || "",
-    signatures: values.v1 || [],
+function decodeJwtPayload(token: string) {
+  const parts = token.split(".")
+  if (parts.length < 2) return null
+  const normalized = parts[1].replace(/-/g, "+").replace(/_/g, "/")
+  const padded = normalized + "=".repeat((4 - (normalized.length % 4 || 4)) % 4)
+  try {
+    const jsonPayload = new TextDecoder().decode(Uint8Array.from(atob(padded), (char) => char.charCodeAt(0)))
+    return JSON.parse(jsonPayload) as Record<string, unknown>
+  } catch {
+    return null
   }
-}
-
-function timingSafeEqual(a: string, b: string) {
-  if (a.length !== b.length) return false
-  let mismatch = 0
-  for (let i = 0; i < a.length; i += 1) {
-    mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i)
-  }
-  return mismatch === 0
-}
-
-async function computeHmac(secret: string, payload: string) {
-  const encoder = new TextEncoder()
-  const key = await crypto.subtle.importKey(
-    "raw",
-    encoder.encode(secret),
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["sign"],
-  )
-  const signature = await crypto.subtle.sign("HMAC", key, encoder.encode(payload))
-  return Array.from(new Uint8Array(signature)).map((byte) => byte.toString(16).padStart(2, "0")).join("")
-}
-
-async function verifyWebhookSignature(rawBody: string, signatureHeader: string, secret: string) {
-  const { timestamp, signatures } = parseStripeSignature(signatureHeader)
-  if (!timestamp || !signatures.length) return false
-  const signedPayload = `${timestamp}.${rawBody}`
-  const expected = await computeHmac(secret, signedPayload)
-  return signatures.some((signature) => timingSafeEqual(expected, signature))
 }
 
 function normalizeEmail(value: unknown) {
@@ -91,10 +47,6 @@ function firstNonEmpty<T>(...values: Array<T | null | undefined>) {
     if (value !== null && value !== undefined && value !== "") return value
   }
   return null
-}
-
-function getHeader(req: Request, name: string) {
-  return req.headers.get(name) || req.headers.get(name.toLowerCase()) || ""
 }
 
 function isAccessActive(status: string, endsAt: string | null) {
@@ -121,17 +73,23 @@ async function stripeRequest(path: string, apiKey: string) {
 }
 
 async function findUserIdByEmail(adminClient: any, email: string) {
-  if (!email) return null
+  const normalized = normalizeEmail(email)
+  let page = 1
 
-  const { data, error } = await adminClient
-    .schema("auth")
-    .from("users")
-    .select("id")
-    .ilike("email", email)
-    .limit(1)
+  while (page <= 10) {
+    const { data, error } = await adminClient.auth.admin.listUsers({
+      page,
+      perPage: 200,
+    })
+    if (error) throw error
+    const users = Array.isArray(data?.users) ? data.users : []
+    const match = users.find((user: any) => normalizeEmail(user.email) === normalized)
+    if (match) return match.id
+    if (users.length < 200) break
+    page += 1
+  }
 
-  if (error) throw error
-  return data?.[0]?.id || null
+  return null
 }
 
 async function getAppAdminId(adminClient: any) {
@@ -151,7 +109,7 @@ async function ensureActivationKey(adminClient: any, params: {
   accessEndsAt: string | null
   existingKeyId?: number | null
 }) {
-  const note = `${legacyBillingNotePrefix}${params.subscriptionId}]`
+  const note = `[paddle-subscription:${params.subscriptionId}]`
   const active = !params.accessEndsAt || new Date(params.accessEndsAt).getTime() > Date.now()
   let targetKeyId = params.existingKeyId || null
 
@@ -208,15 +166,7 @@ async function ensureActivationKey(adminClient: any, params: {
     .select("id, code, expires_at, is_active")
     .single()
 
-  if (error) {
-    if (error.code === "23505") {
-      const existingByNote = await loadByNote()
-      if (existingByNote) {
-        return existingByNote
-      }
-    }
-    throw error
-  }
+  if (error) throw error
   return data
 }
 
@@ -345,13 +295,9 @@ async function sendPremiumKeyEmail(params: {
         <div style="font-size:12px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#c6a756;margin:0 0 8px;">Your license</div>
         <div style="font-size:28px;line-height:1.2;font-weight:800;letter-spacing:1.5px;color:#ffffff;">${escapeHtml(params.activationKeyCode)}</div>
       </div>
-      <p style="margin:0 0 14px;">This same license remains valid for as long as your subscription stays active. You can keep using it in the desktop app without changing it every month.</p>
+      <p style="margin:0 0 14px;">This same license remains valid for as long as your subscription stays active.</p>
       ${cycleEnd ? `<p style="margin:0 0 14px;">Next billing date: <strong>${escapeHtml(cycleEnd)}</strong></p>` : ""}
-      <p style="margin:0 0 18px;">You can also find this license in your RIFTSKIN account under <strong>Subscriptions</strong>.</p>
       <div style="margin:0 0 18px;">${renderEmailButton("Open my account", "https://riftskin.com/account.html")}</div>
-      <div style="padding:14px 16px;background:#0b1323;border:1px solid #22314d;border-radius:16px;color:#93a4bf;">
-        VAT not applicable, article 293 B of the French CGI.
-      </div>
     `,
     footerNote: "You can reply directly to this email if you need help.",
   })
@@ -361,10 +307,7 @@ async function sendPremiumKeyEmail(params: {
     "",
     "Your payment has been confirmed.",
     `Your Premium license: ${params.activationKeyCode}`,
-    "This same license remains valid for as long as your subscription stays active.",
     cycleEnd ? `Next billing date: ${cycleEnd}` : "",
-    "VAT not applicable, article 293 B of the French CGI.",
-    "You can also find this license in your RIFTSKIN account and use it inside the desktop app.",
   ].filter(Boolean).join("\n")
 
   return sendBillingEmail({
@@ -375,149 +318,48 @@ async function sendPremiumKeyEmail(params: {
   })
 }
 
-async function sendCancellationAcknowledgedEmail(params: {
-  toEmail: string
-  currentPeriodEndsAt: string | null
-}) {
-  const cycleEnd = formatParisDate(params.currentPeriodEndsAt)
-  const html = renderEmailLayout({
-    previewText: cycleEnd
-      ? `Cancellation confirmed. Your access stays active until ${cycleEnd}.`
-      : "Cancellation confirmed. Your access stays active until the end of the paid period.",
-    eyebrow: "Subscription",
-    title: "Cancellation confirmed",
-    lead: "Your RIFTSKIN Premium subscription will no longer renew automatically.",
-    bodyHtml: `
-      <p style="margin:0 0 14px;">${cycleEnd
-        ? `Your Premium access stays active until <strong>${escapeHtml(cycleEnd)}</strong>.`
-        : "Your Premium access stays active until the end of the period you already paid for."}</p>
-      <p style="margin:0 0 18px;">Your license stays the same during that time and remains available in your RIFTSKIN account.</p>
-      <div style="margin:0 0 18px;">${renderEmailButton("Manage subscription", "https://riftskin.com/account.html")}</div>
-      <div style="padding:14px 16px;background:#0b1323;border:1px solid #22314d;border-radius:16px;color:#93a4bf;">
-        VAT not applicable, article 293 B of the French CGI.
-      </div>
-    `,
-    footerNote: "If this cancellation was not requested by you, contact RIFTSKIN support immediately.",
-  })
-  const text = [
-    "RIFTSKIN Premium cancellation",
-    "",
-    "Your cancellation request has been confirmed.",
-    cycleEnd ? `Your Premium access stays active until ${cycleEnd}.` : "Your Premium access stays active until the end of the paid period.",
-    "Your license stays the same during that time and remains available in your RIFTSKIN account.",
-    "VAT not applicable, article 293 B of the French CGI.",
-  ].join("\n")
-  return sendBillingEmail({
-    toEmail: params.toEmail,
-    subject: "Cancellation confirmed - RIFTSKIN Premium",
-    html,
-    text,
-  })
-}
-
-async function sendSubscriptionExpiredEmail(params: {
-  toEmail: string
-}) {
-  const html = renderEmailLayout({
-    previewText: "Your Premium subscription has ended. Your account remains available for a future reactivation.",
-    eyebrow: "Subscription",
-    title: "Your Premium access has expired",
-    lead: "Your RIFTSKIN Premium subscription has now ended.",
-    bodyHtml: `
-      <p style="margin:0 0 14px;">Your web account remains available, and you can subscribe again at any time to reactivate your license and Premium features.</p>
-      <p style="margin:0 0 18px;">Free mode still works inside the desktop app.</p>
-      <div style="margin:0 0 18px;">${renderEmailButton("Subscribe again", "https://riftskin.com/pricing.html")}</div>
-      <div style="padding:14px 16px;background:#0b1323;border:1px solid #22314d;border-radius:16px;color:#93a4bf;">
-        VAT not applicable, article 293 B of the French CGI.
-      </div>
-    `,
-    footerNote: "You can always check your license and subscription status from your RIFTSKIN account.",
-  })
-  const text = [
-    "RIFTSKIN Premium subscription ended",
-    "",
-    "Your Premium subscription has now ended and Premium access has expired.",
-    "Your web account remains available, and you can subscribe again at any time to reactivate your license.",
-    "VAT not applicable, article 293 B of the French CGI.",
-  ].join("\n")
-  return sendBillingEmail({
-    toEmail: params.toEmail,
-    subject: "Subscription ended - RIFTSKIN Premium",
-    html,
-    text,
-  })
-}
-
-function getNotificationState(raw: unknown) {
-  const record = raw && typeof raw === "object" ? raw as Record<string, unknown> : {}
-  const existing = record._riftskin_notifications
-  return existing && typeof existing === "object" ? existing as Record<string, unknown> : {}
-}
-
 async function getCustomerEmail(customerId: string | null, apiKey: string) {
   if (!customerId) return null
   const customer = await stripeRequest(`/v1/customers/${customerId}`, apiKey)
   return normalizeEmail(customer.email)
 }
 
-async function buildSubscriptionSnapshot(eventType: string, payload: Record<string, unknown>, apiKey: string) {
-  const eventObject = (payload.data || {}) as Record<string, unknown>
-  const object = (eventObject.object || {}) as Record<string, unknown>
-  let subscription = object
+async function listStripeCustomersByEmail(email: string, apiKey: string) {
+  const payload = await stripeRequest(`/v1/customers?email=${encodeURIComponent(email)}&limit=10`, apiKey)
+  return Array.isArray(payload.data) ? payload.data : []
+}
 
-  if (eventType === "checkout.session.completed") {
-    const subscriptionId = String(object.subscription || "").trim()
-    if (!subscriptionId) {
-      return {
-        ignored: true,
-        reason: "missing_subscription_id",
-      }
-    }
-    subscription = await stripeRequest(`/v1/subscriptions/${subscriptionId}`, apiKey)
-  }
+async function listSubscriptionsForCustomer(customerId: string, apiKey: string) {
+  const payload = await stripeRequest(`/v1/subscriptions?customer=${encodeURIComponent(customerId)}&status=all&limit=10`, apiKey)
+  return Array.isArray(payload.data) ? payload.data : []
+}
 
-  if (String(subscription.object || "") !== "subscription") {
-    return {
-      ignored: true,
-      reason: "unsupported_object",
-    }
-  }
-
+function buildSubscriptionSnapshotFromSubscription(subscription: Record<string, unknown>, fallbackEmail: string) {
   const items = (((subscription.items || {}) as Record<string, unknown>).data || []) as Array<Record<string, unknown>>
   const firstItem = items[0] || {}
   const price = (firstItem.price || {}) as Record<string, unknown>
   const product = price.product
   const customerId = String(subscription.customer || "").trim() || null
-
   const customerEmail =
-    normalizeEmail(subscription.metadata && (subscription.metadata as Record<string, unknown>).email) ||
-    await getCustomerEmail(customerId, apiKey)
+    normalizeEmail((subscription.metadata as Record<string, unknown> | undefined)?.email) ||
+    normalizeEmail(fallbackEmail)
 
-  const currentPeriodStartsAt = unixToIso(firstNonEmpty(
-    subscription.current_period_start,
-    firstItem.current_period_start,
+  const currentPeriodEndsAt = unixToIso(firstNonEmpty(
+    subscription.current_period_end,
+    firstItem.current_period_end,
   ))
-  const currentPeriodEndsAt = eventType === "customer.subscription.deleted"
-    ? unixToIso(firstNonEmpty(
-      subscription.ended_at,
-      subscription.canceled_at,
-      subscription.current_period_end,
-      firstItem.current_period_end,
-    ))
-    : unixToIso(firstNonEmpty(
-      subscription.current_period_end,
-      firstItem.current_period_end,
-    ))
 
   return {
-    ignored: false,
     subscriptionId: String(subscription.id || "").trim(),
     customerId,
     customerEmail,
-    status: String(subscription.status || eventType).trim().toLowerCase(),
+    status: String(subscription.status || "").trim().toLowerCase(),
     priceId: String(price.id || "").trim() || null,
     productId: typeof product === "string" ? product : String((product as Record<string, unknown> | null)?.id || "").trim() || null,
-    currentPeriodStartsAt,
+    currentPeriodStartsAt: unixToIso(firstNonEmpty(
+      subscription.current_period_start,
+      firstItem.current_period_start,
+    )),
     currentPeriodEndsAt,
     canceledAt: unixToIso(subscription.canceled_at),
     activatedAt: unixToIso(subscription.start_date),
@@ -539,40 +381,53 @@ Deno.serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")
-    const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET")
     const stripeSecretKey = Deno.env.get("STRIPE_SECRET_KEY")
+    const authHeader = req.headers.get("Authorization") || ""
+    const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : ""
 
-    if (!supabaseUrl || !serviceRoleKey || !webhookSecret || !stripeSecretKey) {
+    if (!supabaseUrl || !serviceRoleKey || !stripeSecretKey) {
       return json({ error: "missing_env" }, 500)
     }
-
-    const rawBody = await req.text()
-    const signatureHeader = getHeader(req, "Stripe-Signature")
-    const validSignature = await verifyWebhookSignature(rawBody, signatureHeader, webhookSecret)
-    if (!validSignature) {
-      return json({ error: "invalid_signature" }, 401)
+    if (!token) {
+      return json({ error: "not_authenticated" }, 401)
     }
 
-    const payload = JSON.parse(rawBody) as Record<string, unknown>
-    const eventType = String(payload.type || "").trim()
-    if (!eventType) {
-      return json({ error: "missing_event_type" }, 400)
-    }
+    const claims = decodeJwtPayload(token)
+    const role = String(claims?.role || "").trim()
+    const authEmail = normalizeEmail(claims?.email)
+    const body = await req.json().catch(() => ({}))
+    const requestedEmail = normalizeEmail(body.email)
+    const targetEmail = requestedEmail || authEmail
 
-    if (!["checkout.session.completed", "customer.subscription.created", "customer.subscription.updated", "customer.subscription.deleted"].includes(eventType)) {
-      return json({ ok: true, ignored: true, eventType })
+    if (!targetEmail) {
+      return json({ error: "missing_email" }, 400)
+    }
+    if (role !== "service_role" && authEmail !== targetEmail) {
+      return json({ error: "forbidden" }, 403)
     }
 
     const adminClient = createClient(supabaseUrl, serviceRoleKey, {
       auth: { persistSession: false },
     })
 
-    const snapshot = await buildSubscriptionSnapshot(eventType, payload, stripeSecretKey)
-    if (snapshot.ignored) {
-      return json({ ok: true, ignored: true, eventType, reason: snapshot.reason })
+    const customers = await listStripeCustomersByEmail(targetEmail, stripeSecretKey)
+    const subscriptions = []
+    for (const customer of customers) {
+      const customerId = String(customer.id || "").trim()
+      if (!customerId) continue
+      const rows = await listSubscriptionsForCustomer(customerId, stripeSecretKey)
+      for (const row of rows) subscriptions.push(row)
     }
+
+    subscriptions.sort((a: any, b: any) => Number(b.created || 0) - Number(a.created || 0))
+    const preferred = subscriptions.find((row: any) => ["active", "trialing", "past_due", "canceled", "cancelled"].includes(String(row.status || "").toLowerCase()))
+    if (!preferred) {
+      return json({ ok: false, reason: "no_subscription_found", email: targetEmail })
+    }
+
+    const snapshot = buildSubscriptionSnapshotFromSubscription(preferred as Record<string, unknown>, targetEmail)
     if (!snapshot.subscriptionId || !snapshot.customerEmail) {
-      return json({ ok: true, ignored: true, eventType, reason: "missing_subscription_identity" })
+      return json({ ok: false, reason: "missing_subscription_identity", email: targetEmail })
     }
 
     const userId = await findUserIdByEmail(adminClient, snapshot.customerEmail)
@@ -584,7 +439,7 @@ Deno.serve(async (req) => {
 
     const existing = await adminClient
       .from("stripe_subscriptions")
-      .select("id, activation_key_id, last_event_id, raw, status, current_period_ends_at")
+      .select("id, activation_key_id, raw")
       .eq("stripe_subscription_id", snapshot.subscriptionId)
       .maybeSingle()
 
@@ -592,13 +447,6 @@ Deno.serve(async (req) => {
       return json({ error: "load_subscription_failed", detail: existing.error.message }, 500)
     }
 
-    const eventId = String(payload.id || "").trim() || null
-    if (eventId && existing.data?.last_event_id === eventId) {
-      return json({ ok: true, ignored: true, eventType, reason: "duplicate_event", subscriptionId: snapshot.subscriptionId })
-    }
-
-    const existingNotificationState = getNotificationState(existing.data?.raw)
-    const existingActive = isAccessActive(String(existing.data?.status || ""), existing.data?.current_period_ends_at ? String(existing.data.current_period_ends_at) : null)
     const active = isAccessActive(snapshot.status, snapshot.currentPeriodEndsAt)
     const activationKey = await ensureActivationKey(adminClient, {
       adminUserId: keyOwnerUserId,
@@ -608,42 +456,11 @@ Deno.serve(async (req) => {
       existingKeyId: existing.data?.activation_key_id || null,
     })
 
-    let statusEmail = null
-    const nextNotificationState: Record<string, unknown> = { ...existingNotificationState }
-
-    if (
-      ["canceled", "cancelled"].includes(snapshot.status) &&
-      active &&
-      existingNotificationState.cancellation_period_end !== snapshot.currentPeriodEndsAt
-    ) {
-      statusEmail = await sendCancellationAcknowledgedEmail({
-        toEmail: snapshot.customerEmail,
-        currentPeriodEndsAt: snapshot.currentPeriodEndsAt,
-      })
-      nextNotificationState.cancellation_period_end = snapshot.currentPeriodEndsAt
-    }
-
-    if (
-      existingActive &&
-      !active &&
-      existingNotificationState.expired_event_id !== eventId
-    ) {
-      statusEmail = await sendSubscriptionExpiredEmail({
-        toEmail: snapshot.customerEmail,
-      })
-      nextNotificationState.expired_event_id = eventId
-    }
-
-    const rawWithNotifications = {
-      ...(snapshot.raw && typeof snapshot.raw === "object" ? snapshot.raw as Record<string, unknown> : {}),
-      _riftskin_notifications: nextNotificationState,
-    }
-
     const saved = await upsertSubscriptionRow(adminClient, {
       stripe_subscription_id: snapshot.subscriptionId,
       stripe_customer_id: snapshot.customerId,
       customer_email: snapshot.customerEmail,
-      status: snapshot.status || eventType,
+      status: snapshot.status,
       product_id: snapshot.productId,
       price_id: snapshot.priceId,
       current_period_starts_at: snapshot.currentPeriodStartsAt,
@@ -653,10 +470,10 @@ Deno.serve(async (req) => {
       trialing_at: snapshot.trialingAt,
       paused_at: snapshot.pausedAt,
       activation_key_id: activationKey.id,
-      last_event_id: String(payload.id || "").trim() || null,
-      last_event_type: eventType,
+      last_event_id: null,
+      last_event_type: "manual_reconcile",
       last_event_at: new Date().toISOString(),
-      raw: rawWithNotifications,
+      raw: snapshot.raw,
       updated_at: new Date().toISOString(),
     })
 
@@ -666,7 +483,7 @@ Deno.serve(async (req) => {
     }
 
     let emailReceipt = null
-    if (eventType === "checkout.session.completed" && active) {
+    if (active) {
       emailReceipt = await sendPremiumKeyEmail({
         toEmail: snapshot.customerEmail,
         activationKeyCode: activationKey.code,
@@ -676,14 +493,12 @@ Deno.serve(async (req) => {
 
     return json({
       ok: true,
-      eventType,
+      email: snapshot.customerEmail,
       subscriptionId: snapshot.subscriptionId,
-      customerEmail: snapshot.customerEmail,
       activationKeyCode: activationKey.code,
       active,
       billingRowId: saved.id,
       emailReceipt,
-      statusEmail,
     })
   } catch (error) {
     return json({

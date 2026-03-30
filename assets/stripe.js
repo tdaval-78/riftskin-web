@@ -129,6 +129,25 @@
     }
   }
 
+  async function reconcileSubscription() {
+    if (!supabaseClient) return false;
+    const session = await getSession();
+    if (!session || !session.user) return false;
+
+    try {
+      const data = await invokeFunction('stripe-reconcile-subscription', {});
+      if (data && data.ok) {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('checkout');
+        window.location.replace(url.toString());
+        return true;
+      }
+    } catch (_err) {
+      // Leave the processing message visible; the page can still be refreshed manually.
+    }
+    return false;
+  }
+
   subscribeBtns.forEach(function (btn) {
     btn.addEventListener('click', function (event) {
       if (event.defaultPrevented) return;
@@ -159,7 +178,8 @@
   const params = new URLSearchParams(window.location.search);
   const checkoutState = params.get('checkout');
   if (checkoutState === 'success') {
-    setAlert('Payment confirmed. Your premium key is available in your account and is also being sent by email.', 'ok');
+    setAlert('Payment received. Your premium access is being activated. If the key does not appear within a minute, refresh the page.', 'ok');
+    reconcileSubscription();
   } else if (checkoutState === 'canceled') {
     setAlert('Checkout canceled.', '');
   } else if (checkoutState === 'signin') {

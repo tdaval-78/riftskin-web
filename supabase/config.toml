@@ -46,3 +46,8 @@ entrypoint = "./functions/auth-password-reset/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/account-signup/index.ts"
+
+[functions.stripe-reconcile-subscription]
+enabled = true
+verify_jwt = true
+entrypoint = "./functions/stripe-reconcile-subscription/index.ts"
