@@ -41,3 +41,8 @@ entrypoint = "./functions/auth-send-confirmation/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/auth-password-reset/index.ts"
+
+[functions.account-signup]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/account-signup/index.ts"

@@ -1029,37 +1029,22 @@
       }
 
       msg(out, t('msg_creating_account'));
-      const { error } = await supabaseClient.auth.signUp({
-        email: email,
-        password: password,
-        options: {
-          emailRedirectTo: authCallbackUrl()
-        }
-      });
-
-      if (error) {
-        msg(out, error.message || t('msg_signup_failed'), 'error');
-        return;
-      }
-
-      const confirmationResult = await supabaseClient.functions.invoke('auth-send-confirmation', {
+      const confirmationResult = await supabaseClient.functions.invoke('account-signup', {
         body: {
           email: email,
+          password: password,
           redirectTo: authCallbackUrl()
         }
       });
 
       if (confirmationResult.error || !confirmationResult.data || confirmationResult.data.ok !== true) {
-        const message = confirmationResult.error && confirmationResult.error.message
+        const rawMessage = confirmationResult.error && confirmationResult.error.message
           ? confirmationResult.error.message
-          : (confirmationResult.data && (confirmationResult.data.message || confirmationResult.data.error)) || t('msg_confirmation_resend_failed');
+          : (confirmationResult.data && (confirmationResult.data.message || confirmationResult.data.error)) || '';
+        const message = rawMessage === 'account_exists'
+          ? t('msg_account_exists')
+          : (rawMessage || t('msg_signup_failed'));
         msg(out, message, 'error');
-        return;
-      }
-
-      if (confirmationResult.data.reason === 'already_confirmed') {
-        setResendVisibility(false);
-        msg(out, t('msg_account_exists'), 'error');
         return;
       }
 
