@@ -78,7 +78,18 @@
   }
 
   async function ensureValidSession() {
-    const session = await getSession() || await waitForSession(4, 250);
+    let session = await getSession();
+    if (!session || !session.user) {
+      session = await waitForSession(12, 250);
+    }
+    if ((!session || !session.user) && supabaseClient) {
+      try {
+        const refreshed = await refreshSession();
+        if (refreshed && refreshed.user) {
+          session = refreshed;
+        }
+      } catch (_err) {}
+    }
     if (!session || !session.user) return null;
 
     if (session.expires_at) {
@@ -278,7 +289,7 @@
   async function maybeResumeCheckout(allowed) {
     if (!allowed || !isAccountPage || resumeCheckoutInFlight || resumeCheckoutHandled || !hasCheckoutIntent()) return false;
 
-    const session = await getSession();
+    const session = await ensureValidSession();
     if (!session || !session.user) return false;
 
     resumeCheckoutInFlight = true;
@@ -425,8 +436,7 @@
           openCheckout();
           return;
         }
-        setCheckoutIntent();
-        window.location.href = accountCheckoutLaunchUrl();
+        redirectToAccountSignIn();
         return;
       }
 
