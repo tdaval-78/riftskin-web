@@ -49,9 +49,9 @@
       '<section class="section" style="min-height:70vh;display:flex;align-items:center;justify-content:center;">',
       '  <div class="panel" style="max-width:720px;width:100%;text-align:center;">',
       '    <div class="maintenance-modal-kicker">RIFTSKIN</div>',
-      '    <h2 style="margin-bottom:12px;">Acces prive temporaire</h2>',
-      '    <p class="section-intro" style="margin:0 auto 16px;">Le site public est verrouille pendant les tests Stripe. Seul le compte autorise peut acceder a l interface pour le moment.</p>',
-      '    <div class="notice" style="margin-bottom:16px;">Connectez-vous avec l adresse autorisee sur la page compte pour continuer.</div>',
+      '    <h2 style="margin-bottom:12px;">Maintenance en cours</h2>',
+      '    <p class="section-intro" style="margin:0 auto 16px;">Le site public RIFTSKIN est temporairement indisponible pendant la finalisation de la mise en production.</p>',
+      '    <div class="notice" style="margin-bottom:16px;">Seule l adresse admin autorisee peut acceder au site pendant cette maintenance.</div>',
       '    <div class="field-row" style="justify-content:center;">',
       '      <a class="btn btn-primary" href="/account.html">Ouvrir la page compte</a>',
       '    </div>',
@@ -69,7 +69,7 @@
 
     const intro = document.querySelector('[data-i18n="site_account_intro"]');
     if (intro) {
-      intro.textContent = 'Acces prive temporaire. Seule l adresse autorisee peut se connecter pendant les tests Stripe.';
+      intro.textContent = 'Maintenance en cours. Seule l adresse admin autorisee peut se connecter pendant cette periode.';
     }
 
     const loggedOut = document.querySelector('[data-logged-out]');
@@ -78,7 +78,7 @@
       notice.className = 'notice';
       notice.setAttribute('data-private-access-msg', '1');
       notice.style.marginTop = '12px';
-      notice.textContent = 'Creation de compte desactivee pendant les tests. Connectez-vous uniquement avec l adresse autorisee.';
+      notice.textContent = 'Creation de compte desactivee pendant la maintenance. Connectez-vous uniquement avec l adresse admin autorisee.';
       loggedOut.insertAdjacentElement('beforebegin', notice);
     }
   }
