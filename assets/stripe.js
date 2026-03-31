@@ -70,6 +70,27 @@
     return result && result.data ? result.data.session : null;
   }
 
+  async function refreshSession() {
+    if (!supabaseClient) return null;
+    const result = await supabaseClient.auth.refreshSession();
+    return result && result.data ? result.data.session : null;
+  }
+
+  async function ensureValidSession() {
+    const session = await getSession();
+    if (!session || !session.user) return null;
+
+    if (session.expires_at) {
+      const expiresAtMs = Number(session.expires_at) * 1000;
+      if (Number.isFinite(expiresAtMs) && expiresAtMs <= (Date.now() + 60 * 1000)) {
+        const refreshed = await refreshSession();
+        return refreshed && refreshed.user ? refreshed : session;
+      }
+    }
+
+    return session;
+  }
+
   function delay(ms) {
     return new Promise(function (resolve) {
       window.setTimeout(resolve, ms);
@@ -149,7 +170,7 @@
       return;
     }
 
-    const session = await getSession();
+    const session = await ensureValidSession();
     if (!session || !session.user) {
       redirectToAccountSignIn();
       return;
@@ -172,6 +193,31 @@
     } catch (err) {
       const rawMessage = await extractFunctionErrorMessage(err);
       const message = rawMessage || ((err && err.message) ? err.message : t('msg_checkout_open_failed', 'Unable to open checkout.'));
+      if (/invalid jwt/i.test(message)) {
+        const refreshedSession = await refreshSession();
+        if (refreshedSession && refreshedSession.user) {
+          try {
+            const retryData = await invokeFunction('create-stripe-checkout-session', {
+              successUrl: absoluteUrl(cfg.stripeCheckoutSuccessUrl, '/account.html?checkout=success'),
+              cancelUrl: absoluteUrl(cfg.stripeCheckoutCancelUrl, '/pricing.html?checkout=canceled')
+            });
+
+            if (!retryData.url) {
+              throw new Error(t('msg_checkout_open_failed', 'Unable to open checkout.'));
+            }
+
+            clearCheckoutIntent();
+            markCheckoutPending();
+            window.location.href = retryData.url;
+            return;
+          } catch (retryErr) {
+            const retryRawMessage = await extractFunctionErrorMessage(retryErr);
+            const retryMessage = retryRawMessage || ((retryErr && retryErr.message) ? retryErr.message : message);
+            setAlert(retryMessage, 'error');
+            return;
+          }
+        }
+      }
       if (/not_authenticated/i.test(message)) {
         redirectToAccountSignIn();
         return;
@@ -202,7 +248,7 @@
       return;
     }
 
-    const session = await getSession();
+    const session = await ensureValidSession();
     if (!session || !session.user) {
       redirectToAccountSignIn();
       return;
@@ -222,6 +268,28 @@
     } catch (err) {
       const rawMessage = await extractFunctionErrorMessage(err);
       const message = rawMessage || ((err && err.message) ? err.message : t('msg_portal_missing', 'Customer portal URL is not configured yet.'));
+      if (/invalid jwt/i.test(message)) {
+        const refreshedSession = await refreshSession();
+        if (refreshedSession && refreshedSession.user) {
+          try {
+            const retryData = await invokeFunction('create-stripe-portal-session', {
+              returnUrl: absoluteUrl(cfg.stripeBillingReturnUrl, '/account.html?billing=return')
+            });
+
+            if (!retryData.url) {
+              throw new Error(t('msg_portal_missing', 'Customer portal URL is not configured yet.'));
+            }
+
+            window.location.href = retryData.url;
+            return;
+          } catch (retryErr) {
+            const retryRawMessage = await extractFunctionErrorMessage(retryErr);
+            const retryMessage = retryRawMessage || ((retryErr && retryErr.message) ? retryErr.message : message);
+            setAlert(retryMessage, 'error');
+            return;
+          }
+        }
+      }
       if (/not_authenticated/i.test(message)) {
         redirectToAccountSignIn();
         return;
@@ -293,7 +361,7 @@
       }
 
       if (btn.hasAttribute('data-premium-cta') && !isAccountPage) {
-        const session = await getSession();
+        const session = await ensureValidSession();
         if (session && session.user) {
           openCheckout();
           return;
