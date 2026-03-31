@@ -9,6 +9,7 @@
   const CHECKOUT_INTENT_KEY = 'riftskin_stripe_checkout_intent';
   const isAccountPage = document.body && document.body.getAttribute('data-page') === 'account';
   let resumeCheckoutInFlight = false;
+  let resumeCheckoutHandled = false;
 
   function t(key, fallback) {
     if (window.RiftSkinI18n && typeof window.RiftSkinI18n.t === 'function') {
@@ -77,7 +78,7 @@
   }
 
   async function ensureValidSession() {
-    const session = await getSession();
+    const session = await getSession() || await waitForSession(4, 250);
     if (!session || !session.user) return null;
 
     if (session.expires_at) {
@@ -117,6 +118,13 @@
 
   function accountCheckoutLaunchUrl() {
     return '/account.html?checkout=launch#account-subscription';
+  }
+
+  function clearCheckoutStateFromUrl() {
+    const url = new URL(window.location.href);
+    if (!url.searchParams.has('checkout')) return;
+    url.searchParams.delete('checkout');
+    window.history.replaceState({}, '', url.toString());
   }
 
   function redirectToAccountSignIn() {
@@ -268,12 +276,14 @@
   }
 
   async function maybeResumeCheckout(allowed) {
-    if (!allowed || !isAccountPage || resumeCheckoutInFlight || !hasCheckoutIntent()) return false;
+    if (!allowed || !isAccountPage || resumeCheckoutInFlight || resumeCheckoutHandled || !hasCheckoutIntent()) return false;
 
     const session = await getSession();
     if (!session || !session.user) return false;
 
     resumeCheckoutInFlight = true;
+    resumeCheckoutHandled = true;
+    clearCheckoutStateFromUrl();
     setAlert(t('msg_checkout_resume', 'Redirecting to Stripe checkout...'), '');
     try {
       await openCheckout();
@@ -463,8 +473,9 @@
   }
 
   if (supabaseClient) {
-    supabaseClient.auth.onAuthStateChange(function (_event, session) {
+    supabaseClient.auth.onAuthStateChange(function (event, session) {
       if (!session || !session.user) return;
+      if (event !== 'SIGNED_IN') return;
       maybeResumeCheckout(allowCheckoutResume);
     });
   }
