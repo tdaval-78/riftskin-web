@@ -115,6 +115,33 @@
     return result.data || {};
   }
 
+  async function extractFunctionErrorMessage(error) {
+    if (!error) return '';
+
+    const context = error.context;
+    if (context) {
+      try {
+        if (typeof context.clone === 'function') {
+          const payload = await context.clone().json().catch(function () { return null; });
+          if (payload && (payload.detail || payload.message || payload.error)) {
+            return String(payload.detail || payload.message || payload.error);
+          }
+        }
+      } catch (_err) {}
+
+      try {
+        if (typeof context.json === 'function') {
+          const payload = await context.json().catch(function () { return null; });
+          if (payload && (payload.detail || payload.message || payload.error)) {
+            return String(payload.detail || payload.message || payload.error);
+          }
+        }
+      } catch (_err) {}
+    }
+
+    return error.message ? String(error.message) : '';
+  }
+
   async function openCheckout() {
     if (cfg.billingProvider !== 'stripe') {
       clearCheckoutIntent();
@@ -143,7 +170,8 @@
       markCheckoutPending();
       window.location.href = data.url;
     } catch (err) {
-      const message = (err && err.message) ? err.message : t('msg_checkout_open_failed', 'Unable to open checkout.');
+      const rawMessage = await extractFunctionErrorMessage(err);
+      const message = rawMessage || ((err && err.message) ? err.message : t('msg_checkout_open_failed', 'Unable to open checkout.'));
       if (/not_authenticated/i.test(message)) {
         redirectToAccountSignIn();
         return;
@@ -192,7 +220,8 @@
 
       window.location.href = data.url;
     } catch (err) {
-      const message = (err && err.message) ? err.message : t('msg_portal_missing', 'Customer portal URL is not configured yet.');
+      const rawMessage = await extractFunctionErrorMessage(err);
+      const message = rawMessage || ((err && err.message) ? err.message : t('msg_portal_missing', 'Customer portal URL is not configured yet.'));
       if (/not_authenticated/i.test(message)) {
         redirectToAccountSignIn();
         return;
@@ -249,7 +278,7 @@
   }
 
   subscribeBtns.forEach(function (btn) {
-    btn.addEventListener('click', function (event) {
+    btn.addEventListener('click', async function (event) {
       if (event.defaultPrevented) return;
       event.preventDefault();
 
@@ -264,6 +293,11 @@
       }
 
       if (btn.hasAttribute('data-premium-cta') && !isAccountPage) {
+        const session = await getSession();
+        if (session && session.user) {
+          openCheckout();
+          return;
+        }
         setCheckoutIntent();
         window.location.href = accountCheckoutLaunchUrl();
         return;
