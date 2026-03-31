@@ -134,15 +134,48 @@
     redirectToAccountSignIn();
   }
 
-  async function invokeFunction(name, body) {
-    if (!supabaseClient) {
+  async function invokeFunction(name, body, session) {
+    if (!cfg.supabaseUrl || !cfg.supabaseAnonKey) {
       throw new Error(t('msg_status_supabase_missing', 'Supabase is not configured.'));
     }
-    const result = await supabaseClient.functions.invoke(name, {
-      body: body || {}
+
+    const headers = {
+      'Content-Type': 'application/json',
+      apikey: cfg.supabaseAnonKey
+    };
+
+    if (session && session.access_token) {
+      headers.Authorization = 'Bearer ' + session.access_token;
+    }
+
+    const response = await fetch(cfg.supabaseUrl.replace(/\/+$/, '') + '/functions/v1/' + name, {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(body || {})
     });
-    if (result.error) throw result.error;
-    return result.data || {};
+
+    const payload = await response.json().catch(function () { return null; });
+    if (!response.ok) {
+      const err = new Error(
+        (payload && (payload.detail || payload.message || payload.error))
+          || ('Edge Function returned status ' + response.status)
+      );
+      err.context = {
+        clone: function () {
+          return {
+            json: function () {
+              return Promise.resolve(payload);
+            }
+          };
+        },
+        json: function () {
+          return Promise.resolve(payload);
+        }
+      };
+      throw err;
+    }
+
+    return payload || {};
   }
 
   async function extractFunctionErrorMessage(error) {
@@ -190,7 +223,7 @@
       const data = await invokeFunction('create-stripe-checkout-session', {
         successUrl: absoluteUrl(cfg.stripeCheckoutSuccessUrl, '/account.html?checkout=success'),
         cancelUrl: absoluteUrl(cfg.stripeCheckoutCancelUrl, '/pricing.html?checkout=canceled')
-      });
+      }, session);
 
       if (!data.url) {
         throw new Error(t('msg_checkout_open_failed', 'Unable to open checkout.'));
@@ -209,7 +242,7 @@
             const retryData = await invokeFunction('create-stripe-checkout-session', {
               successUrl: absoluteUrl(cfg.stripeCheckoutSuccessUrl, '/account.html?checkout=success'),
               cancelUrl: absoluteUrl(cfg.stripeCheckoutCancelUrl, '/pricing.html?checkout=canceled')
-            });
+            }, refreshedSession);
 
             if (!retryData.url) {
               throw new Error(t('msg_checkout_open_failed', 'Unable to open checkout.'));
@@ -273,7 +306,7 @@
     try {
       const data = await invokeFunction('create-stripe-portal-session', {
         returnUrl: absoluteUrl(cfg.stripeBillingReturnUrl, '/account.html?billing=return')
-      });
+      }, session);
 
       if (!data.url) {
         throw new Error(t('msg_portal_missing', 'Customer portal URL is not configured yet.'));
@@ -289,7 +322,7 @@
           try {
             const retryData = await invokeFunction('create-stripe-portal-session', {
               returnUrl: absoluteUrl(cfg.stripeBillingReturnUrl, '/account.html?billing=return')
-            });
+            }, refreshedSession);
 
             if (!retryData.url) {
               throw new Error(t('msg_portal_missing', 'Customer portal URL is not configured yet.'));
@@ -327,7 +360,7 @@
     let attempt = 0;
     while (attempt < 6) {
       try {
-        const data = await invokeFunction('stripe-reconcile-subscription', {});
+        const data = await invokeFunction('stripe-reconcile-subscription', {}, session);
         if (data && data.ok) {
           clearCheckoutPending();
           const url = new URL(window.location.href);
@@ -355,7 +388,7 @@
     if (!session || !session.user) return false;
 
     try {
-      const data = await invokeFunction('stripe-reconcile-subscription', {});
+      const data = await invokeFunction('stripe-reconcile-subscription', {}, session);
       if (!data || data.ok !== true) return false;
       const url = new URL(window.location.href);
       url.searchParams.delete('billing');
