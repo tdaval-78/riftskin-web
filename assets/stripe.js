@@ -6,6 +6,9 @@
   const subscribeBtns = Array.from(document.querySelectorAll('[data-subscribe], [data-premium-cta]'));
   const portalBtns = Array.from(document.querySelectorAll('[data-open-billing-portal]'));
   const PENDING_CHECKOUT_KEY = 'riftskin_stripe_checkout_pending';
+  const CHECKOUT_INTENT_KEY = 'riftskin_stripe_checkout_intent';
+  const isAccountPage = document.body && document.body.getAttribute('data-page') === 'account';
+  let resumeCheckoutInFlight = false;
 
   function t(key, fallback) {
     if (window.RiftSkinI18n && typeof window.RiftSkinI18n.t === 'function') {
@@ -31,6 +34,20 @@
   function clearCheckoutPending() {
     if (!pageStorage) return;
     pageStorage.removeItem(PENDING_CHECKOUT_KEY);
+  }
+
+  function setCheckoutIntent() {
+    if (!pageStorage) return;
+    pageStorage.setItem(CHECKOUT_INTENT_KEY, 'subscribe');
+  }
+
+  function hasCheckoutIntent() {
+    return !!(pageStorage && pageStorage.getItem(CHECKOUT_INTENT_KEY) === 'subscribe');
+  }
+
+  function clearCheckoutIntent() {
+    if (!pageStorage) return;
+    pageStorage.removeItem(CHECKOUT_INTENT_KEY);
   }
 
   function createSupabaseClient() {
@@ -78,6 +95,7 @@
   }
 
   function redirectToAccountSignIn() {
+    setCheckoutIntent();
     const next = encodeURIComponent(window.location.pathname + window.location.search);
     window.location.href = '/account.html?checkout=signin&next=' + next;
   }
@@ -95,6 +113,7 @@
 
   async function openCheckout() {
     if (cfg.billingProvider !== 'stripe') {
+      clearCheckoutIntent();
       setAlert(t('msg_checkout_not_configured'), 'error');
       return;
     }
@@ -116,6 +135,7 @@
         throw new Error(t('msg_checkout_open_failed', 'Unable to open checkout.'));
       }
 
+      clearCheckoutIntent();
       markCheckoutPending();
       window.location.href = data.url;
     } catch (err) {
@@ -125,6 +145,22 @@
         return;
       }
       setAlert(message, 'error');
+    }
+  }
+
+  async function maybeResumeCheckout() {
+    if (!isAccountPage || resumeCheckoutInFlight || !hasCheckoutIntent()) return false;
+
+    const session = await getSession();
+    if (!session || !session.user) return false;
+
+    resumeCheckoutInFlight = true;
+    setAlert(t('msg_checkout_resume', 'Redirecting to Stripe checkout...'), '');
+    try {
+      await openCheckout();
+      return true;
+    } finally {
+      resumeCheckoutInFlight = false;
     }
   }
 
@@ -239,16 +275,31 @@
   const checkoutState = params.get('checkout');
   const billingState = params.get('billing');
   if (checkoutState === 'success') {
+    clearCheckoutIntent();
     markCheckoutPending();
     setAlert('Payment received. Your premium access is being activated. If the key does not appear within a minute, refresh the page.', 'ok');
     reconcileSubscription();
   } else if (checkoutState === 'canceled') {
+    clearCheckoutIntent();
     clearCheckoutPending();
     setAlert('Checkout canceled.', '');
   } else if (checkoutState === 'signin') {
-    setAlert('Sign in or create your account first to continue with Stripe checkout.', '');
+    setCheckoutIntent();
+    maybeResumeCheckout().then(function (resumed) {
+      if (resumed) return;
+      setAlert('Sign in or create your account first to continue with Stripe checkout.', '');
+    });
   } else if (billingState === 'return') {
     setAlert('Refreshing your subscription status...', '');
     reconcileBillingReturn();
+  } else {
+    maybeResumeCheckout();
+  }
+
+  if (supabaseClient) {
+    supabaseClient.auth.onAuthStateChange(function (_event, session) {
+      if (!session || !session.user) return;
+      maybeResumeCheckout();
+    });
   }
 })();

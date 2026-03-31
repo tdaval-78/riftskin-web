@@ -404,6 +404,7 @@ window.RiftSkinTranslations = {
     msg_checkout_not_configured: "Checkout is not configured yet. Add your Stripe price and backend keys first.",
     msg_checkout_script_failed: "Unable to load Paddle checkout script.",
     msg_checkout_open_failed: "Unable to open checkout.",
+    msg_checkout_resume: "Redirecting to Stripe checkout...",
 
     cb_title: "RIFTSKIN - Account",
     cb_confirm_h1: "Email confirmed",
@@ -845,6 +846,7 @@ window.RiftSkinTranslations = {
     msg_checkout_not_configured: "Le checkout n'est pas configure. Ajoutez d'abord le prix Stripe et les cles backend.",
     msg_checkout_script_failed: "Impossible de charger le script Paddle checkout.",
     msg_checkout_open_failed: "Impossible d'ouvrir le checkout.",
+    msg_checkout_resume: "Redirection vers le checkout Stripe...",
 
     cb_title: "RIFTSKIN - Compte",
     cb_confirm_h1: "Email confirme",
@@ -1191,6 +1193,7 @@ window.RiftSkinTranslations = {
     msg_checkout_not_configured: "Checkout no configurado. Agrega primero el precio de Stripe y las claves backend.",
     msg_checkout_script_failed: "No se pudo cargar el script de Paddle.",
     msg_checkout_open_failed: "No se pudo abrir el checkout.",
+    msg_checkout_resume: "Redirigiendo al checkout de Stripe...",
 
     cb_title: "RIFTSKIN - Cuenta",
     cb_confirm_h1: "Email confirmado",
@@ -1537,6 +1540,7 @@ window.RiftSkinTranslations = {
     msg_checkout_not_configured: "Checkout nao configurado. Adicione primeiro o preco Stripe e as chaves do backend.",
     msg_checkout_script_failed: "Nao foi possivel carregar script Paddle.",
     msg_checkout_open_failed: "Nao foi possivel abrir checkout.",
+    msg_checkout_resume: "Redirecionando para o checkout do Stripe...",
 
     cb_title: "RIFTSKIN - Conta",
     cb_confirm_h1: "Email confirmado",
@@ -1883,6 +1887,7 @@ window.RiftSkinTranslations = {
     msg_checkout_not_configured: "结算尚未配置，请先填写 Stripe 价格和后端密钥。",
     msg_checkout_script_failed: "无法加载 Paddle 结算脚本。",
     msg_checkout_open_failed: "无法打开结算页面。",
+    msg_checkout_resume: "正在跳转到 Stripe 结算页面...",
 
     cb_title: "RIFTSKIN - 账户",
     cb_confirm_h1: "邮箱已确认",
