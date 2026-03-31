@@ -125,6 +125,15 @@
     window.location.href = '/account.html?checkout=signin&next=' + next;
   }
 
+  async function forceReauthenticate() {
+    try {
+      if (supabaseClient) {
+        await supabaseClient.auth.signOut();
+      }
+    } catch (_err) {}
+    redirectToAccountSignIn();
+  }
+
   async function invokeFunction(name, body) {
     if (!supabaseClient) {
       throw new Error(t('msg_status_supabase_missing', 'Supabase is not configured.'));
@@ -213,10 +222,16 @@
           } catch (retryErr) {
             const retryRawMessage = await extractFunctionErrorMessage(retryErr);
             const retryMessage = retryRawMessage || ((retryErr && retryErr.message) ? retryErr.message : message);
+            if (/invalid jwt|not_authenticated/i.test(retryMessage)) {
+              await forceReauthenticate();
+              return;
+            }
             setAlert(retryMessage, 'error');
             return;
           }
         }
+        await forceReauthenticate();
+        return;
       }
       if (/not_authenticated/i.test(message)) {
         redirectToAccountSignIn();
@@ -285,10 +300,16 @@
           } catch (retryErr) {
             const retryRawMessage = await extractFunctionErrorMessage(retryErr);
             const retryMessage = retryRawMessage || ((retryErr && retryErr.message) ? retryErr.message : message);
+            if (/invalid jwt|not_authenticated/i.test(retryMessage)) {
+              await forceReauthenticate();
+              return;
+            }
             setAlert(retryMessage, 'error');
             return;
           }
         }
+        await forceReauthenticate();
+        return;
       }
       if (/not_authenticated/i.test(message)) {
         redirectToAccountSignIn();
