@@ -583,7 +583,7 @@
 
       if (row.access_source === 'expired') {
         setBillingUi(false);
-        setAccessBadge(t('account_access_expired_badge'), 'error');
+        setAccessBadge(t('account_access_free_badge'), '');
         if (accessMeta) accessMeta.textContent = t('account_access_expired_meta');
         return;
       }
