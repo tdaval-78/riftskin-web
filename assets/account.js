@@ -35,6 +35,8 @@
   const myKeysBody = document.querySelector('[data-my-keys-body]');
   const myKeysMsg = document.querySelector('[data-my-keys-msg]');
   const myKeysDateHeader = document.querySelector('[data-my-keys-date-header]');
+  const machineActivationWrap = document.querySelector('[data-machine-activation-wrap]');
+  const machineActivationStatus = document.querySelector('[data-machine-activation-status]');
   const adminEntry = document.querySelector('[data-admin-entry]');
 
   const adminPanel = document.querySelector('[data-admin-only]');
@@ -149,6 +151,14 @@
     billingPortalBtns.forEach(function (btn) {
       btn.style.display = 'none';
     });
+  }
+
+  function setMachineActivationBadge(active, visible) {
+    if (!machineActivationWrap || !machineActivationStatus) return;
+    machineActivationWrap.style.display = visible ? '' : 'none';
+    if (!visible) return;
+    machineActivationStatus.textContent = active ? t('account_machine_activation_yes') : t('account_machine_activation_no');
+    machineActivationStatus.className = 'status-badge ' + (active ? 'ok' : '');
   }
 
   function resetAccountManagementUi() {
@@ -428,6 +438,7 @@
     if (accessMeta) accessMeta.textContent = '';
     if (myKeysBody) myKeysBody.replaceChildren();
     if (myKeysMsg) msg(myKeysMsg, '');
+    setMachineActivationBadge(false, false);
     if (adminEntry) adminEntry.style.display = 'none';
     if (adminPanel) adminPanel.style.display = 'none';
     setBillingUi(false);
@@ -564,6 +575,7 @@
       if (row.is_admin) {
         clearPendingStripeCheckout();
         setBillingUi(true);
+        setMachineActivationBadge(false, false);
         setAccessBadge('Admin permanent access', 'ok');
         if (accessMeta) accessMeta.textContent = 'This account has permanent premium access.';
         return;
@@ -572,6 +584,10 @@
       if (row.access_granted && (row.access_source === 'activation_key' || row.access_source === 'subscription_canceled' || row.access_source === 'admin_grant')) {
         clearPendingStripeCheckout();
         setBillingUi(true);
+        setMachineActivationBadge(
+          !!(subscriptionSummary && subscriptionSummary.machineActivationActive),
+          !!subscriptionSummary
+        );
         if (row.access_source === 'subscription_canceled' || (subscriptionSummary && subscriptionSummary.cancellationScheduled)) {
           setAccessBadge(t('account_subscription_canceled_badge'), 'warning');
           if (accessMeta) {
@@ -592,6 +608,10 @@
 
       if (row.access_source === 'expired') {
         setBillingUi(false);
+        setMachineActivationBadge(
+          !!(subscriptionSummary && subscriptionSummary.machineActivationActive),
+          !!subscriptionSummary
+        );
         setAccessBadge('Premium inactive', 'error');
         if (accessMeta) accessMeta.textContent = 'Your premium code is no longer active. The desktop app free mode stays available.';
         return;
@@ -605,6 +625,7 @@
       }
 
       setBillingUi(false);
+      setMachineActivationBadge(false, !!subscriptionSummary);
       setAccessBadge('Free mode only', '');
       if (accessMeta) accessMeta.textContent = 'No active premium subscription is attached right now. The desktop app still remains usable for free.';
     } catch (err) {

@@ -237,6 +237,50 @@ Deno.serve(async (req) => {
       return json({ ok: true, email: targetEmail, subscription: null })
     }
 
+    let machineActivationCount = 0
+    let machineActivationActive = false
+
+    if (data.activation_key_id) {
+      const activationKeyResult = await adminClient
+        .from("activation_keys")
+        .select("code")
+        .eq("id", data.activation_key_id)
+        .limit(1)
+        .maybeSingle()
+
+      if (activationKeyResult.error) {
+        return json({ error: "load_activation_key_failed", detail: activationKeyResult.error.message }, 500)
+      }
+
+      const activationCode = String(activationKeyResult.data?.code || "").trim()
+      if (activationCode) {
+        const licenseKeyResult = await adminClient
+          .from("license_keys")
+          .select("id")
+          .eq("license_key", activationCode)
+          .limit(1)
+          .maybeSingle()
+
+        if (licenseKeyResult.error) {
+          return json({ error: "load_license_key_failed", detail: licenseKeyResult.error.message }, 500)
+        }
+
+        if (licenseKeyResult.data?.id) {
+          const deviceActivationResult = await adminClient
+            .from("device_activations")
+            .select("device_id", { count: "exact", head: false })
+            .eq("license_key_id", licenseKeyResult.data.id)
+
+          if (deviceActivationResult.error) {
+            return json({ error: "load_device_activations_failed", detail: deviceActivationResult.error.message }, 500)
+          }
+
+          machineActivationCount = Number(deviceActivationResult.count || 0)
+          machineActivationActive = machineActivationCount > 0
+        }
+      }
+    }
+
     const status = String(data.status || "").trim().toLowerCase()
     const currentPeriodEndsAt = data.current_period_ends_at ? String(data.current_period_ends_at) : null
     const cancellationScheduled = isCancellationScheduled(data.raw)
@@ -292,6 +336,8 @@ Deno.serve(async (req) => {
         cancelAt: unixToIso(raw.cancel_at),
         cancelAtPeriodEnd: raw.cancel_at_period_end === true,
         activationKeyId: data.activation_key_id,
+        machineActivationCount,
+        machineActivationActive,
         updatedAt: data.updated_at,
         notifications: nextNotificationState,
       },

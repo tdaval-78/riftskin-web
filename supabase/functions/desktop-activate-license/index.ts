@@ -110,6 +110,16 @@ async function bindDeviceLicense(adminClient: any, deviceId: string, licenseKeyI
   if (error) throw error
 }
 
+async function loadDeviceActivationsForLicense(adminClient: any, licenseKeyId: string) {
+  const { data, error } = await adminClient
+    .from("device_activations")
+    .select("device_id, license_key_id, last_seen_at")
+    .eq("license_key_id", licenseKeyId)
+
+  if (error) throw error
+  return Array.isArray(data) ? data : []
+}
+
 function buildPremiumState(license: {
   license_type: string
   expires_at?: string | null
@@ -170,6 +180,18 @@ Deno.serve(async (req) => {
     const valid = license.is_active === true && (isAdmin || (isPremium && isFutureDate(license.expires_at || null)))
     if (!valid) {
       return json({ ok: false, message: "Invalid or expired license key" }, 200)
+    }
+
+    const activations = await loadDeviceActivationsForLicense(adminClient, license.id)
+    const currentActivation = activations.find((row: any) => normalizeDeviceId(row.device_id) === deviceId)
+    const foreignActivation = activations.find((row: any) => normalizeDeviceId(row.device_id) && normalizeDeviceId(row.device_id) !== deviceId)
+
+    if (!currentActivation && foreignActivation) {
+      return json({
+        ok: false,
+        reason: "license_already_active_elsewhere",
+        message: "This license is already active on another machine. Remove it from the active machine before using it here.",
+      }, 200)
     }
 
     await bindDeviceLicense(adminClient, deviceId, license.id)
