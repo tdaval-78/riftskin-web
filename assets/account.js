@@ -1144,6 +1144,7 @@
       msg(out, t('msg_signed_in'), 'ok');
       pushAnalyticsEvent('riftskin_signin_success');
       await refreshSession();
+      document.dispatchEvent(new CustomEvent('riftskin:signin-success'));
     });
   }
 

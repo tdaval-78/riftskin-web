@@ -140,6 +140,10 @@
 
   function redirectToAccountSignIn() {
     setCheckoutIntent();
+    if (isAccountPage) {
+      setAlert('Sign in or create your account first to continue with Stripe checkout.', '');
+      return;
+    }
     const next = encodeURIComponent(window.location.pathname + window.location.search);
     window.location.href = '/account.html?checkout=signin&next=' + next;
   }
@@ -304,6 +308,38 @@
     }
   }
 
+  async function handleInitialCheckoutState() {
+    const allowCheckoutResume = checkoutState === 'signin' || checkoutState === 'launch';
+    if (checkoutState === 'success') {
+      clearCheckoutIntent();
+      markCheckoutPending();
+      setAlert('Payment received. Your premium access is being activated. If the key does not appear within a minute, refresh the page.', 'ok');
+      reconcileSubscription();
+      return;
+    }
+
+    if (checkoutState === 'canceled') {
+      clearCheckoutIntent();
+      clearCheckoutPending();
+      setAlert('Checkout canceled.', '');
+      return;
+    }
+
+    if (billingState === 'return') {
+      setAlert('Refreshing your subscription status...', '');
+      reconcileBillingReturn();
+      return;
+    }
+
+    if (!allowCheckoutResume) return;
+
+    setCheckoutIntent();
+    const resumed = await maybeResumeCheckout(true);
+    if (!resumed) {
+      setAlert('Sign in or create your account first to continue with Stripe checkout.', '');
+    }
+  }
+
   async function openPortal() {
     if (cfg.billingProvider !== 'stripe') {
       setAlert(t('msg_portal_missing'), 'error');
@@ -455,38 +491,16 @@
   const params = new URLSearchParams(window.location.search);
   const checkoutState = params.get('checkout');
   const billingState = params.get('billing');
-  const allowCheckoutResume = checkoutState === 'signin' || checkoutState === 'launch';
-  if (checkoutState === 'success') {
-    clearCheckoutIntent();
-    markCheckoutPending();
-    setAlert('Payment received. Your premium access is being activated. If the key does not appear within a minute, refresh the page.', 'ok');
-    reconcileSubscription();
-  } else if (checkoutState === 'canceled') {
-    clearCheckoutIntent();
-    clearCheckoutPending();
-    setAlert('Checkout canceled.', '');
-  } else if (checkoutState === 'signin') {
-    setCheckoutIntent();
-    maybeResumeCheckout(allowCheckoutResume).then(function (resumed) {
-      if (resumed) return;
-      setAlert('Sign in or create your account first to continue with Stripe checkout.', '');
-    });
-  } else if (checkoutState === 'launch') {
-    setCheckoutIntent();
-    maybeResumeCheckout(allowCheckoutResume).then(function (resumed) {
-      if (resumed) return;
-      setAlert('Sign in or create your account first to continue with Stripe checkout.', '');
-    });
-  } else if (billingState === 'return') {
-    setAlert('Refreshing your subscription status...', '');
-    reconcileBillingReturn();
-  }
+  handleInitialCheckoutState();
 
-  if (supabaseClient) {
-    supabaseClient.auth.onAuthStateChange(function (event, session) {
-      if (!session || !session.user) return;
-      if (event !== 'SIGNED_IN') return;
-      maybeResumeCheckout(allowCheckoutResume);
-    });
-  }
+  document.addEventListener('riftskin:signin-success', function () {
+    maybeResumeCheckout(true);
+  });
+
+  window.RiftSkinStripe = window.RiftSkinStripe || {};
+  window.RiftSkinStripe.openCheckout = openCheckout;
+  window.RiftSkinStripe.openPortal = openPortal;
+  window.RiftSkinStripe.resumeCheckout = function () {
+    return maybeResumeCheckout(true);
+  };
 })();
