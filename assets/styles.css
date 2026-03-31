@@ -671,6 +671,39 @@ body[data-page="account"] .section-intro {
     0 16px 32px rgba(69, 51, 11, 0.28);
 }
 
+.hero-premium-points {
+  display: grid;
+  gap: 12px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--text-secondary);
+}
+
+.hero-premium-points li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  line-height: 1.65;
+}
+
+.hero-premium-points li::before {
+  content: "✓";
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  margin-top: 0.15em;
+  background: linear-gradient(180deg, #34d47a, #199b51);
+  color: #f6fff9;
+  font-size: 0.9rem;
+  font-weight: 900;
+  box-shadow: 0 6px 18px rgba(35, 181, 93, 0.24);
+}
+
 .hero-side-grid {
   display: grid;
   gap: 10px;
