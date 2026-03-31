@@ -125,15 +125,6 @@
     window.location.href = '/account.html?checkout=signin&next=' + next;
   }
 
-  async function forceReauthenticate() {
-    try {
-      if (supabaseClient) {
-        await supabaseClient.auth.signOut();
-      }
-    } catch (_err) {}
-    redirectToAccountSignIn();
-  }
-
   async function invokeFunction(name, body, session) {
     if (!cfg.supabaseUrl || !cfg.supabaseAnonKey) {
       throw new Error(t('msg_status_supabase_missing', 'Supabase is not configured.'));
@@ -256,14 +247,16 @@
             const retryRawMessage = await extractFunctionErrorMessage(retryErr);
             const retryMessage = retryRawMessage || ((retryErr && retryErr.message) ? retryErr.message : message);
             if (/invalid jwt|not_authenticated/i.test(retryMessage)) {
-              await forceReauthenticate();
+              clearCheckoutIntent();
+              redirectToAccountSignIn();
               return;
             }
             setAlert(retryMessage, 'error');
             return;
           }
         }
-        await forceReauthenticate();
+        clearCheckoutIntent();
+        redirectToAccountSignIn();
         return;
       }
       if (/not_authenticated/i.test(message)) {
@@ -274,8 +267,8 @@
     }
   }
 
-  async function maybeResumeCheckout() {
-    if (!isAccountPage || resumeCheckoutInFlight || !hasCheckoutIntent()) return false;
+  async function maybeResumeCheckout(allowed) {
+    if (!allowed || !isAccountPage || resumeCheckoutInFlight || !hasCheckoutIntent()) return false;
 
     const session = await getSession();
     if (!session || !session.user) return false;
@@ -334,14 +327,16 @@
             const retryRawMessage = await extractFunctionErrorMessage(retryErr);
             const retryMessage = retryRawMessage || ((retryErr && retryErr.message) ? retryErr.message : message);
             if (/invalid jwt|not_authenticated/i.test(retryMessage)) {
-              await forceReauthenticate();
+              clearCheckoutIntent();
+              redirectToAccountSignIn();
               return;
             }
             setAlert(retryMessage, 'error');
             return;
           }
         }
-        await forceReauthenticate();
+        clearCheckoutIntent();
+        redirectToAccountSignIn();
         return;
       }
       if (/not_authenticated/i.test(message)) {
@@ -440,6 +435,7 @@
   const params = new URLSearchParams(window.location.search);
   const checkoutState = params.get('checkout');
   const billingState = params.get('billing');
+  const allowCheckoutResume = checkoutState === 'signin' || checkoutState === 'launch';
   if (checkoutState === 'success') {
     clearCheckoutIntent();
     markCheckoutPending();
@@ -451,27 +447,25 @@
     setAlert('Checkout canceled.', '');
   } else if (checkoutState === 'signin') {
     setCheckoutIntent();
-    maybeResumeCheckout().then(function (resumed) {
+    maybeResumeCheckout(allowCheckoutResume).then(function (resumed) {
       if (resumed) return;
       setAlert('Sign in or create your account first to continue with Stripe checkout.', '');
     });
   } else if (checkoutState === 'launch') {
     setCheckoutIntent();
-    maybeResumeCheckout().then(function (resumed) {
+    maybeResumeCheckout(allowCheckoutResume).then(function (resumed) {
       if (resumed) return;
       setAlert('Sign in or create your account first to continue with Stripe checkout.', '');
     });
   } else if (billingState === 'return') {
     setAlert('Refreshing your subscription status...', '');
     reconcileBillingReturn();
-  } else {
-    maybeResumeCheckout();
   }
 
   if (supabaseClient) {
     supabaseClient.auth.onAuthStateChange(function (_event, session) {
       if (!session || !session.user) return;
-      maybeResumeCheckout();
+      maybeResumeCheckout(allowCheckoutResume);
     });
   }
 })();
