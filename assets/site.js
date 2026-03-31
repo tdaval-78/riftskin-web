@@ -357,6 +357,9 @@
   });
 
   const premiumCtas = Array.from(document.querySelectorAll('[data-home-premium-cta], [data-premium-cta]'));
+  const pricingAck = document.querySelector('[data-pricing-ack]');
+  const pricingAckRow = document.querySelector('[data-pricing-ack-row]');
+  const pricingPremiumCta = document.querySelector('[data-premium-cta]');
 
   function setPremiumCtaState(isPremium) {
     if (!premiumCtas.length) return;
@@ -371,9 +374,27 @@
     });
   }
 
+  function setPricingAckVisibility(visible) {
+    if (!pricingAckRow || !pricingAck) return;
+    pricingAckRow.style.display = visible ? '' : 'none';
+    if (!visible) {
+      pricingAck.checked = false;
+    }
+  }
+
+  function syncPricingAckState(forceEnabled) {
+    if (!pricingAck || !pricingPremiumCta) return;
+    const enabled = forceEnabled === true || !!pricingAck.checked;
+    pricingPremiumCta.classList.toggle('is-disabled', !enabled);
+    pricingPremiumCta.setAttribute('aria-disabled', enabled ? 'false' : 'true');
+    pricingPremiumCta.tabIndex = enabled ? 0 : -1;
+  }
+
   async function syncHomePremiumCta() {
     if (!premiumCtas.length || !window.supabase || !cfg.supabaseUrl || !cfg.supabaseAnonKey) {
       setPremiumCtaState(false);
+      setPricingAckVisibility(true);
+      syncPricingAckState(false);
       return;
     }
 
@@ -381,6 +402,8 @@
       const supabaseClient = getSharedSupabaseClient();
       if (!supabaseClient) {
         setPremiumCtaState(false);
+        setPricingAckVisibility(true);
+        syncPricingAckState(false);
         return;
       }
       const sessionResult = await supabaseClient.auth.getSession();
@@ -388,6 +411,8 @@
 
       if (!session || !session.user) {
         setPremiumCtaState(false);
+        setPricingAckVisibility(true);
+        syncPricingAckState(false);
         return;
       }
 
@@ -397,42 +422,50 @@
 
       const rows = accessResult && accessResult.data;
       const row = Array.isArray(rows) ? rows[0] : null;
-      const hasPremium = !!(row && (row.is_admin || (row.access_granted && (row.access_source === 'activation_key' || row.access_source === 'admin_grant'))));
+      const accessSource = row && row.access_source ? String(row.access_source).trim().toLowerCase() : '';
+      const hasPremium = !!(row && (row.is_admin || (row.access_granted && (
+        accessSource === 'activation_key' ||
+        accessSource === 'admin_grant' ||
+        accessSource === 'subscription_canceled'
+      ))));
       setPremiumCtaState(hasPremium);
+      setPricingAckVisibility(!hasPremium);
+      syncPricingAckState(hasPremium);
     } catch (_err) {
       setPremiumCtaState(false);
+      setPricingAckVisibility(true);
+      syncPricingAckState(false);
     }
   }
 
   setPremiumCtaState(false);
+  setPricingAckVisibility(true);
+  syncPricingAckState(false);
   syncHomePremiumCta();
-
-  const pricingAck = document.querySelector('[data-pricing-ack]');
-  const pricingPremiumCta = document.querySelector('[data-premium-cta]');
 
   premiumCtas.forEach(function (premiumCta) {
     premiumCta.addEventListener('click', function (event) {
       if (event.defaultPrevented) return;
-      if (premiumCta === pricingPremiumCta && pricingAck && !pricingAck.checked) return;
+      if (
+        premiumCta === pricingPremiumCta &&
+        pricingAck &&
+        pricingAckRow &&
+        pricingAckRow.style.display !== 'none' &&
+        !pricingAck.checked
+      ) return;
     });
   });
 
   if (pricingAck && pricingPremiumCta) {
-    function syncPricingAckState() {
-      const checked = !!pricingAck.checked;
-      pricingPremiumCta.classList.toggle('is-disabled', !checked);
-      pricingPremiumCta.setAttribute('aria-disabled', checked ? 'false' : 'true');
-      pricingPremiumCta.tabIndex = checked ? 0 : -1;
-    }
-
-    pricingAck.addEventListener('change', syncPricingAckState);
+    pricingAck.addEventListener('change', function () {
+      syncPricingAckState(false);
+    });
     pricingPremiumCta.addEventListener('click', function (event) {
+      if (pricingAckRow && pricingAckRow.style.display === 'none') return;
       if (pricingAck.checked) return;
       event.preventDefault();
       pricingAck.focus();
     });
-
-    syncPricingAckState();
   }
 
   const productTour = document.querySelector('[data-product-tour]');
