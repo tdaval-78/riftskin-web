@@ -23,6 +23,22 @@
   const authStorage = window.localStorage || window.sessionStorage;
   window.dataLayer = window.dataLayer || [];
 
+  function getSharedSupabaseClient() {
+    if (!window.supabase || !cfg.supabaseUrl || !cfg.supabaseAnonKey) return null;
+    if (window.__riftskinSupabaseClient) {
+      return window.__riftskinSupabaseClient;
+    }
+    window.__riftskinSupabaseClient = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey, {
+      auth: {
+        storage: authStorage,
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: false
+      }
+    });
+    return window.__riftskinSupabaseClient;
+  }
+
   function enforceSiteMaintenanceGate() {}
 
   enforceSiteMaintenanceGate();
@@ -362,14 +378,11 @@
     }
 
     try {
-      const supabaseClient = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey, {
-        auth: {
-          storage: authStorage,
-          persistSession: true,
-          autoRefreshToken: true,
-          detectSessionInUrl: false
-        }
-      });
+      const supabaseClient = getSharedSupabaseClient();
+      if (!supabaseClient) {
+        setPremiumCtaState(false);
+        return;
+      }
       const sessionResult = await supabaseClient.auth.getSession();
       const session = sessionResult && sessionResult.data ? sessionResult.data.session : null;
 
