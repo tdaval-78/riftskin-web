@@ -23,6 +23,130 @@
   const authStorage = window.localStorage || window.sessionStorage;
   window.dataLayer = window.dataLayer || [];
 
+  function normalizeEmail(value) {
+    return (value || '').toString().trim().toLowerCase();
+  }
+
+  function getMaintenanceAllowedEmails() {
+    if (!Array.isArray(cfg.siteMaintenanceAllowedEmails)) return [];
+    return cfg.siteMaintenanceAllowedEmails.map(normalizeEmail).filter(Boolean);
+  }
+
+  function readStoredSessionEmail() {
+    const stores = [];
+    try { if (window.localStorage) stores.push(window.localStorage); } catch (_err) {}
+    try { if (window.sessionStorage) stores.push(window.sessionStorage); } catch (_err) {}
+
+    for (let i = 0; i < stores.length; i += 1) {
+      const store = stores[i];
+      for (let j = 0; j < store.length; j += 1) {
+        const key = store.key(j) || '';
+        if (!/auth-token/i.test(key)) continue;
+        try {
+          const raw = store.getItem(key);
+          if (!raw) continue;
+          const parsed = JSON.parse(raw);
+          const candidate = parsed && parsed.user && parsed.user.email
+            ? parsed.user.email
+            : (parsed && parsed.currentSession && parsed.currentSession.user && parsed.currentSession.user.email
+              ? parsed.currentSession.user.email
+              : '');
+          const email = normalizeEmail(candidate);
+          if (email) return email;
+        } catch (_err) {
+          continue;
+        }
+      }
+    }
+
+    return '';
+  }
+
+  function isMaintenanceBypassPath(pathname) {
+    return pathname === '/account.html' || pathname === '/auth/callback' || pathname === '/auth/callback/';
+  }
+
+  function getSiteMaintenanceCopy() {
+    const lang = window.RiftSkinI18n && typeof window.RiftSkinI18n.getLanguage === 'function'
+      ? window.RiftSkinI18n.getLanguage()
+      : 'en';
+
+    const copyByLang = {
+      fr: {
+        title: 'RIFTSKIN en maintenance privee',
+        body: 'Le site est temporairement reserve au compte admin pendant les derniers ajustements. Connectez-vous avec contact@riftskin.com pour continuer.',
+        action: 'Ouvrir la page compte'
+      },
+      es: {
+        title: 'RIFTSKIN en mantenimiento privado',
+        body: 'El sitio esta temporalmente reservado a la cuenta de administrador mientras terminamos los ultimos ajustes. Inicia sesion con contact@riftskin.com para continuar.',
+        action: 'Abrir la pagina de cuenta'
+      },
+      pt: {
+        title: 'RIFTSKIN em manutencao privada',
+        body: 'O site esta temporariamente reservado para a conta de administrador enquanto finalizamos os ultimos ajustes. Entre com contact@riftskin.com para continuar.',
+        action: 'Abrir a pagina da conta'
+      },
+      zh: {
+        title: 'RIFTSKIN 正在进行内部维护',
+        body: '网站暂时只对管理员账户开放，以便完成最后的调整。请使用 contact@riftskin.com 登录后继续。',
+        action: '打开账户页面'
+      },
+      en: {
+        title: 'RIFTSKIN is in private maintenance',
+        body: 'The website is temporarily reserved for the admin account while the last adjustments are being completed. Sign in with contact@riftskin.com to continue.',
+        action: 'Open account page'
+      }
+    };
+
+    return copyByLang[lang] || copyByLang.en;
+  }
+
+  async function enforceSiteMaintenanceGate() {
+    if (!cfg.siteMaintenanceEnabled) return;
+
+    const allowedEmails = getMaintenanceAllowedEmails();
+    let email = readStoredSessionEmail();
+
+    if (window.supabase && cfg.supabaseUrl && cfg.supabaseAnonKey) {
+      try {
+        const supabaseClient = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey, {
+          auth: {
+            storage: authStorage,
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: false
+          }
+        });
+        const sessionResult = await supabaseClient.auth.getSession();
+        const session = sessionResult && sessionResult.data ? sessionResult.data.session : null;
+        email = normalizeEmail(session && session.user ? session.user.email : '') || email;
+      } catch (_err) {
+        email = email || '';
+      }
+    }
+
+    const authorized = !!(email && allowedEmails.indexOf(email) !== -1);
+
+    if (authorized) return;
+
+    if (isMaintenanceBypassPath(window.location.pathname)) {
+      document.body.setAttribute('data-site-maintenance', '1');
+      document.dispatchEvent(new CustomEvent('riftskin:site-maintenance', {
+        detail: { allowed: false, allowedEmails: allowedEmails.slice() }
+      }));
+      return;
+    }
+
+    const nextValue = window.location.pathname + window.location.search + window.location.hash;
+    const target = new URL('/account.html', window.location.origin);
+    target.searchParams.set('maintenance', '1');
+    target.searchParams.set('next', nextValue);
+    window.location.replace(target.toString());
+  }
+
+  enforceSiteMaintenanceGate();
+
   function pushAnalyticsEvent(eventName, params) {
     if (!eventName) return;
     window.dataLayer.push(Object.assign({

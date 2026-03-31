@@ -14,6 +14,7 @@
   const statusBox = document.querySelector('[data-account-status]');
   const loggedOutView = document.querySelector('[data-logged-out]');
   const loggedInView = document.querySelector('[data-logged-in]');
+  const signUpCard = document.querySelector('[data-signup-form]') ? document.querySelector('[data-signup-form]').closest('.account-auth-card') : null;
   const sessionSummary = document.querySelector('[data-session-summary]');
   const accountEmails = document.querySelectorAll('[data-session-email]');
   const accountEmailInput = document.querySelector('[data-account-email]');
@@ -86,6 +87,38 @@
 
   function t(key) {
     return window.RiftSkinI18n ? window.RiftSkinI18n.t(key) : key;
+  }
+
+  function normalizeEmail(value) {
+    return (value || '').toString().trim().toLowerCase();
+  }
+
+  function getMaintenanceAllowedEmails() {
+    if (!Array.isArray(cfg.siteMaintenanceAllowedEmails)) return [];
+    return cfg.siteMaintenanceAllowedEmails.map(normalizeEmail).filter(Boolean);
+  }
+
+  function isMaintenanceAllowedSession(session) {
+    if (!cfg.siteMaintenanceEnabled) return true;
+    const user = session && session.user ? session.user : null;
+    const email = normalizeEmail(user ? user.email : '');
+    return !!(email && getMaintenanceAllowedEmails().indexOf(email) !== -1);
+  }
+
+  function getMaintenanceMessage() {
+    const lang = window.RiftSkinI18n && typeof window.RiftSkinI18n.getLanguage === 'function'
+      ? window.RiftSkinI18n.getLanguage()
+      : 'en';
+
+    const copyByLang = {
+      fr: "Le site est temporairement reserve au compte admin pendant les derniers ajustements. Connectez-vous avec contact@riftskin.com pour continuer.",
+      es: "El sitio esta temporalmente reservado a la cuenta de administrador mientras terminamos los ultimos ajustes. Inicia sesion con contact@riftskin.com para continuar.",
+      pt: "O site esta temporariamente reservado para a conta de administrador enquanto finalizamos os ultimos ajustes. Entre com contact@riftskin.com para continuar.",
+      zh: "网站暂时只对管理员账户开放，以便完成最后的调整。请使用 contact@riftskin.com 登录后继续。",
+      en: "The website is temporarily reserved for the admin account while the last adjustments are being completed. Sign in with contact@riftskin.com to continue."
+    };
+
+    return copyByLang[lang] || copyByLang.en;
   }
 
   function msg(target, text, type) {
@@ -433,6 +466,15 @@
     setBillingUi(false);
   }
 
+  function applyMaintenanceLoggedOutState() {
+    if (!cfg.siteMaintenanceEnabled) return;
+    if (signUpCard) signUpCard.style.display = 'none';
+    const signInForm = document.querySelector('[data-signin-form]');
+    const out = signInForm ? signInForm.querySelector('[data-msg]') : null;
+    msg(out, getMaintenanceMessage(), 'error');
+    setResendVisibility(false);
+  }
+
   if (!window.supabase || !cfg.supabaseUrl || !cfg.supabaseAnonKey) {
     setSessionUi(null);
     setStatus(t('msg_status_supabase_missing'), 'error');
@@ -514,12 +556,20 @@
 
   async function refreshSession() {
     const session = await getSession();
+    if (cfg.siteMaintenanceEnabled && session && !isMaintenanceAllowedSession(session)) {
+      await supabaseClient.auth.signOut();
+      setSessionUi(null);
+      applyMaintenanceLoggedOutState();
+      return;
+    }
     setSessionUi(session);
     if (session && session.user) {
       await refreshAccessStatus(session.user.id);
       await loadMyKeys(session.user.id);
       await refreshAdminEntry();
+      return;
     }
+    applyMaintenanceLoggedOutState();
   }
 
   async function refreshAdminEntry() {
@@ -1041,6 +1091,10 @@
     refreshSession();
   });
 
+  document.addEventListener('riftskin:site-maintenance', function () {
+    applyMaintenanceLoggedOutState();
+  });
+
   const signInForm = document.querySelector('[data-signin-form]');
   if (signInForm) {
     signInForm.addEventListener('submit', async function (e) {
@@ -1068,6 +1122,14 @@
         return;
       }
 
+      const refreshedSession = await getSession();
+      if (cfg.siteMaintenanceEnabled && refreshedSession && !isMaintenanceAllowedSession(refreshedSession)) {
+        await supabaseClient.auth.signOut();
+        msg(out, getMaintenanceMessage(), 'error');
+        applyMaintenanceLoggedOutState();
+        return;
+      }
+
       setResendVisibility(false);
       msg(resendMsg, '', '');
       if (accountEmailInput) accountEmailInput.value = email;
@@ -1081,6 +1143,11 @@
   if (signUpForm) {
     signUpForm.addEventListener('submit', async function (e) {
       e.preventDefault();
+      if (cfg.siteMaintenanceEnabled) {
+        const out = signUpForm.querySelector('[data-msg]');
+        msg(out, getMaintenanceMessage(), 'error');
+        return;
+      }
       const out = signUpForm.querySelector('[data-msg]');
 
       const email = signUpForm.querySelector('[name="email"]').value.trim();
