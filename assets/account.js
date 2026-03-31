@@ -35,8 +35,6 @@
   const myKeysBody = document.querySelector('[data-my-keys-body]');
   const myKeysMsg = document.querySelector('[data-my-keys-msg]');
   const myKeysDateHeader = document.querySelector('[data-my-keys-date-header]');
-  const machineActivationWrap = document.querySelector('[data-machine-activation-wrap]');
-  const machineActivationStatus = document.querySelector('[data-machine-activation-status]');
   const adminEntry = document.querySelector('[data-admin-entry]');
 
   const adminPanel = document.querySelector('[data-admin-only]');
@@ -151,14 +149,6 @@
     billingPortalBtns.forEach(function (btn) {
       btn.style.display = 'none';
     });
-  }
-
-  function setMachineActivationBadge(active, visible) {
-    if (!machineActivationWrap || !machineActivationStatus) return;
-    machineActivationWrap.style.display = visible ? '' : 'none';
-    if (!visible) return;
-    machineActivationStatus.textContent = active ? t('account_machine_activation_yes') : t('account_machine_activation_no');
-    machineActivationStatus.className = 'status-badge ' + (active ? 'ok' : '');
   }
 
   function resetAccountManagementUi() {
@@ -438,7 +428,6 @@
     if (accessMeta) accessMeta.textContent = '';
     if (myKeysBody) myKeysBody.replaceChildren();
     if (myKeysMsg) msg(myKeysMsg, '');
-    setMachineActivationBadge(false, false);
     if (adminEntry) adminEntry.style.display = 'none';
     if (adminPanel) adminPanel.style.display = 'none';
     setBillingUi(false);
@@ -566,7 +555,6 @@
       if (row.is_admin) {
         clearPendingStripeCheckout();
         setBillingUi(true);
-        setMachineActivationBadge(false, false);
         setAccessBadge(t('account_access_admin_badge'), 'ok');
         if (accessMeta) accessMeta.textContent = t('account_access_admin_meta');
         return;
@@ -575,10 +563,6 @@
       if (row.access_granted && (row.access_source === 'activation_key' || row.access_source === 'subscription_canceled' || row.access_source === 'admin_grant')) {
         clearPendingStripeCheckout();
         setBillingUi(true);
-        setMachineActivationBadge(
-          !!(subscriptionSummary && subscriptionSummary.machineActivationActive),
-          !!subscriptionSummary
-        );
         if (row.access_source === 'subscription_canceled' || (subscriptionSummary && subscriptionSummary.cancellationScheduled)) {
           setAccessBadge(t('account_subscription_canceled_badge'), 'warning');
           if (accessMeta) {
@@ -599,10 +583,6 @@
 
       if (row.access_source === 'expired') {
         setBillingUi(false);
-        setMachineActivationBadge(
-          !!(subscriptionSummary && subscriptionSummary.machineActivationActive),
-          !!subscriptionSummary
-        );
         setAccessBadge(t('account_access_expired_badge'), 'error');
         if (accessMeta) accessMeta.textContent = t('account_access_expired_meta');
         return;
@@ -616,7 +596,6 @@
       }
 
       setBillingUi(false);
-      setMachineActivationBadge(false, !!subscriptionSummary);
       setAccessBadge(t('account_access_free_badge'), '');
       if (accessMeta) accessMeta.textContent = t('account_access_free_meta');
     } catch (err) {
@@ -1000,7 +979,7 @@
     if (!rows.length) {
       const tr = document.createElement('tr');
       const td = document.createElement('td');
-      td.colSpan = 4;
+      td.colSpan = 5;
       td.textContent = t('account_my_key_empty');
       tr.appendChild(td);
       myKeysBody.appendChild(tr);
@@ -1030,6 +1009,12 @@
         ? formatDate(latestSubscriptionSummary.currentPeriodEndsAt || keyObj.expires_at || '')
         : (keyObj.expires_at ? formatDate(keyObj.expires_at) : t('account_my_key_subscription_active'));
       tr.appendChild(tdExpires);
+
+      const tdMachine = document.createElement('td');
+      tdMachine.textContent = latestSubscriptionSummary && latestSubscriptionSummary.machineActivationActive
+        ? t('account_machine_activation_yes')
+        : t('account_machine_activation_no');
+      tr.appendChild(tdMachine);
 
       const tdStatus = document.createElement('td');
       tdStatus.textContent = keyObj.is_active === false
