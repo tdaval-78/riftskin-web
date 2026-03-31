@@ -228,12 +228,12 @@ async function syncLegacyDesktopLicense(adminClient: any, params: {
   return data?.id || null
 }
 
-async function ensureUserAccess(adminClient: any, userId: string, keyId: number, accessEndsAt: string | null, active: boolean) {
+async function ensureUserAccess(adminClient: any, userId: string, keyId: number, accessEndsAt: string | null, active: boolean, source = "activation_key") {
   const { error } = await adminClient
     .from("user_access")
     .upsert({
       user_id: userId,
-      source: "activation_key",
+      source,
       granted_by_key_id: keyId,
       granted_at: new Date().toISOString(),
       expires_at: accessEndsAt,
@@ -661,7 +661,14 @@ Deno.serve(async (req) => {
 
     if (userId) {
       await ensureRedemption(adminClient, activationKey.id, userId)
-      await ensureUserAccess(adminClient, userId, activationKey.id, snapshot.currentPeriodEndsAt, active)
+      await ensureUserAccess(
+        adminClient,
+        userId,
+        activationKey.id,
+        snapshot.currentPeriodEndsAt,
+        active,
+        cancellationScheduled && active ? "subscription_canceled" : "activation_key",
+      )
     }
 
     let emailReceipt = null

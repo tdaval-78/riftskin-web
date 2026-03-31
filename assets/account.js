@@ -196,6 +196,7 @@
   function accessSourceLabel(item) {
     if (item.is_admin) return t('admin_source_admin');
     if (item.access_source === 'admin_grant' && !item.access_expires_at) return t('admin_source_permanent');
+    if (item.access_source === 'subscription_canceled') return t('account_subscription_canceled_table_status');
     if (item.access_source === 'activation_key') return t('admin_source_key');
     if (item.access_source) return item.access_source;
     return t('admin_not_available');
@@ -568,14 +569,14 @@
         return;
       }
 
-      if (row.access_granted && (row.access_source === 'activation_key' || row.access_source === 'admin_grant')) {
+      if (row.access_granted && (row.access_source === 'activation_key' || row.access_source === 'subscription_canceled' || row.access_source === 'admin_grant')) {
         clearPendingStripeCheckout();
         setBillingUi(true);
-        if (subscriptionSummary && subscriptionSummary.cancellationScheduled) {
+        if (row.access_source === 'subscription_canceled' || (subscriptionSummary && subscriptionSummary.cancellationScheduled)) {
           setAccessBadge(t('account_subscription_canceled_badge'), 'warning');
           if (accessMeta) {
             accessMeta.textContent = fillTemplate(t('account_subscription_canceled_meta'), {
-              date: formatDate(subscriptionSummary.currentPeriodEndsAt || row.access_expires_at || '')
+              date: formatDate((subscriptionSummary && subscriptionSummary.currentPeriodEndsAt) || row.access_expires_at || '')
             });
           }
           return;
@@ -996,7 +997,12 @@
 
     rows.forEach(function (row) {
       const keyObj = row.activation_keys || {};
-      const cancellationScheduled = !!(latestSubscriptionSummary && latestSubscriptionSummary.cancellationScheduled && keyObj.is_active !== false);
+      const cancellationScheduled = !!(
+        keyObj.is_active !== false && (
+          (latestSubscriptionSummary && latestSubscriptionSummary.cancellationScheduled) ||
+          (accessStatus && accessStatus.textContent === t('account_subscription_canceled_badge'))
+        )
+      );
       const tr = document.createElement('tr');
 
       const tdCode = document.createElement('td');
