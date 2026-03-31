@@ -93,32 +93,12 @@
     return (value || '').toString().trim().toLowerCase();
   }
 
-  function getMaintenanceAllowedEmails() {
-    if (!Array.isArray(cfg.siteMaintenanceAllowedEmails)) return [];
-    return cfg.siteMaintenanceAllowedEmails.map(normalizeEmail).filter(Boolean);
-  }
-
-  function isMaintenanceAllowedSession(session) {
-    if (!cfg.siteMaintenanceEnabled) return true;
-    const user = session && session.user ? session.user : null;
-    const email = normalizeEmail(user ? user.email : '');
-    return !!(email && getMaintenanceAllowedEmails().indexOf(email) !== -1);
+  function isMaintenanceAllowedSession() {
+    return true;
   }
 
   function getMaintenanceMessage() {
-    const lang = window.RiftSkinI18n && typeof window.RiftSkinI18n.getLanguage === 'function'
-      ? window.RiftSkinI18n.getLanguage()
-      : 'en';
-
-    const copyByLang = {
-      fr: "Le site est temporairement reserve au compte admin pendant les derniers ajustements. Connectez-vous avec contact@riftskin.com pour continuer.",
-      es: "El sitio esta temporalmente reservado a la cuenta de administrador mientras terminamos los ultimos ajustes. Inicia sesion con contact@riftskin.com para continuar.",
-      pt: "O site esta temporariamente reservado para a conta de administrador enquanto finalizamos os ultimos ajustes. Entre com contact@riftskin.com para continuar.",
-      zh: "网站暂时只对管理员账户开放，以便完成最后的调整。请使用 contact@riftskin.com 登录后继续。",
-      en: "The website is temporarily reserved for the admin account while the last adjustments are being completed. Sign in with contact@riftskin.com to continue."
-    };
-
-    return copyByLang[lang] || copyByLang.en;
+    return '';
   }
 
   function msg(target, text, type) {
@@ -500,12 +480,7 @@
   }
 
   function applyMaintenanceLoggedOutState() {
-    if (!cfg.siteMaintenanceEnabled) return;
-    if (signUpCard) signUpCard.style.display = 'none';
-    const signInForm = document.querySelector('[data-signin-form]');
-    const out = signInForm ? signInForm.querySelector('[data-msg]') : null;
-    msg(out, getMaintenanceMessage(), 'error');
-    setResendVisibility(false);
+    if (signUpCard) signUpCard.style.display = '';
   }
 
   if (!window.supabase || !cfg.supabaseUrl || !cfg.supabaseAnonKey) {
