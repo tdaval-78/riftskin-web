@@ -18,12 +18,12 @@ entrypoint = "./functions/paddle-webhook/index.ts"
 
 [functions.create-stripe-checkout-session]
 enabled = true
-verify_jwt = false
+verify_jwt = true
 entrypoint = "./functions/create-stripe-checkout-session/index.ts"
 
 [functions.create-stripe-portal-session]
 enabled = true
-verify_jwt = false
+verify_jwt = true
 entrypoint = "./functions/create-stripe-portal-session/index.ts"
 
 [functions.stripe-webhook]
@@ -56,6 +56,11 @@ entrypoint = "./functions/desktop-activate-license/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/desktop-release-license/index.ts"
+
+[functions.delete-account]
+enabled = true
+verify_jwt = true
+entrypoint = "./functions/delete-account/index.ts"
 
 [functions.stripe-reconcile-subscription]
 enabled = true

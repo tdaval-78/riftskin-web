@@ -12,6 +12,7 @@ const bucketName = "support-requests"
 const maxFiles = 5
 const maxFileSize = 25 * 1024 * 1024
 const attachmentLinkTtlSeconds = 60 * 60 * 24 * 7
+const throttleWindowMs = 2 * 60 * 1000
 const allowedMimePrefixes = ["image/", "video/"]
 const allowedMimeTypes = [
   "application/zip",
@@ -36,6 +37,21 @@ function sanitizeFileName(name: string) {
     .replace(/-+/g, "-")
     .replace(/^-|-$/g, "")
     .slice(0, 120) || "file"
+}
+
+function normalizeEmail(value: unknown) {
+  return String(value || "").trim().toLowerCase()
+}
+
+function getClientIp(req: Request) {
+  const forwarded = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || req.headers.get("cf-connecting-ip") || ""
+  return forwarded.split(",")[0]?.trim() || "unknown"
+}
+
+async function sha256Hex(value: string) {
+  const input = new TextEncoder().encode(value)
+  const digest = await crypto.subtle.digest("SHA-256", input)
+  return Array.from(new Uint8Array(digest)).map((byte) => byte.toString(16).padStart(2, "0")).join("")
 }
 
 function isAllowedFile(file: File) {
@@ -78,6 +94,58 @@ async function ensureBucket(client: any) {
   if (createError && !/already exists/i.test(createError.message || "")) {
     throw createError
   }
+}
+
+async function enforceRateLimit(client: any, req: Request, email: string) {
+  const ip = getClientIp(req)
+  const key = await sha256Hex(`${normalizeEmail(email)}|${ip}`)
+  const filePath = `_throttle/${key}.json`
+  const payload = {
+    email: normalizeEmail(email),
+    ip,
+    created_at: new Date().toISOString(),
+  }
+  const blob = new Blob([JSON.stringify(payload)], { type: "application/json" })
+
+  const { error: uploadError } = await client.storage
+    .from(bucketName)
+    .upload(filePath, blob, {
+      contentType: "application/json",
+      upsert: false,
+    })
+
+  if (!uploadError) return
+
+  const uploadMessage = String(uploadError.message || "")
+  if (!/already exists|resource already exists|duplicate/i.test(uploadMessage)) {
+    throw uploadError
+  }
+
+  const existing = await client.storage.from(bucketName).download(filePath)
+  if (existing.error) throw existing.error
+
+  const existingText = await existing.data.text()
+  let createdAtMs = 0
+  try {
+    createdAtMs = new Date(JSON.parse(existingText).created_at || 0).getTime()
+  } catch (_error) {
+    createdAtMs = 0
+  }
+
+  if (createdAtMs && (Date.now() - createdAtMs) < throttleWindowMs) {
+    throw new Error("rate_limited")
+  }
+
+  const { error: removeError } = await client.storage.from(bucketName).remove([filePath])
+  if (removeError) throw removeError
+
+  const { error: replaceError } = await client.storage
+    .from(bucketName)
+    .upload(filePath, blob, {
+      contentType: "application/json",
+      upsert: false,
+    })
+  if (replaceError) throw replaceError
 }
 
 async function sendSupportEmail(params: {
@@ -203,9 +271,13 @@ Deno.serve(async (req) => {
     const topic = String(formData.get("topic") || "").trim()
     const topicLabel = String(formData.get("topic_label") || topic).trim()
     const message = String(formData.get("message") || "").trim()
+    const honeypot = String(formData.get("website") || "").trim()
 
     if (!name || !email || !topic || !message) {
       return json({ error: "missing_fields" }, 400)
+    }
+    if (honeypot) {
+      return json({ error: "invalid_request", message: "Support request blocked." }, 400)
     }
 
     const attachmentEntries = formData.getAll("attachments")
@@ -226,6 +298,7 @@ Deno.serve(async (req) => {
     })
 
     await ensureBucket(supabase)
+    await enforceRateLimit(supabase, req, email)
 
     const requestId = crypto.randomUUID()
     const createdAt = new Date().toISOString()
@@ -311,6 +384,12 @@ Deno.serve(async (req) => {
     })
   } catch (error) {
     console.error("support-request error", error)
+    if (error instanceof Error && error.message === "rate_limited") {
+      return json({
+        error: "rate_limited",
+        message: "Please wait a moment before sending another support request.",
+      }, 429)
+    }
     return json({
       error: "support_request_failed",
       message: error instanceof Error ? error.message : "Unknown error",

@@ -105,6 +105,7 @@
     const name = (data.get('name') || '').toString().trim();
     const email = (data.get('email') || '').toString().trim();
     const topic = (data.get('topic') || '').toString().trim();
+    const website = (data.get('website') || '').toString().trim();
     const selectedTopicLabel = topicSelect && topicSelect.selectedIndex >= 0
       ? topicSelect.options[topicSelect.selectedIndex].textContent.trim()
       : topic;
@@ -117,6 +118,7 @@
     supportData.append('topic', topic);
     supportData.append('topic_label', selectedTopicLabel);
     supportData.append('message', message);
+    supportData.append('website', website);
 
     pushAnalyticsEvent('riftskin_support_submit_attempt', {
       support_topic: topic || 'unknown',
@@ -172,8 +174,13 @@
         support_topic: topic || 'unknown',
         attachments_count: attachments.length
       });
-    } catch (_err) {
-      out.textContent = t('site_support_submit_error');
+    } catch (err) {
+      const rawMessage = err && err.message ? String(err.message) : '';
+      if (rawMessage === 'Please wait a moment before sending another support request.') {
+        out.textContent = t('site_support_submit_rate_limited');
+      } else {
+        out.textContent = rawMessage || t('site_support_submit_error');
+      }
       out.className = 'msg error';
       pushAnalyticsEvent('riftskin_support_submit_error', {
         support_topic: topic || 'unknown',

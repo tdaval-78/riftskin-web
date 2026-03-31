@@ -16,16 +16,15 @@ function json(data: Record<string, unknown>, status = 200) {
   })
 }
 
-function decodeJwtPayload(token: string) {
-  const parts = token.split(".")
-  if (parts.length < 2) return null
-  const normalized = parts[1].replace(/-/g, "+").replace(/_/g, "/")
-  const padded = normalized + "=".repeat((4 - (normalized.length % 4 || 4)) % 4)
+function normalizeRiftskinUrl(value: unknown, fallback: string) {
+  const raw = String(value || "").trim()
+  if (!raw) return fallback
   try {
-    const jsonPayload = new TextDecoder().decode(Uint8Array.from(atob(padded), (char) => char.charCodeAt(0)))
-    return JSON.parse(jsonPayload) as Record<string, unknown>
-  } catch {
-    return null
+    const url = new URL(raw)
+    if (url.origin !== "https://riftskin.com") return fallback
+    return url.toString()
+  } catch (_error) {
+    return fallback
   }
 }
 
@@ -87,9 +86,10 @@ Deno.serve(async (req) => {
       auth: { persistSession: false },
     })
 
-    const claims = decodeJwtPayload(token)
-    const userEmail = String(claims?.email || "").trim().toLowerCase()
-    if (!userEmail) {
+    const { data: userResult, error: userError } = await adminClient.auth.getUser(token)
+    const user = userResult.user
+    const userEmail = String(user?.email || "").trim().toLowerCase()
+    if (userError || !userEmail) {
       return json({ error: "not_authenticated" }, 401)
     }
 
@@ -113,7 +113,7 @@ Deno.serve(async (req) => {
     }))
 
     const body = await req.json().catch(() => ({}))
-    const returnUrl = String(body.returnUrl || "").trim() || "https://riftskin.com/account.html"
+    const returnUrl = normalizeRiftskinUrl(body.returnUrl, "https://riftskin.com/account.html")
     const portalSession = await stripeRequest("/v1/billing_portal/sessions", stripeSecretKey, new URLSearchParams({
       customer: customerId,
       return_url: returnUrl,

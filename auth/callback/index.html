@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex,nofollow" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; img-src 'self' data: https://www.google-analytics.com https://riftskin.com https://jfmrwxmlncvzoremcmbi.supabase.co; style-src 'self' 'unsafe-inline'; script-src 'self' https://cdn.jsdelivr.net; connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://analytics.google.com https://jfmrwxmlncvzoremcmbi.supabase.co;" />
-  <title>RIFTSKIN - Account Access</title>
+  <title data-i18n="cb_title">RIFTSKIN - Account</title>
   <style>
     :root {
       --bg: #06070a;
@@ -224,53 +224,55 @@
   <main class="shell">
     <section class="hero">
       <img class="logo" src="https://riftskin.com/assets/logo.png" alt="RIFTSKIN logo" />
-      <div class="eyebrow">Account Access</div>
+      <div class="eyebrow" data-i18n="cb_badge">Account Ready</div>
     </section>
 
     <section id="confirm-view" class="content hidden">
-      <h1 id="confirm-title">Email confirmed.</h1>
-      <p id="confirm-copy">Your account is now verified. You can go back to the RIFTSKIN account page and sign in normally.</p>
+      <h1 id="confirm-title" data-i18n="cb_confirm_h1">Email confirmed</h1>
+      <p id="confirm-copy" data-i18n-html="cb_confirm_p_html">Your email address has been confirmed.<br />You can now return to RIFTSKIN and click <strong>I've confirmed</strong>.</p>
       <div class="panel">
-        <div class="panel-title">What happens next</div>
-        <p id="confirm-panel-copy" class="panel-copy">Return to the account page, sign in with your email and password, and continue your setup from there.</p>
+        <div class="panel-title" data-i18n="cb_next_steps">What happens next</div>
+        <p id="confirm-panel-copy" class="panel-copy" data-i18n="cb_confirm_panel">Return to the account page, sign in with your email and password, and continue your setup from there.</p>
       </div>
       <div id="confirm-message" class="msg"></div>
       <div class="actions">
-        <a class="ghost-btn" href="/account.html">Back to account</a>
+        <a class="ghost-btn" href="/account.html" data-i18n="cb_back_account">Back to account</a>
       </div>
     </section>
 
     <section id="recovery-view" class="content hidden">
-      <h1 id="recovery-title">Reset your password.</h1>
-      <p id="recovery-copy">Choose a new password for your RIFTSKIN account, then return to the account page and sign in.</p>
+      <h1 id="recovery-title" data-i18n="cb_recovery_h1">Choose a new password</h1>
+      <p id="recovery-copy" data-i18n="cb_recovery_p">Enter your new RIFTSKIN password, then return to the app and sign in.</p>
       <form id="reset-form">
-        <label for="password">New password</label>
+        <label for="password" data-i18n="cb_new_password">New password</label>
         <input id="password" type="password" minlength="8" required />
-        <label for="confirm-password">Confirm password</label>
+        <label for="confirm-password" data-i18n="cb_confirm_password">Confirm password</label>
         <input id="confirm-password" type="password" minlength="8" required />
-        <button id="submit-btn" class="primary-btn" type="submit">Update password</button>
+        <button id="submit-btn" class="primary-btn" type="submit" data-i18n="cb_update_password">Update password</button>
         <div id="message" class="msg"></div>
       </form>
       <div id="recovery-success-panel" class="panel hidden">
-        <div class="panel-title">Password updated</div>
-        <p class="panel-copy">Your password has been changed successfully. Return to the account page and sign in with your new password.</p>
+        <div class="panel-title" data-i18n="cb_pwd_updated_title">Password updated</div>
+        <p class="panel-copy" data-i18n="cb_pwd_updated_panel">Your password has been changed successfully. Return to the account page and sign in with your new password.</p>
       </div>
       <div class="actions">
-        <a class="ghost-btn" href="/account.html">Back to account</a>
+        <a class="ghost-btn" href="/account.html" data-i18n="cb_back_account">Back to account</a>
       </div>
     </section>
 
     <section id="error-view" class="content hidden">
-      <h1>Link unavailable.</h1>
-      <p id="error-copy">This confirmation or recovery link is invalid, expired, or has already been used.</p>
+      <h1 data-i18n="cb_error_h1">Link unavailable</h1>
+      <p id="error-copy" data-i18n="cb_error_p">This confirmation or reset link is invalid, expired, or has already been used.</p>
       <div class="actions">
-        <a class="ghost-btn" href="/account.html">Back to account</a>
+        <a class="ghost-btn" href="/account.html" data-i18n="cb_back_account">Back to account</a>
       </div>
     </section>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="/assets/config.js"></script>
-  <script src="/assets/auth-callback.js"></script>
+  <script src="/assets/config.js?v=20260331n"></script>
+  <script src="/assets/translations.js?v=20260331s"></script>
+  <script src="/assets/i18n.js?v=20260331s"></script>
+  <script src="/assets/auth-callback.js?v=20260331s"></script>
 </body>
 </html>

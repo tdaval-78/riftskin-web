@@ -16,16 +16,15 @@ function json(data: Record<string, unknown>, status = 200) {
   })
 }
 
-function decodeJwtPayload(token: string) {
-  const parts = token.split(".")
-  if (parts.length < 2) return null
-  const normalized = parts[1].replace(/-/g, "+").replace(/_/g, "/")
-  const padded = normalized + "=".repeat((4 - (normalized.length % 4 || 4)) % 4)
+function normalizeRiftskinUrl(value: unknown, fallback: string) {
+  const raw = String(value || "").trim()
+  if (!raw) return fallback
   try {
-    const jsonPayload = new TextDecoder().decode(Uint8Array.from(atob(padded), (char) => char.charCodeAt(0)))
-    return JSON.parse(jsonPayload) as Record<string, unknown>
-  } catch {
-    return null
+    const url = new URL(raw)
+    if (url.origin !== "https://riftskin.com") return fallback
+    return url.toString()
+  } catch (_error) {
+    return fallback
   }
 }
 
@@ -102,16 +101,17 @@ Deno.serve(async (req) => {
       auth: { persistSession: false },
     })
 
-    const claims = decodeJwtPayload(token)
-    const userId = String(claims?.sub || "").trim()
-    const userEmail = String(claims?.email || "").trim().toLowerCase()
-    if (!userId || !userEmail) {
+    const { data: userResult, error: userError } = await adminClient.auth.getUser(token)
+    const user = userResult.user
+    const userId = String(user?.id || "").trim()
+    const userEmail = String(user?.email || "").trim().toLowerCase()
+    if (userError || !userId || !userEmail) {
       return json({ error: "not_authenticated" }, 401)
     }
 
     const body = await req.json().catch(() => ({}))
-    const successUrl = String(body.successUrl || "").trim() || "https://riftskin.com/account.html?checkout=success#account-subscription"
-    const cancelUrl = String(body.cancelUrl || "").trim() || "https://riftskin.com/pricing.html?checkout=canceled"
+    const successUrl = normalizeRiftskinUrl(body.successUrl, "https://riftskin.com/account.html?checkout=success#account-subscription")
+    const cancelUrl = normalizeRiftskinUrl(body.cancelUrl, "https://riftskin.com/pricing.html?checkout=canceled")
 
     let customerId = await findExistingCustomerId(adminClient, userEmail)
     if (!customerId) {

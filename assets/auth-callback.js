@@ -19,22 +19,28 @@
   const confirmInput = document.getElementById('confirm-password');
   const submitBtn = document.getElementById('submit-btn');
   const messageEl = document.getElementById('message');
+  const i18n = window.RiftSkinI18n;
+  const t = function (key, fallback) {
+    if (!i18n || typeof i18n.t !== 'function') return fallback || key;
+    const translated = i18n.t(key);
+    return translated === key ? (fallback || key) : translated;
+  };
 
   const copy = {
-    supabaseMissing: 'Supabase configuration is missing.',
-    invalidReset: 'This recovery link is invalid or has expired. Please request a new password reset.',
-    confirmFailed: 'Email confirmation failed. Please request a new confirmation email.',
-    confirmSuccess: 'Email confirmed successfully. You can now sign in to your account.',
-    emailChangeTitle: 'Email change confirmed.',
-    emailChangeCopy: 'Your new email address is now active. Return to the RIFTSKIN account page and sign in with that new address.',
-    emailChangePanelCopy: 'Return to the account page, sign in with your new email and password, and continue from there.',
-    emailChangeSuccess: 'Email updated successfully. You can now sign in with your new address.',
-    resetSessionFailed: 'The recovery session could not be initialized.',
-    passwordMin: 'Your password must contain at least 8 characters.',
-    passwordMismatch: 'The passwords do not match.',
-    passwordUpdateFailed: 'Your password could not be updated.',
-    passwordUpdated: 'Password updated successfully. Return to the account page and sign in with your new password.',
-    genericError: 'This confirmation or recovery link is invalid, expired, or has already been used.'
+    supabaseMissing: t('msg_status_supabase_missing', 'Supabase configuration is missing.'),
+    invalidReset: t('cb_invalid_reset', 'Invalid or expired reset link. Please request a new one.'),
+    confirmFailed: t('cb_confirm_failed', 'Email confirmation failed. Please request a new confirmation email.'),
+    confirmSuccess: t('cb_confirm_success', 'Email confirmed successfully. You can now sign in.'),
+    emailChangeTitle: t('cb_email_change_title', 'Email change confirmed'),
+    emailChangeCopy: t('cb_email_change_copy', 'Your new email address is now active. Return to the RIFTSKIN account page and sign in with that new address.'),
+    emailChangePanelCopy: t('cb_email_change_panel', 'Return to the account page, sign in with your new email and password, and continue from there.'),
+    emailChangeSuccess: t('cb_email_change_success', 'Email updated successfully. You can now sign in with your new address.'),
+    resetSessionFailed: t('cb_reset_session_failed', 'Reset session could not be initialized.'),
+    passwordMin: t('cb_pwd_min', 'Password must contain at least 8 characters.'),
+    passwordMismatch: t('cb_pwd_mismatch', 'Passwords do not match.'),
+    passwordUpdateFailed: t('cb_pwd_update_failed', 'Could not update password.'),
+    passwordUpdated: t('cb_pwd_updated', 'Password updated successfully. You can now return to RIFTSKIN.'),
+    genericError: t('cb_error_p', 'This confirmation or reset link is invalid, expired, or has already been used.')
   };
 
   function setMessage(type, text) {
@@ -56,8 +62,8 @@
   }
 
   function showRecoverySuccessState() {
-    if (recoveryTitleEl) recoveryTitleEl.textContent = 'Password updated.';
-    if (recoveryCopyEl) recoveryCopyEl.textContent = 'Your password has already been changed. Return to the account page and sign in with your new password.';
+    if (recoveryTitleEl) recoveryTitleEl.textContent = t('cb_pwd_updated_title', 'Password updated');
+    if (recoveryCopyEl) recoveryCopyEl.textContent = t('cb_pwd_updated_panel', 'Your password has been changed successfully. Return to the account page and sign in with your new password.');
     if (form) form.classList.add('hidden');
     if (recoverySuccessPanelEl) recoverySuccessPanelEl.classList.remove('hidden');
   }
