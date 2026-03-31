@@ -212,6 +212,39 @@
     return Array.isArray(val) ? val : [];
   }
 
+  async function extractFunctionErrorMessage(result) {
+    if (result && result.data) {
+      const directMessage = result.data.message || result.data.error;
+      if (directMessage) return String(directMessage);
+    }
+
+    const error = result && result.error ? result.error : null;
+    if (!error) return '';
+
+    const context = error.context;
+    if (context) {
+      try {
+        if (typeof context.clone === 'function') {
+          const payload = await context.clone().json().catch(function () { return null; });
+          if (payload && (payload.message || payload.error)) {
+            return String(payload.message || payload.error);
+          }
+        }
+      } catch (_err) {}
+
+      try {
+        if (typeof context.json === 'function') {
+          const payload = await context.json().catch(function () { return null; });
+          if (payload && (payload.message || payload.error)) {
+            return String(payload.message || payload.error);
+          }
+        }
+      } catch (_err) {}
+    }
+
+    return error.message ? String(error.message) : '';
+  }
+
   function createBadge(label, kind) {
     const span = document.createElement('span');
     span.className = 'status-badge ' + (kind || '');
@@ -1173,9 +1206,7 @@
       });
 
       if (confirmationResult.error || !confirmationResult.data || confirmationResult.data.ok !== true) {
-        const rawMessage = confirmationResult.error && confirmationResult.error.message
-          ? confirmationResult.error.message
-          : (confirmationResult.data && (confirmationResult.data.message || confirmationResult.data.error)) || '';
+        const rawMessage = await extractFunctionErrorMessage(confirmationResult);
         const message = rawMessage === 'account_exists'
           ? t('msg_account_exists')
           : (rawMessage || t('msg_signup_failed'));
