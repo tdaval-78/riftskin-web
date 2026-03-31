@@ -162,6 +162,13 @@ async function ensureActivationKey(adminClient: any, params: {
   accessEndsAt: string | null
   existingKeyId?: number | null
 }) {
+  type ActivationKeyRow = {
+    id: number
+    code: string
+    expires_at: string | null
+    is_active: boolean
+    created_at?: string | null
+  }
   const canonicalNote = `${legacyBillingNotePrefixes[0]}${params.subscriptionId}]`
   const active = !params.accessEndsAt || new Date(params.accessEndsAt).getTime() > Date.now()
   let targetKeyId = params.existingKeyId || null
@@ -170,9 +177,10 @@ async function ensureActivationKey(adminClient: any, params: {
     for (const prefix of legacyBillingNotePrefixes) {
       const existingByNote = await adminClient
         .from("activation_keys")
-        .select("id, code, expires_at, is_active")
+        .select("id, code, expires_at, is_active, created_at")
         .eq("note", `${prefix}${params.subscriptionId}]`)
-        .order("id", { ascending: false })
+        .order("created_at", { ascending: true })
+        .order("id", { ascending: true })
         .limit(1)
         .maybeSingle()
 
@@ -180,6 +188,75 @@ async function ensureActivationKey(adminClient: any, params: {
       if (existingByNote.data) return existingByNote.data
     }
     return null
+  }
+
+  const loadAllByNote = async (): Promise<ActivationKeyRow[]> => {
+    const rows: ActivationKeyRow[] = []
+    for (const prefix of legacyBillingNotePrefixes) {
+      const existingByNote = await adminClient
+        .from("activation_keys")
+        .select("id, code, expires_at, is_active, created_at")
+        .eq("note", `${prefix}${params.subscriptionId}]`)
+        .order("created_at", { ascending: true })
+        .order("id", { ascending: true })
+
+      if (existingByNote.error) throw existingByNote.error
+      for (const row of existingByNote.data || []) {
+        if (!rows.some((item) => Number(item.id || 0) === Number(row.id || 0))) {
+          rows.push(row as ActivationKeyRow)
+        }
+      }
+    }
+    return rows
+  }
+
+  const dedupeByNote = async (preferredId: number | null): Promise<ActivationKeyRow> => {
+    const matches = await loadAllByNote()
+    if (!matches.length) {
+      throw new Error("activation_key_missing_after_dedupe")
+    }
+
+    const canonical = matches.find((row) => Number(row.id || 0) === Number(preferredId || 0)) || matches[0]
+    const duplicateRows = matches.filter((row) => Number(row.id || 0) !== Number(canonical.id || 0))
+    if (!duplicateRows.length) return canonical
+
+    const duplicateIds = duplicateRows.map((row) => Number(row.id || 0)).filter(Boolean)
+    const duplicateCodes = duplicateRows.map((row) => String(row.code || "").trim()).filter(Boolean)
+
+    if (duplicateIds.length) {
+      const { error: redemptionDeleteError } = await adminClient
+        .from("key_redemptions")
+        .delete()
+        .in("key_id", duplicateIds)
+      if (redemptionDeleteError) throw redemptionDeleteError
+
+      const { error: activationDeleteError } = await adminClient
+        .from("activation_keys")
+        .delete()
+        .in("id", duplicateIds)
+      if (activationDeleteError) throw activationDeleteError
+    }
+
+    if (duplicateCodes.length) {
+      const { error: licenseDeleteError } = await adminClient
+        .from("license_keys")
+        .delete()
+        .in("license_key", duplicateCodes)
+      if (licenseDeleteError) throw licenseDeleteError
+    }
+
+    const { error: canonicalUpdateError } = await adminClient
+      .from("activation_keys")
+      .update({
+        created_for_email: params.customerEmail,
+        note: canonicalNote,
+        expires_at: params.accessEndsAt,
+        is_active: active,
+      })
+      .eq("id", canonical.id)
+    if (canonicalUpdateError) throw canonicalUpdateError
+
+    return canonical
   }
 
   if (!targetKeyId) {
@@ -201,7 +278,7 @@ async function ensureActivationKey(adminClient: any, params: {
       .single()
 
     if (error) throw error
-    return data
+    return await dedupeByNote(Number(data.id || 0))
   }
 
   const code = crypto.randomUUID().replace(/-/g, "").slice(0, 16).toUpperCase().replace(/(.{4})/g, "$1-").replace(/-$/, "")
@@ -226,12 +303,12 @@ async function ensureActivationKey(adminClient: any, params: {
     if (error.code === "23505") {
       const existingByNote = await loadByNote()
       if (existingByNote) {
-        return existingByNote
+        return await dedupeByNote(Number(existingByNote.id || 0))
       }
     }
     throw error
   }
-  return data
+  return await dedupeByNote(Number(data.id || 0))
 }
 
 async function syncLegacyDesktopLicense(adminClient: any, params: {
