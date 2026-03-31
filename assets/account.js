@@ -494,14 +494,16 @@
   const PENDING_CHECKOUT_KEY = 'riftskin_stripe_checkout_pending';
   let reconcileInFlight = false;
   let latestSubscriptionSummary = null;
-  const supabaseClient = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey, {
-    auth: {
-      storage: authStorage,
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: false
-    }
-  });
+  const supabaseClient = window.__riftskinSupabaseClient
+    || window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey, {
+      auth: {
+        storage: authStorage,
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: false
+      }
+    });
+  window.__riftskinSupabaseClient = supabaseClient;
 
   async function getSession() {
     const { data } = await supabaseClient.auth.getSession();

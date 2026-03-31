@@ -53,7 +53,10 @@
 
   function createSupabaseClient() {
     if (!window.supabase || !cfg.supabaseUrl || !cfg.supabaseAnonKey) return null;
-    return window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey, {
+    if (window.__riftskinSupabaseClient) {
+      return window.__riftskinSupabaseClient;
+    }
+    window.__riftskinSupabaseClient = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey, {
       auth: {
         storage: authStorage,
         persistSession: true,
@@ -61,6 +64,7 @@
         detectSessionInUrl: false
       }
     });
+    return window.__riftskinSupabaseClient;
   }
 
   const supabaseClient = createSupabaseClient();
