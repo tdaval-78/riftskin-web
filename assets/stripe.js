@@ -94,6 +94,10 @@
     return new URL(target, window.location.origin).toString();
   }
 
+  function accountCheckoutLaunchUrl() {
+    return '/account.html?checkout=launch#account-subscription';
+  }
+
   function redirectToAccountSignIn() {
     setCheckoutIntent();
     const next = encodeURIComponent(window.location.pathname + window.location.search);
@@ -259,6 +263,12 @@
         return;
       }
 
+      if (btn.hasAttribute('data-premium-cta') && !isAccountPage) {
+        setCheckoutIntent();
+        window.location.href = accountCheckoutLaunchUrl();
+        return;
+      }
+
       openCheckout();
     });
   });
@@ -284,6 +294,12 @@
     clearCheckoutPending();
     setAlert('Checkout canceled.', '');
   } else if (checkoutState === 'signin') {
+    setCheckoutIntent();
+    maybeResumeCheckout().then(function (resumed) {
+      if (resumed) return;
+      setAlert('Sign in or create your account first to continue with Stripe checkout.', '');
+    });
+  } else if (checkoutState === 'launch') {
     setCheckoutIntent();
     maybeResumeCheckout().then(function (resumed) {
       if (resumed) return;
