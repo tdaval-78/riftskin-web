@@ -361,12 +361,17 @@
   const pricingAckRow = document.querySelector('[data-pricing-ack-row]');
   const pricingPremiumCta = document.querySelector('[data-premium-cta]');
 
-  function setPremiumCtaState(isPremium) {
+  function setPremiumCtaState(state) {
     if (!premiumCtas.length) return;
     premiumCtas.forEach(function (premiumCta) {
-      const key = premiumCta.hasAttribute('data-home-premium-cta')
-        ? (isPremium ? 'site_home_manage_cta' : 'site_pricing_premium_cta')
-        : (isPremium ? 'site_pricing_manage_cta' : 'site_pricing_premium_cta');
+      let key = 'site_pricing_premium_cta';
+      if (premiumCta.hasAttribute('data-home-premium-cta')) {
+        key = state === 'premium' ? 'site_home_manage_cta' : 'site_pricing_premium_cta';
+      } else if (state === 'premium') {
+        key = 'site_pricing_manage_cta';
+      } else if (state === 'guest') {
+        key = 'site_pricing_signin_cta';
+      }
       if (window.RiftSkinI18n && typeof window.RiftSkinI18n.t === 'function') {
         premiumCta.textContent = window.RiftSkinI18n.t(key);
       }
@@ -392,7 +397,7 @@
 
   async function syncHomePremiumCta() {
     if (!premiumCtas.length || !window.supabase || !cfg.supabaseUrl || !cfg.supabaseAnonKey) {
-      setPremiumCtaState(false);
+      setPremiumCtaState('guest');
       setPricingAckVisibility(true);
       syncPricingAckState(false);
       return;
@@ -401,7 +406,7 @@
     try {
       const supabaseClient = getSharedSupabaseClient();
       if (!supabaseClient) {
-        setPremiumCtaState(false);
+        setPremiumCtaState('guest');
         setPricingAckVisibility(true);
         syncPricingAckState(false);
         return;
@@ -410,7 +415,7 @@
       const session = sessionResult && sessionResult.data ? sessionResult.data.session : null;
 
       if (!session || !session.user) {
-        setPremiumCtaState(false);
+        setPremiumCtaState('guest');
         setPricingAckVisibility(true);
         syncPricingAckState(false);
         return;
@@ -428,17 +433,17 @@
         accessSource === 'admin_grant' ||
         accessSource === 'subscription_canceled'
       ))));
-      setPremiumCtaState(hasPremium);
+      setPremiumCtaState(hasPremium ? 'premium' : 'no_subscription');
       setPricingAckVisibility(!hasPremium);
       syncPricingAckState(hasPremium);
     } catch (_err) {
-      setPremiumCtaState(false);
+      setPremiumCtaState('guest');
       setPricingAckVisibility(true);
       syncPricingAckState(false);
     }
   }
 
-  setPremiumCtaState(false);
+  setPremiumCtaState('guest');
   setPricingAckVisibility(true);
   syncPricingAckState(false);
   syncHomePremiumCta();
