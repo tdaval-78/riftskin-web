@@ -455,15 +455,6 @@
   const PENDING_CHECKOUT_KEY = 'riftskin_stripe_checkout_pending';
   let reconcileInFlight = false;
   let latestSubscriptionSummary = null;
-  const privateAccessEnabled = !!cfg.privateAccessEnabled;
-  const privateAllowedEmails = Array.isArray(cfg.privateAccessAllowedEmails)
-    ? cfg.privateAccessAllowedEmails.map(function (email) { return String(email || '').trim().toLowerCase(); }).filter(Boolean)
-    : [];
-
-  function isPrivateEmailAllowed(email) {
-    return privateAllowedEmails.indexOf(String(email || '').trim().toLowerCase()) !== -1;
-  }
-
   const supabaseClient = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey, {
     auth: {
       storage: authStorage,
@@ -576,8 +567,8 @@
         clearPendingStripeCheckout();
         setBillingUi(true);
         setMachineActivationBadge(false, false);
-        setAccessBadge('Admin permanent access', 'ok');
-        if (accessMeta) accessMeta.textContent = 'This account has permanent premium access.';
+        setAccessBadge(t('account_access_admin_badge'), 'ok');
+        if (accessMeta) accessMeta.textContent = t('account_access_admin_meta');
         return;
       }
 
@@ -597,9 +588,9 @@
           }
           return;
         }
-        setAccessBadge('Premium active', 'ok');
+        setAccessBadge(t('account_access_premium_badge'), 'ok');
         if (accessMeta) {
-          accessMeta.textContent = fillTemplate('Premium is active. Your key stays the same while the subscription remains active. Current billing period ends on {date}.', {
+          accessMeta.textContent = fillTemplate(t('account_access_premium_meta'), {
             date: formatDate(row.access_expires_at || '')
           });
         }
@@ -612,8 +603,8 @@
           !!(subscriptionSummary && subscriptionSummary.machineActivationActive),
           !!subscriptionSummary
         );
-        setAccessBadge('Premium inactive', 'error');
-        if (accessMeta) accessMeta.textContent = 'Your premium code is no longer active. The desktop app free mode stays available.';
+        setAccessBadge(t('account_access_expired_badge'), 'error');
+        if (accessMeta) accessMeta.textContent = t('account_access_expired_meta');
         return;
       }
 
@@ -626,8 +617,8 @@
 
       setBillingUi(false);
       setMachineActivationBadge(false, !!subscriptionSummary);
-      setAccessBadge('Free mode only', '');
-      if (accessMeta) accessMeta.textContent = 'No active premium subscription is attached right now. The desktop app still remains usable for free.';
+      setAccessBadge(t('account_access_free_badge'), '');
+      if (accessMeta) accessMeta.textContent = t('account_access_free_meta');
     } catch (err) {
       setBillingUi(false);
       setAccessBadge(t('admin_unavailable'), 'error');
@@ -1078,11 +1069,6 @@
       const password = signInForm.querySelector('[name="password"]').value;
       const out = signInForm.querySelector('[data-msg]');
 
-      if (privateAccessEnabled && privateAllowedEmails.length && !isPrivateEmailAllowed(email)) {
-        msg(out, "Acces prive temporaire. Cette adresse email n'est pas autorisee pendant les tests Stripe.", 'error');
-        return;
-      }
-
       msg(out, t('msg_signing_in'));
       const { error } = await supabaseClient.auth.signInWithPassword({ email: email, password: password });
       if (error) {
@@ -1111,11 +1097,6 @@
     signUpForm.addEventListener('submit', async function (e) {
       e.preventDefault();
       const out = signUpForm.querySelector('[data-msg]');
-
-      if (privateAccessEnabled && privateAllowedEmails.length) {
-        msg(out, "Creation de compte desactivee pendant les tests Stripe.", 'error');
-        return;
-      }
 
       const email = signUpForm.querySelector('[name="email"]').value.trim();
       const password = signUpForm.querySelector('[name="password"]').value;
