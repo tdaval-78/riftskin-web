@@ -1216,7 +1216,13 @@
 
       if (accountEmailInput) accountEmailInput.value = email;
       setResendVisibility(true);
-      msg(out, t('msg_account_created'), 'ok');
+      msg(
+        out,
+        confirmationResult.data.mode === 'resend'
+          ? t('msg_account_confirmation_pending')
+          : t('msg_account_created'),
+        'ok'
+      );
       pushAnalyticsEvent('riftskin_signup_success');
     });
   }
