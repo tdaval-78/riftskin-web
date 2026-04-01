@@ -7,7 +7,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self' mailto:; img-src 'self' data: https://www.google-analytics.com https://jfmrwxmlncvzoremcmbi.supabase.co; style-src 'self' 'unsafe-inline'; script-src 'self' https://cdn.jsdelivr.net https://cdn.paddle.com https://www.googletagmanager.com; connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://analytics.google.com https://jfmrwxmlncvzoremcmbi.supabase.co https://api.paddle.com https://sandbox-api.paddle.com https://checkout.paddle.com https://sandbox-checkout.paddle.com; frame-src https://checkout.paddle.com https://sandbox-checkout.paddle.com https://www.googletagmanager.com;" />
   <title data-i18n="site_admin_title">RIFTSKIN - Admin</title>
   <meta name="description" data-i18n-content="site_admin_meta_desc" content="Gérez le statut desktop public de RiftSkin et le message de service depuis la console admin." />
-  <link rel="stylesheet" href="/assets/styles.css?v=20260401o" />
+  <link rel="stylesheet" href="/assets/styles.css?v=20260401p" />
   <!-- Google Tag Manager -->
   <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-TBCZT7QR');</script>
   <!-- End Google Tag Manager -->
@@ -81,26 +81,31 @@
             <span class="legal-card-kicker" data-i18n="site_admin_nav_overview_kicker">ADMIN 00</span>
             <h3 data-i18n="site_admin_nav_overview_title">Vue d'ensemble</h3>
             <p class="subtle" data-i18n="site_admin_nav_overview_desc">Regroupez les indicateurs clés, la dernière release publique et les grandes tendances d'usage.</p>
+            <span class="admin-nav-arrow" aria-hidden="true">↗</span>
           </a>
           <a class="panel admin-nav-card" href="/admin.html?view=shared" data-admin-view-link="shared">
             <span class="legal-card-kicker" data-i18n="site_admin_nav_shared_kicker">ADMIN 01</span>
             <h3 data-i18n="site_admin_nav_shared_title">État partagé</h3>
             <p class="subtle" data-i18n="site_admin_nav_shared_desc">Publiez le statut public partagé entre le site et l'application desktop.</p>
+            <span class="admin-nav-arrow" aria-hidden="true">↗</span>
           </a>
           <a class="panel admin-nav-card" href="/admin.html?view=access" data-admin-view-link="access">
             <span class="legal-card-kicker" data-i18n="site_admin_nav_access_kicker">ADMIN 02</span>
             <h3 data-i18n="site_admin_nav_access_title">Suivi des accès</h3>
             <p class="subtle" data-i18n="site_admin_nav_access_desc">Suivez les comptes créés, les connexions récentes au site et l'activité web récente.</p>
+            <span class="admin-nav-arrow" aria-hidden="true">↗</span>
           </a>
           <a class="panel admin-nav-card" href="/admin.html?view=sales" data-admin-view-link="sales">
             <span class="legal-card-kicker" data-i18n="site_admin_nav_sales_kicker">ADMIN 03</span>
             <h3 data-i18n="site_admin_nav_sales_title">Suivi des ventes</h3>
             <p class="subtle" data-i18n="site_admin_nav_sales_desc">Contrôlez les abonnements, les annulations en cours et l'état commercial des ventes premium.</p>
+            <span class="admin-nav-arrow" aria-hidden="true">↗</span>
           </a>
           <a class="panel admin-nav-card" href="/admin.html?view=releases" data-admin-view-link="releases">
             <span class="legal-card-kicker" data-i18n="site_admin_nav_releases_kicker">ADMIN 04</span>
             <h3 data-i18n="site_admin_nav_releases_title">Releases publiques</h3>
             <p class="subtle" data-i18n="site_admin_nav_releases_desc">Suivez la dernière version publiée et l'historique des releases de l'application.</p>
+            <span class="admin-nav-arrow" aria-hidden="true">↗</span>
           </a>
         </div>
 
@@ -259,14 +264,11 @@
             <div class="panel admin-metric-card"><span class="legal-card-kicker" data-i18n="site_admin_sales_metric_total">Ventes enregistrées</span><strong data-admin-sales-total>-</strong></div>
           </div>
 
-          <div class="admin-metric-grid admin-metric-grid-4" style="margin-top:12px;">
+          <div class="admin-metric-grid admin-metric-grid-5" style="margin-top:12px;">
             <div class="panel admin-metric-card"><span class="legal-card-kicker" data-i18n="site_admin_sales_metric_revenue_year">CA encaissé sur l'exercice</span><strong data-admin-sales-revenue-year>-</strong></div>
             <div class="panel admin-metric-card"><span class="legal-card-kicker" data-i18n="site_admin_sales_metric_invoices_year">Factures payées sur l'exercice</span><strong data-admin-sales-invoices-year>-</strong></div>
             <div class="panel admin-metric-card"><span class="legal-card-kicker" data-i18n="site_admin_sales_metric_new_year">Nouvelles ventes sur l'exercice</span><strong data-admin-sales-new-year>-</strong></div>
             <div class="panel admin-metric-card"><span class="legal-card-kicker" data-i18n="site_admin_sales_metric_renewals">Renouvellements à 30 jours</span><strong data-admin-sales-renewals>-</strong></div>
-          </div>
-
-          <div class="admin-metric-grid admin-metric-grid-4" style="margin-top:12px;">
             <div class="panel admin-metric-card"><span class="legal-card-kicker" data-i18n="site_admin_sales_metric_billing_issues">Anomalies de paiement</span><strong data-admin-sales-billing-issues>-</strong></div>
           </div>
 

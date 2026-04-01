@@ -2822,6 +2822,8 @@ textarea {
   display: grid;
   gap: 10px;
   margin-bottom: 14px;
+  padding: 18px 20px;
+  border-radius: 22px;
 }
 
 .admin-service-live-meta {
@@ -2838,27 +2840,42 @@ textarea {
 
 .admin-nav-grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 12px;
-  margin-bottom: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 14px;
+  margin-bottom: 16px;
 }
 
 .admin-nav-card {
   display: grid;
-  gap: 12px;
+  gap: 14px;
+  min-height: 212px;
+  align-content: start;
+  padding: 24px;
   text-decoration: none;
   color: inherit;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(211, 176, 75, 0.14), transparent 36%),
+    radial-gradient(circle at 0% 100%, rgba(93, 224, 205, 0.08), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.015)),
+    linear-gradient(180deg, rgba(18, 23, 33, 0.96), rgba(12, 16, 23, 0.94));
   transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
 }
 
 .admin-nav-card:hover {
   transform: translate3d(0, -1px, 0);
   border-color: rgba(241, 221, 145, 0.26);
+  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.2);
 }
 
 .admin-nav-card.is-active {
   border-color: rgba(241, 221, 145, 0.34);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 16px 34px rgba(0, 0, 0, 0.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.06),
+    0 16px 34px rgba(0, 0, 0, 0.18),
+    0 0 0 1px rgba(211, 176, 75, 0.08);
 }
 
 .admin-nav-card h3,
@@ -2866,37 +2883,90 @@ textarea {
   margin: 0;
 }
 
+.admin-nav-card h3 {
+  font-size: clamp(1.34rem, 1.8vw, 1.72rem);
+  line-height: 1.1;
+}
+
+.admin-nav-card p {
+  margin: 0;
+  max-width: none;
+}
+
+.admin-nav-arrow {
+  margin-top: auto;
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--accent-soft);
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
 .admin-metric-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
 }
 
 .admin-metric-grid-6 {
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
 }
 
 .admin-metric-grid-3 {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
 .admin-metric-grid-4 {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.admin-metric-grid-5 {
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
 }
 
 .admin-metric-card {
   display: grid;
   gap: 10px;
+  min-height: 152px;
+  align-content: start;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.admin-metric-card::after {
+  content: "";
+  position: absolute;
+  inset: auto -12% -28% auto;
+  width: 120px;
+  height: 120px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(211, 176, 75, 0.18), transparent 68%);
+  pointer-events: none;
 }
 
 .admin-metric-card strong {
   font-size: clamp(1.6rem, 2vw, 2rem);
-  line-height: 1;
+  line-height: 1.05;
   color: var(--text-primary);
+  max-width: none;
 }
 
 .admin-table-wrap {
   overflow-x: auto;
+  border: 1px solid rgba(71, 97, 130, 0.34);
+  border-radius: 24px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01)),
+    rgba(16, 21, 30, 0.94);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
 }
 
 .admin-table td strong {
@@ -2905,14 +2975,16 @@ textarea {
 
 .admin-visual-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  margin-top: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 14px;
+  margin-top: 14px;
 }
 
 .admin-chart-panel {
   display: grid;
-  gap: 12px;
+  gap: 14px;
+  min-height: 100%;
+  padding: 22px;
 }
 
 .admin-year-filter {
@@ -2923,6 +2995,7 @@ textarea {
 
 .admin-year-filter select {
   min-width: 180px;
+  min-height: 52px;
 }
 
 .admin-chart-stack {
@@ -2933,6 +3006,10 @@ textarea {
 .admin-chart-row {
   display: grid;
   gap: 6px;
+  padding: 12px 14px;
+  border: 1px solid rgba(71, 97, 130, 0.28);
+  border-radius: 18px;
+  background: rgba(12, 18, 26, 0.55);
 }
 
 .admin-chart-meta {
@@ -2966,6 +3043,10 @@ textarea {
   align-items: end;
   gap: 12px;
   min-height: 220px;
+  padding: 18px 16px 12px;
+  border: 1px solid rgba(71, 97, 130, 0.28);
+  border-radius: 20px;
+  background: rgba(12, 18, 26, 0.55);
 }
 
 .admin-bar-item {
@@ -3299,20 +3380,21 @@ body[data-page="support"] .notice {
 
 .admin-console {
   display: grid;
-  gap: 16px;
+  gap: 20px;
 }
 
 .admin-gate-card,
 .admin-panel-block {
   display: grid;
-  gap: 16px;
+  gap: 18px;
+  padding: 24px;
 }
 
 .admin-console-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 14px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) auto;
+  align-items: start;
+  gap: 18px;
 }
 
 .admin-console-actions {
@@ -3320,6 +3402,29 @@ body[data-page="support"] .notice {
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 10px;
+}
+
+.admin-console-head .subtle,
+.admin-panel-block .subtle,
+.admin-chart-panel .subtle {
+  max-width: none;
+}
+
+.admin-console-head h3,
+.admin-panel-block h3 {
+  margin: 0;
+}
+
+.admin-panel-block .section-head {
+  align-items: end;
+}
+
+.admin-panel-block .field-row:last-child {
+  justify-content: flex-end;
+}
+
+.admin-panel-block .field-row:last-child .btn {
+  min-width: 320px;
 }
 
 .admin-grid {
@@ -3404,6 +3509,12 @@ body[data-page="support"] .notice {
   letter-spacing: 0.08em;
   text-align: center;
   text-transform: uppercase;
+}
+
+.admin-nav-card .legal-card-kicker,
+.admin-metric-card .legal-card-kicker {
+  min-width: 132px;
+  padding: 8px 16px;
 }
 
 .legal-hub-card h3,
@@ -3727,10 +3838,25 @@ body[data-page="support"] .notice {
   .admin-nav-grid,
   .admin-metric-grid,
   .admin-metric-grid-6,
+  .admin-metric-grid-5,
   .admin-metric-grid-3,
   .admin-metric-grid-4,
   .admin-visual-grid {
     grid-template-columns: 1fr;
+  }
+
+  .admin-console-head {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-console-actions {
+    justify-content: stretch;
+  }
+
+  .admin-console-actions .btn,
+  .admin-panel-block .field-row:last-child .btn {
+    width: 100%;
+    min-width: 0;
   }
 
   .admin-bar-chart {
