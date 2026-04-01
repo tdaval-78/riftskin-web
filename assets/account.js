@@ -12,6 +12,7 @@
 
   const cfg = window.RiftSkinConfig || {};
   const statusBox = document.querySelector('[data-account-status]');
+  const maintenanceMsg = document.querySelector('[data-maintenance-msg]');
   const loggedOutView = document.querySelector('[data-logged-out]');
   const loggedInView = document.querySelector('[data-logged-in]');
   const signUpCard = document.querySelector('[data-signup-form]') ? document.querySelector('[data-signup-form]').closest('.account-auth-card') : null;
@@ -96,11 +97,20 @@
   }
 
   function isMaintenanceAllowedSession() {
-    return true;
+    const session = arguments[0];
+    const email = session && session.user && session.user.email
+      ? String(session.user.email).trim().toLowerCase()
+      : '';
+    const allowed = Array.isArray(cfg.siteMaintenanceAllowedEmails)
+      ? cfg.siteMaintenanceAllowedEmails.map(function (value) {
+        return String(value || '').trim().toLowerCase();
+      }).filter(Boolean)
+      : [];
+    return !!email && allowed.indexOf(email) !== -1;
   }
 
   function getMaintenanceMessage() {
-    return '';
+    return t('site_maintenance_gate_message');
   }
 
   function msg(target, text, type) {
@@ -459,6 +469,11 @@
   function setSessionUi(session) {
     const user = session && session.user ? session.user : null;
     if (user) {
+      if (maintenanceMsg) {
+        maintenanceMsg.textContent = '';
+        maintenanceMsg.className = 'msg';
+        maintenanceMsg.style.display = 'none';
+      }
       if (loggedOutView) loggedOutView.style.display = 'none';
       if (loggedInView) loggedInView.style.display = 'block';
       if (sessionSummary) sessionSummary.style.display = 'block';
@@ -489,6 +504,15 @@
 
   function applyMaintenanceLoggedOutState() {
     if (signUpCard) signUpCard.style.display = '';
+    if (maintenanceMsg) {
+      maintenanceMsg.textContent = getMaintenanceMessage();
+      maintenanceMsg.className = 'msg error';
+      maintenanceMsg.style.display = '';
+    }
+    if (statusBox) {
+      statusBox.textContent = getMaintenanceMessage();
+      statusBox.className = 'status-badge error';
+    }
   }
 
   if (!window.supabase || !cfg.supabaseUrl || !cfg.supabaseAnonKey) {
