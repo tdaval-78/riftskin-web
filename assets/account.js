@@ -1040,7 +1040,7 @@
     }
 
     const seen = new Set();
-    const rows = safeArray(data).filter(function (row) {
+    let rows = safeArray(data).filter(function (row) {
       const keyObj = row.activation_keys || {};
       const uniqueKey = [
         keyObj.id || keyObj.code || '-',
@@ -1050,6 +1050,30 @@
       seen.add(uniqueKey);
       return true;
     });
+
+    if (latestSubscriptionSummary && latestSubscriptionSummary.activationKeyCode) {
+      const canonicalCode = String(latestSubscriptionSummary.activationKeyCode || '').trim();
+      const canonicalId = Number(latestSubscriptionSummary.activationKeyId || 0) || null;
+      const canonicalMatch = rows.find(function (row) {
+        const keyObj = row.activation_keys || {};
+        return (
+          (canonicalId && Number(keyObj.id || 0) === canonicalId) ||
+          String(keyObj.code || '').trim() === canonicalCode
+        );
+      });
+
+      const canonicalRows = canonicalMatch ? [canonicalMatch] : [{
+        redeemed_at: latestSubscriptionSummary.currentPeriodStartsAt || latestSubscriptionSummary.updatedAt || null,
+        activation_keys: {
+          id: canonicalId,
+          code: canonicalCode,
+          expires_at: latestSubscriptionSummary.activationKeyExpiresAt || latestSubscriptionSummary.currentPeriodEndsAt || null,
+          is_active: latestSubscriptionSummary.activationKeyActive !== false
+        }
+      }];
+
+      rows = canonicalRows;
+    }
 
     if (!rows.length) {
       const tr = document.createElement('tr');

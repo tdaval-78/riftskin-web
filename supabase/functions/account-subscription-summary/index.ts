@@ -239,11 +239,14 @@ Deno.serve(async (req) => {
 
     let machineActivationCount = 0
     let machineActivationActive = false
+    let activationKeyCode: string | null = null
+    let activationKeyExpiresAt: string | null = null
+    let activationKeyActive = false
 
     if (data.activation_key_id) {
       const activationKeyResult = await adminClient
         .from("activation_keys")
-        .select("code")
+        .select("code, expires_at, is_active")
         .eq("id", data.activation_key_id)
         .limit(1)
         .maybeSingle()
@@ -253,6 +256,9 @@ Deno.serve(async (req) => {
       }
 
       const activationCode = String(activationKeyResult.data?.code || "").trim()
+      activationKeyCode = activationCode || null
+      activationKeyExpiresAt = activationKeyResult.data?.expires_at ? String(activationKeyResult.data.expires_at) : null
+      activationKeyActive = activationKeyResult.data?.is_active === true
       if (activationCode) {
         const licenseKeyResult = await adminClient
           .from("license_keys")
@@ -336,6 +342,9 @@ Deno.serve(async (req) => {
         cancelAt: unixToIso(raw.cancel_at),
         cancelAtPeriodEnd: raw.cancel_at_period_end === true,
         activationKeyId: data.activation_key_id,
+        activationKeyCode,
+        activationKeyExpiresAt,
+        activationKeyActive,
         machineActivationCount,
         machineActivationActive,
         updatedAt: data.updated_at,
