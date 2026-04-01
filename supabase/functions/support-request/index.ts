@@ -259,6 +259,7 @@ async function sendSupportAcknowledgementEmail(params: {
   topicLabel: string
   appVersion: string
   message: string
+  attachments: Array<Record<string, unknown>>
 }) {
   const resendApiKey = Deno.env.get("RESEND_API_KEY")
   if (!resendApiKey) {
@@ -270,43 +271,68 @@ async function sendSupportAcknowledgementEmail(params: {
   const appVersionLine = params.appVersion
     ? `<div style="margin:0 0 6px;"><strong>App version:</strong> ${escapeHtml(params.appVersion)}</div>`
     : ""
+  const attachmentItems = params.attachments.length
+    ? params.attachments.map((attachment) => {
+        const name = String(attachment.name || "Attachment")
+        const size = String(attachment.size || "")
+        const signedUrl = String(attachment.signed_url || "")
+        const sizeSuffix = size ? ` (${size} bytes)` : ""
+        if (!signedUrl) return `<li style="margin:0 0 8px;">${escapeHtml(name)}${escapeHtml(sizeSuffix)}</li>`
+        return `<li style="margin:0 0 8px;"><a href="${escapeHtml(signedUrl)}" style="color:#e5edf8;text-decoration:none;">${escapeHtml(name)}</a>${escapeHtml(sizeSuffix)}</li>`
+      }).join("")
+    : "<li style=\"margin:0;\">No attachment</li>"
 
   const html = renderEmailLayout({
-    previewText: "Nous avons bien recu votre demande de support RIFTSKIN.",
+    previewText: "We have received your RIFTSKIN support request.",
     eyebrow: "Support",
-    title: "Nous avons bien recu votre demande",
-    lead: "Votre demande de support a bien ete recue et sera traitee dans les plus brefs delais.",
+    title: "We have received your request",
+    lead: "Your support request has been received and will be reviewed as soon as possible.",
     bodyHtml: `
       <div style="margin:0 0 18px;padding:18px 20px;background:#111c31;border:1px solid #22314d;border-radius:18px;">
-        <div style="font-size:12px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#c6a756;margin:0 0 10px;">Recapitulatif</div>
+        <div style="font-size:12px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#c6a756;margin:0 0 10px;">Summary</div>
         <div style="margin:0 0 6px;"><strong>ID:</strong> ${escapeHtml(params.requestId)}</div>
-        <div style="margin:0 0 6px;"><strong>Nom:</strong> ${escapeHtml(params.name)}</div>
-        <div style="margin:0 0 6px;"><strong>Email de contact:</strong> ${escapeHtml(params.email)}</div>
-        <div style="margin:0 0 6px;"><strong>Sujet:</strong> ${escapeHtml(params.topicLabel)}</div>
+        <div style="margin:0 0 6px;"><strong>Name:</strong> ${escapeHtml(params.name)}</div>
+        <div style="margin:0 0 6px;"><strong>Contact email:</strong> ${escapeHtml(params.email)}</div>
+        <div style="margin:0 0 6px;"><strong>Topic:</strong> ${escapeHtml(params.topicLabel)}</div>
         ${appVersionLine}
       </div>
       <div style="margin:0 0 18px;">
-        <div style="font-size:12px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#c6a756;margin:0 0 10px;">Votre message</div>
+        <div style="font-size:12px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#c6a756;margin:0 0 10px;">Your message</div>
         <div style="white-space:pre-wrap;padding:16px 18px;background:#0b1323;border:1px solid #22314d;border-radius:16px;">${escapeHtml(params.message)}</div>
       </div>
-      <p style="margin:0;">Notre equipe va examiner votre demande au plus vite. Si nous avons besoin d'informations complementaires, nous vous recontacterons a cette adresse.</p>
+      <div style="margin:0 0 18px;">
+        <div style="font-size:12px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#c6a756;margin:0 0 10px;">Attachments</div>
+        <ul style="margin:0;padding-left:18px;color:#93a4bf;">${attachmentItems}</ul>
+      </div>
+      <p style="margin:0;">Our team will review your request as soon as possible. If we need more information, we will contact you at this email address.</p>
     `,
-    footerNote: "Ceci est un email automatique RIFTSKIN. Si vous souhaitez ajouter des details, utilisez la page support.",
+    footerNote: "This is an automated RIFTSKIN email. If you want to add more details, use the support page.",
   })
 
+  const textAttachments = params.attachments.length
+    ? params.attachments.map((attachment) => {
+        const name = String(attachment.name || "Attachment")
+        const signedUrl = String(attachment.signed_url || "")
+        return signedUrl ? `- ${name}: ${signedUrl}` : `- ${name}`
+      }).join("\n")
+    : "- No attachment"
+
   const text = [
-    "Nous avons bien recu votre demande de support RIFTSKIN.",
+    "We have received your RIFTSKIN support request.",
     "",
     `Request ID: ${params.requestId}`,
-    `Nom: ${params.name}`,
-    `Email de contact: ${params.email}`,
-    `Sujet: ${params.topicLabel}`,
+    `Name: ${params.name}`,
+    `Contact email: ${params.email}`,
+    `Topic: ${params.topicLabel}`,
     `App version: ${params.appVersion || "Not provided"}`,
     "",
-    "Votre message :",
+    "Your message:",
     params.message,
     "",
-    "Notre equipe va examiner votre demande dans les plus brefs delais.",
+    "Attachments:",
+    textAttachments,
+    "",
+    "Our team will review your request as soon as possible.",
   ].join("\n")
 
   const response = await fetch("https://api.resend.com/emails", {
@@ -319,7 +345,7 @@ async function sendSupportAcknowledgementEmail(params: {
       from: supportFromEmail,
       to: [params.email],
       reply_to: supportReplyToEmail,
-      subject: "Nous avons bien recu votre demande de support RIFTSKIN",
+      subject: "We have received your RIFTSKIN support request",
       html,
       text,
     }),
@@ -470,6 +496,7 @@ Deno.serve(async (req) => {
       topicLabel,
       appVersion,
       message,
+      attachments: attachmentMeta,
     })
 
     return json({
