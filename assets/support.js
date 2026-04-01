@@ -119,16 +119,19 @@
     if (!topicSelect || !appVersionWrap || !appVersionSelect || !appVersionOtherInput) return;
     const requiresVersion = topicSelect.value === 'application';
     appVersionWrap.hidden = !requiresVersion;
+    appVersionWrap.style.display = requiresVersion ? 'grid' : 'none';
     appVersionSelect.required = requiresVersion;
 
     const wantsOther = requiresVersion && appVersionSelect.value === 'other';
     appVersionOtherInput.hidden = !wantsOther;
+    appVersionOtherInput.style.display = wantsOther ? '' : 'none';
     appVersionOtherInput.required = wantsOther;
 
     if (!requiresVersion) {
       appVersionSelect.value = '';
       appVersionOtherInput.value = '';
       appVersionOtherInput.hidden = true;
+      appVersionOtherInput.style.display = 'none';
       appVersionOtherInput.required = false;
     }
     updateSubmitState();

@@ -2921,8 +2921,16 @@ textarea {
   gap: 10px;
 }
 
+.support-app-version[hidden] {
+  display: none !important;
+}
+
 .support-app-version-note {
   margin: 0;
+}
+
+#support-app-version-other[hidden] {
+  display: none !important;
 }
 
 .support-upload-label,
