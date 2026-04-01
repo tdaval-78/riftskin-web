@@ -46,6 +46,8 @@
   const salesRevenueYearEl = document.querySelector('[data-admin-sales-revenue-year]');
   const salesInvoicesYearEl = document.querySelector('[data-admin-sales-invoices-year]');
   const salesNewYearEl = document.querySelector('[data-admin-sales-new-year]');
+  const salesRenewalsEl = document.querySelector('[data-admin-sales-renewals]');
+  const salesBillingIssuesEl = document.querySelector('[data-admin-sales-billing-issues]');
   const salesYearSelect = document.querySelector('[data-admin-sales-year]');
   const salesBody = document.querySelector('[data-admin-sales-body]');
   const salesMsg = document.querySelector('[data-admin-sales-msg]');
@@ -358,6 +360,8 @@
     if (salesRevenueYearEl) salesRevenueYearEl.textContent = data.annualRevenueSummary?.revenueDisplay || formatMoney(0, 'EUR');
     if (salesInvoicesYearEl) salesInvoicesYearEl.textContent = formatNumber(data.annualRevenueSummary?.paidInvoices || 0);
     if (salesNewYearEl) salesNewYearEl.textContent = formatNumber(data.annualRevenueSummary?.salesRecorded || 0);
+    if (salesRenewalsEl) salesRenewalsEl.textContent = formatNumber(data.salesSummary?.renewalsNext30Days || 0);
+    if (salesBillingIssuesEl) salesBillingIssuesEl.textContent = formatNumber(data.salesSummary?.billingIssueSubscriptions || 0);
     renderYearOptions(data);
 
     if (!salesBody) return;

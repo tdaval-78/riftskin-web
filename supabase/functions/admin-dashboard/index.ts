@@ -156,6 +156,15 @@ function isCanceledButStillRunning(status: string, endsAt: string | null, cancel
   return ["canceled", "cancelled"].includes(status)
 }
 
+function endsWithinDays(isoString: string | null, days: number) {
+  if (!isoString) return false
+  const value = new Date(isoString).getTime()
+  if (!Number.isFinite(value)) return false
+  const now = Date.now()
+  const max = now + (days * 24 * 60 * 60 * 1000)
+  return value >= now && value <= max
+}
+
 type AccountRow = {
   user_id: string
   email: string | null
@@ -374,6 +383,8 @@ Deno.serve(async (req) => {
       activeSubscriptions: salesRows.filter((row) => row.active).length,
       canceledButRunning: salesRows.filter((row) => row.canceledButStillRunning).length,
       endedSubscriptions: salesRows.filter((row) => !row.active).length,
+      renewalsNext30Days: salesRows.filter((row) => row.active && endsWithinDays(row.currentPeriodEndsAt, 30)).length,
+      billingIssueSubscriptions: salesRows.filter((row) => ["past_due", "unpaid", "paused"].includes(String(row.status || ""))).length,
       stripeSubscriptions: salesRows.filter((row) => row.provider === "stripe").length,
       paddleSubscriptions: salesRows.filter((row) => row.provider === "paddle").length,
     }
