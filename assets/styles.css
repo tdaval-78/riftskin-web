@@ -2847,9 +2847,10 @@ textarea {
 
 .admin-nav-card {
   display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
   gap: 14px;
   min-height: 212px;
-  align-content: start;
+  align-content: stretch;
   padding: 24px;
   text-decoration: none;
   color: inherit;
@@ -2894,7 +2895,7 @@ textarea {
 }
 
 .admin-nav-arrow {
-  margin-top: auto;
+  align-self: end;
   justify-self: end;
   display: inline-flex;
   align-items: center;
