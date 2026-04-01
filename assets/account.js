@@ -582,9 +582,11 @@
     }
     setSessionUi(session);
     if (session && session.user) {
-      await refreshAccessStatus(session.user.id);
-      await loadMyKeys(session.user.id);
-      await refreshAdminEntry();
+      await Promise.all([
+        refreshAccessStatus(session.user.id),
+        loadMyKeys(session.user.id),
+        refreshAdminEntry()
+      ]);
       return;
     }
     applyMaintenanceLoggedOutState();
@@ -600,10 +602,14 @@
     if (!userId) return;
 
     try {
-      const subscriptionSummary = await loadSubscriptionSummary();
-      const { data, error } = await supabaseClient.rpc('get_client_access_state', {
-        p_trial_days: cfg.trialDays || 7
-      });
+      const [subscriptionSummary, accessStateResult] = await Promise.all([
+        loadSubscriptionSummary(),
+        supabaseClient.rpc('get_client_access_state', {
+          p_trial_days: cfg.trialDays || 7
+        })
+      ]);
+      const data = accessStateResult.data;
+      const error = accessStateResult.error;
 
       if (error) {
         setBillingUi(false);

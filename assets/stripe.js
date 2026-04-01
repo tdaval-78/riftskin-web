@@ -84,7 +84,7 @@
   async function ensureValidSession() {
     let session = await getSession();
     if (!session || !session.user) {
-      session = await waitForSession(12, 250);
+      session = await waitForSession(4, 150);
     }
     if ((!session || !session.user) && supabaseClient) {
       try {
@@ -338,6 +338,13 @@
     if (!allowCheckoutResume) return;
 
     setCheckoutIntent();
+    if (checkoutState === 'signin') {
+      const session = await getSession();
+      if (!session || !session.user) {
+        setAlert('Sign in or create your account first to continue with Stripe checkout.', '');
+        return;
+      }
+    }
     const resumed = await maybeResumeCheckout(true);
     if (!resumed) {
       setAlert('Sign in or create your account first to continue with Stripe checkout.', '');
