@@ -214,19 +214,6 @@
     const summary = document.createElement('div');
     summary.className = 'support-files-summary';
 
-    const summaryThumb = document.createElement('div');
-    summaryThumb.className = 'support-files-summary-thumb';
-    const firstFile = files[0];
-    if (firstFile && firstFile.type && firstFile.type.startsWith('image/')) {
-      const thumbImg = document.createElement('img');
-      thumbImg.src = getObjectUrl(firstFile);
-      thumbImg.alt = firstFile.name;
-      summaryThumb.appendChild(thumbImg);
-    } else {
-      summaryThumb.textContent = files.length;
-    }
-    summary.appendChild(summaryThumb);
-
     const summaryText = document.createElement('div');
     summaryText.className = 'support-files-summary-text';
     summaryText.textContent = formatFileCount(files.length);
