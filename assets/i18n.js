@@ -1,6 +1,9 @@
 (function () {
   const STORAGE_KEY = 'riftskin_lang';
-  const SUPPORTED = ['en', 'fr', 'es', 'pt'];
+  const DEFAULT_SUPPORTED = ['en', 'fr', 'es', 'pt'];
+  const PAGE_SUPPORTED = {
+    admin: ['en', 'fr']
+  };
   let currentLanguage = null;
 
   function normalizeLanguageCode(code) {
@@ -14,11 +17,19 @@
     return '';
   }
 
+  function getSupportedLanguages() {
+    const page = document.body && document.body.getAttribute('data-page')
+      ? String(document.body.getAttribute('data-page')).trim().toLowerCase()
+      : '';
+    return PAGE_SUPPORTED[page] ? PAGE_SUPPORTED[page].slice() : DEFAULT_SUPPORTED.slice();
+  }
+
   function getLanguage() {
-    if (currentLanguage && SUPPORTED.indexOf(currentLanguage) !== -1) return currentLanguage;
+    const supported = getSupportedLanguages();
+    if (currentLanguage && supported.indexOf(currentLanguage) !== -1) return currentLanguage;
 
     const saved = normalizeLanguageCode(localStorage.getItem(STORAGE_KEY) || '');
-    if (SUPPORTED.indexOf(saved) !== -1) {
+    if (supported.indexOf(saved) !== -1) {
       currentLanguage = saved;
       return currentLanguage;
     }
@@ -94,7 +105,7 @@
     select.className = 'lang-select';
     select.setAttribute('data-lang-select', '1');
 
-    SUPPORTED.forEach(function (lang) {
+    getSupportedLanguages().forEach(function (lang) {
       const option = document.createElement('option');
       option.value = lang;
       option.textContent = lang;
@@ -167,7 +178,7 @@
 
   function setLanguage(lang, persist) {
     const next = normalizeLanguageCode(lang);
-    if (SUPPORTED.indexOf(next) === -1) return;
+    if (getSupportedLanguages().indexOf(next) === -1) return;
     currentLanguage = next;
 
     if (persist !== false) {
@@ -199,7 +210,7 @@
     apply: applyTranslations,
     setLanguage: setLanguage,
     getLanguage: getLanguage,
-    supported: SUPPORTED.slice()
+    supported: getSupportedLanguages
   };
 
   if (document.readyState === 'loading') {
