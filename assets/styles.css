@@ -2808,6 +2808,20 @@ textarea {
   gap: 10px;
 }
 
+.account-cta-row {
+  grid-template-columns: repeat(2, minmax(0, max-content));
+  justify-content: end;
+  align-items: stretch;
+}
+
+.account-cta-row .btn {
+  min-width: 280px;
+}
+
+.account-cta-row .btn:only-child {
+  min-width: 360px;
+}
+
 .admin-service-live-block {
   display: grid;
   gap: 10px;
@@ -3437,6 +3451,16 @@ body[data-page="support"] .notice {
   .field-row,
   .field-row-3 {
     grid-template-columns: 1fr;
+  }
+
+  .account-cta-row {
+    justify-content: stretch;
+  }
+
+  .account-cta-row .btn,
+  .account-cta-row .btn:only-child {
+    min-width: 0;
+    width: 100%;
   }
 
   .status-page-copy h2 {
