@@ -23,7 +23,7 @@
 
   function normalizeLanguage(value) {
     const normalized = String(value || '').trim().toLowerCase();
-    if (normalized === 'fr' || normalized === 'en') return normalized;
+    if (normalized === 'fr' || normalized === 'en' || normalized === 'es' || normalized === 'pt') return normalized;
     return '';
   }
 

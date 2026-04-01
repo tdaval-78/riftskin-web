@@ -1,6 +1,6 @@
 (function () {
   const STORAGE_KEY = 'riftskin_lang';
-  const SUPPORTED = ['en', 'fr'];
+  const SUPPORTED = ['en', 'fr', 'es', 'pt'];
   let currentLanguage = null;
 
   function normalizeLanguageCode(code) {
@@ -145,11 +145,15 @@
       select.value = getLanguage();
       const labels = {
         en: '🇬🇧',
-        fr: '🇫🇷'
+        fr: '🇫🇷',
+        es: '🇪🇸',
+        pt: '🇵🇹'
       };
       const titles = {
         en: translate('lang_en'),
-        fr: translate('lang_fr')
+        fr: translate('lang_fr'),
+        es: translate('lang_es'),
+        pt: translate('lang_pt')
       };
       Array.from(select.options).forEach(function (opt) {
         opt.textContent = labels[opt.value] || opt.value;
