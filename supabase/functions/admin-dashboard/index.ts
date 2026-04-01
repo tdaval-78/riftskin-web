@@ -157,6 +157,15 @@ function yearRange(year: number) {
   }
 }
 
+function maxUnixTimestamp(...values: Array<number | null | undefined>) {
+  let result = 0
+  for (const value of values) {
+    const parsed = Number(value || 0)
+    if (Number.isFinite(parsed) && parsed > result) result = parsed
+  }
+  return result || null
+}
+
 function formatMoneyMinorUnits(amountMinor: number, currency: string) {
   const normalizedCurrency = String(currency || "EUR").trim().toUpperCase() || "EUR"
   return new Intl.NumberFormat("fr-FR", {
@@ -308,12 +317,14 @@ Deno.serve(async (req) => {
       adminUsersResult,
       accessResult,
       keyRedemptionsResult,
+      runtimeStateResult,
     ] = await Promise.all([
       listAllAuthUsers(serviceClient),
       serviceClient.from("profiles").select("id, username"),
       serviceClient.from("app_admins").select("user_id"),
       serviceClient.from("user_access").select("user_id, source, granted_at, expires_at, is_active"),
       serviceClient.from("key_redemptions").select("user_id, key_id, redeemed_at").order("redeemed_at", { ascending: false }),
+      serviceClient.from("app_service_status").select("service_message, published_at, updated_at").eq("channel", "admin-reset-baseline").maybeSingle(),
     ])
 
     if (profilesResult.error) {
@@ -328,7 +339,15 @@ Deno.serve(async (req) => {
     if (keyRedemptionsResult.error) {
       return json({ error: "load_key_redemptions_failed", detail: keyRedemptionsResult.error.message }, 500)
     }
+    if (runtimeStateResult.error) {
+      return json({ error: "load_runtime_state_failed", detail: runtimeStateResult.error.message }, 500)
+    }
     const accountRows = authUsers
+    const resetBaselineIso = isoOrNull(runtimeStateResult.data?.service_message)
+      || isoOrNull(runtimeStateResult.data?.updated_at)
+      || isoOrNull(runtimeStateResult.data?.published_at)
+      || null
+    const resetBaselineUnix = resetBaselineIso ? Math.floor(new Date(resetBaselineIso).getTime() / 1000) : null
 
     const profileByUserId = new Map<string, string>()
     for (const row of profilesResult.data || []) {
@@ -471,7 +490,14 @@ Deno.serve(async (req) => {
         const stripeSubscriptions = await stripeListAll("/v1/subscriptions?status=all&expand[]=data.customer", stripeSecretKey)
         liveStripeRows = stripeSubscriptions
           .map((row) => buildStripeSubscriptionRow(row))
-          .filter((row) => !!row.subscriptionId)
+          .filter((row) => {
+            if (!row.subscriptionId) return false
+            if (!resetBaselineIso) return true
+            const source = row.createdAt || row.activatedAt || row.currentPeriodStartsAt || row.currentPeriodEndsAt || null
+            if (!source) return false
+            const ts = new Date(source).getTime()
+            return Number.isFinite(ts) && ts >= new Date(resetBaselineIso).getTime()
+          })
       } catch (_error) {
         liveStripeRows = []
       }
@@ -497,6 +523,13 @@ Deno.serve(async (req) => {
           active,
           canceledButStillRunning,
         }
+      })
+      .filter((row) => {
+        if (!resetBaselineIso) return true
+        const source = row.createdAt || row.activatedAt || row.currentPeriodStartsAt || row.currentPeriodEndsAt || null
+        if (!source) return false
+        const ts = new Date(source).getTime()
+        return Number.isFinite(ts) && ts >= new Date(resetBaselineIso).getTime()
       })
 
     const mergedStripeById = new Map<string, SalesRow>()
@@ -532,7 +565,13 @@ Deno.serve(async (req) => {
         createdAt: isoOrNull(row.created_at),
         updatedAt: isoOrNull(row.updated_at),
         raw: (row.raw && typeof row.raw === "object") ? row.raw as Record<string, unknown> : {},
-      })) || []),
+      })) || []).filter((row) => {
+        if (!resetBaselineIso) return true
+        const source = row.createdAt || row.activatedAt || row.currentPeriodStartsAt || row.currentPeriodEndsAt || null
+        if (!source) return false
+        const ts = new Date(source).getTime()
+        return Number.isFinite(ts) && ts >= new Date(resetBaselineIso).getTime()
+      }),
     ].map((row) => {
       const active = isBillingStillActive(row.status, row.currentPeriodEndsAt)
       const canceledButStillRunning = isCanceledButStillRunning(row.status, row.currentPeriodEndsAt, row.canceledAt, row.raw)
@@ -603,8 +642,9 @@ Deno.serve(async (req) => {
 
     if (stripeSecretKey) {
       const { startUnix, endUnix } = yearRange(selectedYear)
+      const invoiceStartUnix = maxUnixTimestamp(startUnix, resetBaselineUnix)
       try {
-        const invoices = await stripeListAll(`/v1/invoices?status=paid&created[gte]=${startUnix}&created[lte]=${endUnix}`, stripeSecretKey)
+        const invoices = await stripeListAll(`/v1/invoices?status=paid&created[gte]=${invoiceStartUnix || startUnix}&created[lte]=${endUnix}`, stripeSecretKey)
         const monthlyRevenue = new Map<string, number>()
         let totalMinor = 0
         let currency = "EUR"
