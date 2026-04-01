@@ -2933,6 +2933,11 @@ textarea {
   display: none !important;
 }
 
+.legal-card-kicker {
+  justify-content: center;
+  text-align: center;
+}
+
 .support-upload-label,
 .support-files-title {
   font-size: 0.92rem;
