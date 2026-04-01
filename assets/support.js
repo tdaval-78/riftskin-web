@@ -5,6 +5,8 @@
   const out = document.getElementById('support-msg');
   const emailInput = form ? form.querySelector('[name="email"]') : null;
   const topicSelect = form ? form.querySelector('[name="topic"]') : null;
+  const messageInput = form ? form.querySelector('[name="message"]') : null;
+  const submitBtn = document.getElementById('support-submit');
   const appVersionWrap = document.getElementById('support-app-version');
   const appVersionSelect = document.getElementById('support-app-version-select');
   const appVersionOtherInput = document.getElementById('support-app-version-other');
@@ -115,7 +117,7 @@
 
   function syncAppVersionVisibility() {
     if (!topicSelect || !appVersionWrap || !appVersionSelect || !appVersionOtherInput) return;
-    const requiresVersion = topicSelect.value === 'application';
+    const requiresVersion = topicSelect.value === 'application' || topicSelect.value === 'subscription';
     appVersionWrap.hidden = !requiresVersion;
     appVersionSelect.required = requiresVersion;
 
@@ -129,6 +131,29 @@
       appVersionOtherInput.hidden = true;
       appVersionOtherInput.required = false;
     }
+    updateSubmitState();
+  }
+
+  function isSubmitReady() {
+    const name = form && form.elements.name ? String(form.elements.name.value || '').trim() : '';
+    const email = form && form.elements.email ? String(form.elements.email.value || '').trim() : '';
+    const topic = topicSelect ? String(topicSelect.value || '').trim() : '';
+    const message = messageInput ? String(messageInput.value || '').trim() : '';
+    const requiresVersion = topic === 'application' || topic === 'subscription';
+    const appVersion = appVersionSelect ? String(appVersionSelect.value || '').trim() : '';
+    const appVersionOther = appVersionOtherInput ? String(appVersionOtherInput.value || '').trim() : '';
+    const hasVersion = !requiresVersion || (appVersion && (appVersion !== 'other' || appVersionOther));
+    return Boolean(name && email && topic && message && hasVersion);
+  }
+
+  function updateSubmitState() {
+    if (!submitBtn) return;
+    const ready = isSubmitReady();
+    submitBtn.textContent = ready
+      ? t('site_support_submit')
+      : t('site_support_submit_pending');
+    submitBtn.disabled = !ready;
+    submitBtn.classList.toggle('is-disabled', !ready);
   }
 
   function removeSelectedFile(fileKey) {
@@ -283,6 +308,7 @@
 
       if (sessionEmail) {
         emailInput.value = sessionEmail;
+        updateSubmitState();
       }
     } catch (_err) {
       // No-op: the support form should remain usable even if auth lookup fails.
@@ -314,6 +340,7 @@
     renderSelectedFiles();
     renderAppVersionOptions();
     syncAppVersionVisibility();
+    updateSubmitState();
   });
 
   if (topicSelect) {
@@ -324,8 +351,20 @@
     appVersionSelect.addEventListener('change', syncAppVersionVisibility);
   }
 
+  [form.elements.name, form.elements.email, topicSelect, messageInput, appVersionSelect, appVersionOtherInput].forEach(function (field) {
+    if (!field) return;
+    field.addEventListener('input', updateSubmitState);
+    field.addEventListener('change', updateSubmitState);
+  });
+
+  updateSubmitState();
+
   form.addEventListener('submit', async function (e) {
     e.preventDefault();
+    if (!isSubmitReady()) {
+      updateSubmitState();
+      return;
+    }
     if (!cfg.supabaseUrl || !cfg.supabaseAnonKey) {
       out.textContent = t('site_support_submit_error');
       out.className = 'msg error';
@@ -409,6 +448,7 @@
       renderAppVersionOptions();
       syncAppVersionVisibility();
       prefillAccountEmail();
+      updateSubmitState();
       out.textContent = t('site_support_submit_success');
       out.className = 'msg ok';
       pushAnalyticsEvent('riftskin_support_submit_success', {
