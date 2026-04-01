@@ -119,8 +119,25 @@
     target.className = 'msg ' + (type || '');
   }
 
+  function currentLanguageCode() {
+    const api = window.RiftSkinI18n;
+    if (api && typeof api.getLanguage === 'function') {
+      const lang = String(api.getLanguage() || '').trim().toLowerCase();
+      if (lang === 'fr' || lang === 'en') return lang;
+    }
+
+    try {
+      const saved = String((window.localStorage && window.localStorage.getItem('riftskin_lang')) || '').trim().toLowerCase();
+      if (saved === 'fr' || saved === 'en') return saved;
+    } catch (_error) {
+      // Ignore storage read failures and fall back to English.
+    }
+
+    return 'en';
+  }
+
   function authCallbackUrl() {
-    return window.location.origin + '/auth/callback';
+    return window.location.origin + '/auth/callback?lang=' + encodeURIComponent(currentLanguageCode());
   }
 
   function isEmailNotConfirmedError(error) {

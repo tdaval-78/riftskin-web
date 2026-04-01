@@ -20,6 +20,30 @@
   const submitBtn = document.getElementById('submit-btn');
   const messageEl = document.getElementById('message');
   const i18n = window.RiftSkinI18n;
+
+  function normalizeLanguage(value) {
+    const normalized = String(value || '').trim().toLowerCase();
+    if (normalized === 'fr' || normalized === 'en') return normalized;
+    return '';
+  }
+
+  function requestedLanguageFromUrl() {
+    const query = new URLSearchParams(window.location.search);
+    const queryLang = normalizeLanguage(query.get('lang'));
+    if (queryLang) return queryLang;
+
+    const hash = window.location.hash.startsWith('#') ? window.location.hash.slice(1) : '';
+    if (!hash) return '';
+
+    const fragment = new URLSearchParams(hash);
+    return normalizeLanguage(fragment.get('lang'));
+  }
+
+  const requestedLanguage = requestedLanguageFromUrl();
+  if (requestedLanguage && i18n && typeof i18n.setLanguage === 'function') {
+    i18n.setLanguage(requestedLanguage, true);
+  }
+
   const t = function (key, fallback) {
     if (!i18n || typeof i18n.t !== 'function') return fallback || key;
     const translated = i18n.t(key);
