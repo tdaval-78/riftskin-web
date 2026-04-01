@@ -39,7 +39,76 @@
     return window.__riftskinSupabaseClient;
   }
 
-  function enforceSiteMaintenanceGate() {}
+  function loadSupabaseLibrary() {
+    if (window.supabase) return Promise.resolve(window.supabase);
+    if (window.__riftskinSupabaseLoader) return window.__riftskinSupabaseLoader;
+
+    window.__riftskinSupabaseLoader = new Promise(function (resolve, reject) {
+      const existing = document.querySelector('script[data-riftskin-supabase]');
+      if (existing) {
+        existing.addEventListener('load', function () { resolve(window.supabase); }, { once: true });
+        existing.addEventListener('error', reject, { once: true });
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+      script.async = true;
+      script.setAttribute('data-riftskin-supabase', '1');
+      script.addEventListener('load', function () { resolve(window.supabase); }, { once: true });
+      script.addEventListener('error', reject, { once: true });
+      document.head.appendChild(script);
+    });
+
+    return window.__riftskinSupabaseLoader;
+  }
+
+  function getMaintenanceAllowedEmails() {
+    return Array.isArray(cfg.siteMaintenanceAllowedEmails)
+      ? cfg.siteMaintenanceAllowedEmails.map(function (value) {
+        return String(value || '').trim().toLowerCase();
+      }).filter(Boolean)
+      : [];
+  }
+
+  function isMaintenanceAllowedSession(session) {
+    const email = session && session.user && session.user.email
+      ? String(session.user.email).trim().toLowerCase()
+      : '';
+    return !!email && getMaintenanceAllowedEmails().indexOf(email) !== -1;
+  }
+
+  function redirectToMaintenanceAccount() {
+    const next = window.location.pathname + window.location.search + window.location.hash;
+    const target = '/account.html?maintenance=1&next=' + encodeURIComponent(next);
+    if (window.location.pathname === '/account.html') return;
+    window.location.replace(target);
+  }
+
+  async function enforceSiteMaintenanceGate() {
+    if (!cfg.siteMaintenanceEnabled) return;
+
+    const page = document.body.getAttribute('data-page') || '';
+    if (page === 'account') return;
+
+    try {
+      await loadSupabaseLibrary();
+      const supabaseClient = getSharedSupabaseClient();
+      if (!supabaseClient) {
+        redirectToMaintenanceAccount();
+        return;
+      }
+      const sessionResult = await supabaseClient.auth.getSession();
+      const session = sessionResult && sessionResult.data ? sessionResult.data.session : null;
+      if (session && isMaintenanceAllowedSession(session)) {
+        return;
+      }
+    } catch (_err) {
+      // Fall through to the account page when auth state cannot be verified.
+    }
+
+    redirectToMaintenanceAccount();
+  }
 
   enforceSiteMaintenanceGate();
 
