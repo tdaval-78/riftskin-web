@@ -31,6 +31,7 @@
   ];
   let selectedFiles = [];
   let objectUrls = new Map();
+  let submitInFlight = false;
 
   if (!form) return;
 
@@ -155,8 +156,16 @@
     submitBtn.textContent = ready
       ? t('site_support_submit')
       : t('site_support_submit_pending');
-    submitBtn.disabled = !ready;
-    submitBtn.classList.toggle('is-disabled', !ready);
+    submitBtn.disabled = !ready || submitInFlight;
+    submitBtn.classList.toggle('is-disabled', !ready || submitInFlight);
+  }
+
+  function refreshSubmitStateSoon() {
+    updateSubmitState();
+    window.requestAnimationFrame(updateSubmitState);
+    window.setTimeout(updateSubmitState, 0);
+    window.setTimeout(updateSubmitState, 150);
+    window.setTimeout(updateSubmitState, 500);
   }
 
   function removeSelectedFile(fileKey) {
@@ -298,7 +307,7 @@
 
       if (sessionEmail) {
         emailInput.value = sessionEmail;
-        updateSubmitState();
+        refreshSubmitStateSoon();
       }
     } catch (_err) {
       // No-op: the support form should remain usable even if auth lookup fails.
@@ -322,15 +331,15 @@
     });
   }
 
-  renderSelectedFiles();
-  renderAppVersionOptions();
-  syncAppVersionVisibility();
-  prefillAccountEmail();
+    renderSelectedFiles();
+    renderAppVersionOptions();
+    syncAppVersionVisibility();
+    prefillAccountEmail();
   document.addEventListener('riftskin:language-changed', function () {
     renderSelectedFiles();
     renderAppVersionOptions();
     syncAppVersionVisibility();
-    updateSubmitState();
+    refreshSubmitStateSoon();
   });
 
   if (topicSelect) {
@@ -345,14 +354,30 @@
     if (!field) return;
     field.addEventListener('input', updateSubmitState);
     field.addEventListener('change', updateSubmitState);
+    field.addEventListener('blur', updateSubmitState);
   });
 
-  updateSubmitState();
+  form.addEventListener('focusout', function () {
+    refreshSubmitStateSoon();
+  });
+
+  if (submitBtn) {
+    submitBtn.addEventListener('pointerdown', function () {
+      refreshSubmitStateSoon();
+    });
+    submitBtn.addEventListener('click', function () {
+      refreshSubmitStateSoon();
+    });
+  }
+
+  refreshSubmitStateSoon();
 
   form.addEventListener('submit', async function (e) {
     e.preventDefault();
+    refreshSubmitStateSoon();
     if (!isSubmitReady()) {
-      updateSubmitState();
+      out.textContent = t('site_support_submit_pending');
+      out.className = 'msg';
       return;
     }
     if (!cfg.supabaseUrl || !cfg.supabaseAnonKey) {
@@ -395,6 +420,8 @@
 
     out.textContent = t('site_support_submit_sending');
     out.className = 'msg';
+    submitInFlight = true;
+    updateSubmitState();
 
     try {
       let authToken = cfg.supabaseAnonKey;
@@ -438,7 +465,8 @@
       renderAppVersionOptions();
       syncAppVersionVisibility();
       prefillAccountEmail();
-      updateSubmitState();
+      submitInFlight = false;
+      refreshSubmitStateSoon();
       out.textContent = t('site_support_submit_success');
       out.className = 'msg ok';
       pushAnalyticsEvent('riftskin_support_submit_success', {
@@ -446,6 +474,8 @@
         attachments_count: attachments.length
       });
     } catch (err) {
+      submitInFlight = false;
+      refreshSubmitStateSoon();
       const rawMessage = err && err.message ? String(err.message) : '';
       if (rawMessage === 'Please wait a moment before sending another support request.') {
         out.textContent = t('site_support_submit_rate_limited');
