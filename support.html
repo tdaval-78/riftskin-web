@@ -16,7 +16,7 @@
   <meta name="twitter:title" content="RIFTSKIN - Support" />
   <meta name="twitter:description" content="Contactez le support RIFTSKIN pour votre compte, votre code premium, la facturation, l'import de skins custom ou des problèmes sur l'application." />
   <meta name="twitter:image" content="https://riftskin.com/assets/logo-search-dark.png" />
-  <link rel="stylesheet" href="/assets/styles.css?v=20260401e" />
+  <link rel="stylesheet" href="/assets/styles.css?v=20260401j" />
   <!-- Google Tag Manager -->
   <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-TBCZT7QR');</script>
   <!-- End Google Tag Manager -->
@@ -90,7 +90,10 @@
             </select>
             <div class="support-upload">
               <label class="support-upload-label" for="support-files" data-i18n="site_support_files_label">Pièces jointes</label>
-              <input id="support-files" name="attachments" type="file" multiple accept="image/*,video/*,.zip,.txt,.log,.json" />
+              <input id="support-files" name="attachments" type="file" accept="image/*,video/*,.zip,.txt,.log,.json" hidden />
+              <div class="support-upload-actions" id="support-upload-actions">
+                <button class="btn btn-ghost" id="support-files-trigger" type="button" data-i18n="site_support_files_pick_one">Sélectionner un fichier</button>
+              </div>
               <p class="mini-note support-upload-hint" data-i18n="site_support_files_hint">Vous pouvez ajouter des captures, des vidéos d'écran, des logs ou des archives.</p>
               <div class="support-files-list" id="support-files-list" aria-live="polite"></div>
             </div>
@@ -119,9 +122,9 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/assets/config.js?v=20260331p"></script>
-  <script src="/assets/translations.js?v=20260401h"></script>
-  <script src="/assets/i18n.js?v=20260401h"></script>
+  <script src="/assets/translations.js?v=20260401j"></script>
+  <script src="/assets/i18n.js?v=20260401j"></script>
   <script src="/assets/site.js?v=20260401d"></script>
-  <script src="/assets/support.js"></script>
+  <script src="/assets/support.js?v=20260401j"></script>
 </body>
 </html>
