@@ -1474,7 +1474,10 @@
         msg(out, error.message || t('msg_signout_failed'), 'error');
         return;
       }
-      msg(out, t('msg_signed_out'), 'ok');
+      if (out) {
+        out.textContent = '';
+        out.className = 'msg';
+      }
       await refreshSession();
     });
   }
