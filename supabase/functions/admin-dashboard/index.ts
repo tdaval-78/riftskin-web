@@ -308,17 +308,12 @@ Deno.serve(async (req) => {
       adminUsersResult,
       accessResult,
       keyRedemptionsResult,
-      sessionResult,
     ] = await Promise.all([
       listAllAuthUsers(serviceClient),
       serviceClient.from("profiles").select("id, username"),
       serviceClient.from("app_admins").select("user_id"),
       serviceClient.from("user_access").select("user_id, source, granted_at, expires_at, is_active"),
       serviceClient.from("key_redemptions").select("user_id, key_id, redeemed_at").order("redeemed_at", { ascending: false }),
-      serviceClient
-      .schema("auth")
-      .from("sessions")
-      .select("user_id, updated_at, created_at, not_after"),
     ])
 
     if (profilesResult.error) {
@@ -333,12 +328,7 @@ Deno.serve(async (req) => {
     if (keyRedemptionsResult.error) {
       return json({ error: "load_key_redemptions_failed", detail: keyRedemptionsResult.error.message }, 500)
     }
-    if (sessionResult.error) {
-      return json({ error: "load_sessions_failed", detail: sessionResult.error.message }, 500)
-    }
-
     const accountRows = authUsers
-    const sessionRows = sessionResult.data || []
 
     const profileByUserId = new Map<string, string>()
     for (const row of profilesResult.data || []) {
@@ -388,23 +378,11 @@ Deno.serve(async (req) => {
       }
     }
 
-    const latestSessionByUser = new Map<string, string>()
-    ;(sessionRows || []).forEach((row: Record<string, unknown>) => {
-      const userId = normalizeText(row.user_id)
-      const lastSeen = isoOrNull(row.updated_at) || isoOrNull(row.created_at)
-      const notAfter = isoOrNull(row.not_after)
-      if (!userId || !lastSeen || (notAfter && !isFuture(notAfter))) return
-      const previous = latestSessionByUser.get(userId)
-      if (!previous || new Date(lastSeen).getTime() > new Date(previous).getTime()) {
-        latestSessionByUser.set(userId, lastSeen)
-      }
-    })
-
     const accounts = ((accountRows || []) as Record<string, unknown>[]).map((row) => {
       const userId = normalizeText(row.id)
       const access = accessByUserId.get(userId)
       const latestRedemption = latestRedemptionByUserId.get(userId)
-      const siteLastSeenAt = latestSessionByUser.get(userId) || null
+      const siteLastSeenAt = isoOrNull(row.last_sign_in_at)
       const accessSource = normalizeText(access?.source) || null
       const accessGrantedAt = isoOrNull(access?.granted_at)
       const accessExpiresAt = isoOrNull(access?.expires_at)
