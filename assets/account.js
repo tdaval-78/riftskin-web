@@ -957,8 +957,8 @@
     }
     if (adminServicePublished) {
       adminServicePublished.textContent = row && row.published_at
-        ? 'Live since ' + formatDate(row.published_at)
-        : 'No live desktop status published yet.';
+        ? t('site_status_live_since', 'Published on') + ' ' + formatDate(row.published_at)
+        : t('site_status_published_empty', 'No public status has been published yet.');
     }
     if (adminServiceLiveMessage) {
       adminServiceLiveMessage.textContent = (row && row.service_message) || defaultServiceMessage(normalized);
@@ -972,15 +972,15 @@
 
   async function loadAdminServiceStatus() {
     if (!adminServiceLive) return;
-    adminServiceLive.textContent = 'Chargement...';
+    adminServiceLive.textContent = t('admin_loading', 'Loading...');
     adminServiceLive.className = 'status-badge';
-    if (adminServicePublished) adminServicePublished.textContent = 'Chargement du statut actuel...';
+    if (adminServicePublished) adminServicePublished.textContent = t('site_status_published_loading', 'Checking current public status...');
     if (adminServiceLiveMessage) adminServiceLiveMessage.textContent = '';
 
     const { data, error } = await supabaseClient.rpc('get_public_service_status', { p_channel: 'stable' });
     if (error) {
       if (adminServiceLive) {
-        adminServiceLive.textContent = 'Unavailable';
+        adminServiceLive.textContent = t('admin_unavailable', 'Unavailable');
         adminServiceLive.className = 'status-badge error';
       }
       if (adminServicePublished) adminServicePublished.textContent = serviceStatusBackendMessage(error.message || '');

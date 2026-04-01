@@ -160,8 +160,8 @@
     }
     if (adminServicePublished) {
       adminServicePublished.textContent = row && row.published_at
-        ? 'Live since ' + formatDate(row.published_at)
-        : 'No live desktop status published yet.';
+        ? t('site_status_live_since', 'Published on') + ' ' + formatDate(row.published_at)
+        : t('site_status_published_empty', 'No public status has been published yet.');
     }
     if (adminServiceLiveMessage) {
       adminServiceLiveMessage.textContent = (row && row.service_message) || defaultServiceMessage(normalized);
