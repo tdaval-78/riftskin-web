@@ -205,6 +205,7 @@
   const publicServicePublished = document.querySelector('[data-public-service-published]');
   const publicServiceMessage = document.querySelector('[data-public-service-message]');
   let lastPublicStatusRow = null;
+  let lastPublicRelease = null;
   let publicStatusLoadFailed = false;
 
   function t(key, fallback) {
@@ -243,6 +244,48 @@
     const parsed = new Date(value);
     if (Number.isNaN(parsed.getTime())) return value;
     return parsed.toLocaleString();
+  }
+
+  async function fetchLatestPublicRelease() {
+    const apiUrl = cfg.publicReleasesApiUrl || 'https://api.github.com/repos/tdaval-78/riftskin-updates/releases/latest';
+    const response = await fetch(apiUrl, {
+      headers: {
+        Accept: 'application/vnd.github+json',
+        'User-Agent': 'RIFTSKIN-site'
+      },
+      cache: 'no-store'
+    });
+
+    const payload = await response.json().catch(function () {
+      return null;
+    });
+
+    if (!response.ok) {
+      const errorText = payload && payload.message ? payload.message : ('Request failed with status ' + response.status);
+      throw new Error(errorText);
+    }
+
+    if (!payload || typeof payload !== 'object') {
+      return null;
+    }
+
+    return {
+      tagName: payload.tag_name || '',
+      publishedAt: payload.published_at || ''
+    };
+  }
+
+  function getLatestPublicReleaseLabel(release, row) {
+    const publishedAt = release && release.publishedAt ? release.publishedAt : (row && row.published_at ? row.published_at : '');
+    const publishedLabel = publishedAt
+      ? (t('site_status_live_since', 'Published on') + ' ' + formatPublicTimestamp(publishedAt))
+      : t('site_status_published_empty', 'No public status published yet.');
+
+    if (release && release.tagName) {
+      return publishedLabel + ' • ' + release.tagName;
+    }
+
+    return publishedLabel;
   }
 
   function setNavStatusState(state, message) {
@@ -285,14 +328,12 @@
     return Array.isArray(payload) ? (payload[0] || null) : null;
   }
 
-  function renderPublicStatusPage(row) {
+  function renderPublicStatusPage(row, release) {
     if (!publicServiceBadge && !publicServicePublished && !publicServiceMessage) return;
 
     const normalizedState = row && row.injection_state === 'ok' ? 'ok' : 'maintenance';
     const info = getPublicServiceStateInfo(normalizedState);
-    const publishedValue = row && row.published_at
-      ? (t('site_status_live_since', 'Live since') + ' ' + formatPublicTimestamp(row.published_at))
-      : t('site_status_published_empty', 'No public status published yet.');
+    const publishedValue = getLatestPublicReleaseLabel(release, row);
     const messageValue = (row && row.service_message) || getDefaultPublicServiceMessage(normalizedState);
 
     if (publicServiceBadge) {
@@ -326,16 +367,26 @@
     }
 
     try {
-      const statusRow = await fetchPublicServiceStatus();
+      const results = await Promise.allSettled([
+        fetchPublicServiceStatus(),
+        fetchLatestPublicRelease()
+      ]);
+      const statusRow = results[0].status === 'fulfilled' ? results[0].value : null;
+      const release = results[1].status === 'fulfilled' ? results[1].value : null;
+
+      if (!statusRow) {
+        throw results[0].reason || new Error('Unable to load public service status.');
+      }
       const normalizedState = statusRow && statusRow.injection_state === 'ok' ? 'ok' : 'maintenance';
       const message = (statusRow && statusRow.service_message) || getDefaultPublicServiceMessage(normalizedState);
       publicStatusLoadFailed = false;
       lastPublicStatusRow = statusRow;
+      lastPublicRelease = release;
 
       setNavStatusState(normalizedState, message);
 
       if (publicServiceBadge || publicServicePublished || publicServiceMessage) {
-        renderPublicStatusPage(statusRow);
+        renderPublicStatusPage(statusRow, release);
       }
     } catch (_err) {
       publicStatusLoadFailed = true;
@@ -352,7 +403,7 @@
       return;
     }
     if (publicServiceBadge || publicServicePublished || publicServiceMessage) {
-      renderPublicStatusPage(lastPublicStatusRow);
+      renderPublicStatusPage(lastPublicStatusRow, lastPublicRelease);
     }
   });
 

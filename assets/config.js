@@ -27,5 +27,6 @@ window.RiftSkinConfig = {
   downloadInstallerUrl: "https://github.com/tdaval-78/riftskin-updates/releases/latest/download/RiftSkin-macos-installer.pkg",
   downloadWindowsUrl: "https://github.com/tdaval-78/riftskin-updates/releases/latest/download/RiftSkin-Windows.exe",
   downloadDirectAppUrl: "https://github.com/tdaval-78/riftskin-updates/releases/latest/download/RiftSkin-macos-installer.pkg",
-  publicReleasesUrl: "https://github.com/tdaval-78/riftskin-updates/releases"
+  publicReleasesUrl: "https://github.com/tdaval-78/riftskin-updates/releases",
+  publicReleasesApiUrl: "https://api.github.com/repos/tdaval-78/riftskin-updates/releases/latest"
 };
