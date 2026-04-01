@@ -124,12 +124,13 @@ Deno.serve(async (req) => {
     const html = renderEmailLayout({
       previewText: "Reset your RIFTSKIN password securely.",
       eyebrow: "Account security",
+      badge: "Password reset",
       title: "Reset your password",
       lead: "A password reset was requested for your RIFTSKIN account.",
       bodyHtml: `
         <p style="margin:0 0 14px;">Use the button below to choose a new password.</p>
         <div style="margin:0 0 18px;">${renderEmailButton("Reset password", actionLink)}</div>
-        <div style="margin:0 0 18px;padding:16px 18px;background:#0b1323;border:1px solid #22314d;border-radius:16px;color:#93a4bf;">
+        <div style="margin:0 0 18px;padding:16px 18px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:20px;color:#c8d0dd;">
           If you did not request this reset, you can ignore this email and your current password will remain unchanged.
         </div>
       `,

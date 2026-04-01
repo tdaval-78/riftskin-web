@@ -154,6 +154,7 @@ Deno.serve(async (req) => {
     const html = renderEmailLayout({
       previewText: "A fresh confirmation link for your RIFTSKIN account is ready.",
       eyebrow: "Account security",
+      badge: "Email confirmation",
       title: "Your confirmation link",
       lead: "Use this link to confirm your email and continue signing in to RIFTSKIN.",
       bodyHtml: `

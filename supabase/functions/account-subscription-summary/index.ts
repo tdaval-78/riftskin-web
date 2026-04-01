@@ -116,6 +116,7 @@ async function sendCancellationAcknowledgedEmail(params: {
       ? `Cancellation confirmed. Your access stays active until ${cycleEnd}.`
       : "Cancellation confirmed. Your access stays active until the end of the paid period.",
     eyebrow: "Subscription",
+    badge: "Cancellation",
     title: "Cancellation confirmed",
     lead: "Your RIFTSKIN Premium subscription will no longer renew automatically.",
     bodyHtml: `
@@ -152,6 +153,7 @@ async function sendSubscriptionExpiredEmail(params: {
   const html = renderEmailLayout({
     previewText: "Your Premium subscription has ended. Your account remains available for a future reactivation.",
     eyebrow: "Subscription",
+    badge: "Premium expired",
     title: "Your Premium access has expired",
     lead: "Your RIFTSKIN Premium subscription has now ended.",
     bodyHtml: `

@@ -429,11 +429,12 @@ async function sendPremiumKeyEmail(params: {
   const html = renderEmailLayout({
     previewText: `Your RIFTSKIN Premium license is ready: ${params.activationKeyCode}`,
     eyebrow: "Premium active",
+    badge: "Your license",
     title: "Your RIFTSKIN Premium license",
     lead: "Your payment has been confirmed and your Premium subscription is now active.",
     bodyHtml: `
-      <div style="margin:0 0 18px;padding:18px 20px;background:#111c31;border:1px solid #22314d;border-radius:18px;">
-        <div style="font-size:12px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#c6a756;margin:0 0 8px;">Your license</div>
+      <div style="margin:0 0 18px;padding:18px 20px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:20px;">
+        <div style="font-size:12px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#e8dbb0;margin:0 0 8px;">Your license</div>
         <div style="font-size:28px;line-height:1.2;font-weight:800;letter-spacing:1.5px;color:#ffffff;">${escapeHtml(params.activationKeyCode)}</div>
       </div>
       <p style="margin:0 0 14px;">This same license remains valid for as long as your subscription stays active.</p>
@@ -469,6 +470,7 @@ async function sendCancellationAcknowledgedEmail(params: {
       ? `Cancellation confirmed. Your access stays active until ${cycleEnd}.`
       : "Cancellation confirmed. Your access stays active until the end of the paid period.",
     eyebrow: "Subscription",
+    badge: "Cancellation",
     title: "Cancellation confirmed",
     lead: "Your RIFTSKIN Premium subscription will no longer renew automatically.",
     bodyHtml: `
@@ -478,7 +480,7 @@ async function sendCancellationAcknowledgedEmail(params: {
       <p style="margin:0 0 14px;">No new charge will be made at the next monthly renewal.</p>
       <p style="margin:0 0 18px;">Your license stays the same during that time and remains available in your RIFTSKIN account, but Premium features will stop automatically at the end date above.</p>
       <div style="margin:0 0 18px;">${renderEmailButton("Manage subscription", "https://riftskin.com/account.html")}</div>
-      <div style="padding:14px 16px;background:#0b1323;border:1px solid #22314d;border-radius:16px;color:#93a4bf;">
+      <div style="padding:14px 16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:20px;color:#c8d0dd;">
         VAT not applicable, article 293 B of the French CGI.
       </div>
     `,
@@ -509,6 +511,7 @@ async function sendSubscriptionExpiredEmail(params: {
   const html = renderEmailLayout({
     previewText: "Your Premium subscription has ended. Your account remains available for a future reactivation.",
     eyebrow: "Subscription",
+    badge: "Premium expired",
     title: "Your Premium access has expired",
     lead: "Your RIFTSKIN Premium subscription has now ended.",
     bodyHtml: `
@@ -516,7 +519,7 @@ async function sendSubscriptionExpiredEmail(params: {
       <p style="margin:0 0 14px;">Your web account remains available, and you can subscribe again at any time to reactivate your license and Premium features.</p>
       <p style="margin:0 0 18px;">Free mode still works inside the desktop app.</p>
       <div style="margin:0 0 18px;">${renderEmailButton("Subscribe again", "https://riftskin.com/pricing.html")}</div>
-      <div style="padding:14px 16px;background:#0b1323;border:1px solid #22314d;border-radius:16px;color:#93a4bf;">
+      <div style="padding:14px 16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:20px;color:#c8d0dd;">
         VAT not applicable, article 293 B of the French CGI.
       </div>
     `,

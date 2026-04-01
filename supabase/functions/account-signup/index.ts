@@ -109,12 +109,13 @@ function buildConfirmationEmail(actionLink: string, mode: "signup" | "resend") {
   const html = renderEmailLayout({
     previewText,
     eyebrow: "Account security",
+    badge: mode === "signup" ? "Email confirmation" : "Confirmation link",
     title,
     lead,
     bodyHtml: `
       <p style="margin:0 0 14px;">Use the button below to confirm your email address and finish activating your account.</p>
       <div style="margin:0 0 18px;">${renderEmailButton("Confirm my account", actionLink)}</div>
-      <div style="margin:0 0 18px;padding:16px 18px;background:#0b1323;border:1px solid #22314d;border-radius:16px;color:#93a4bf;">
+      <div style="margin:0 0 18px;padding:16px 18px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:20px;color:#c8d0dd;">
         After confirmation, return to the RIFTSKIN account page and sign in with your email and password.
       </div>
       <p style="margin:0;">If you did not request this account, you can safely ignore this email.</p>
