@@ -3334,15 +3334,18 @@ Object.assign(window.RiftSkinTranslations.pt, {
 });
 
 Object.assign(window.RiftSkinTranslations.en, {
-  admin_filter_admin: "Admin"
+  admin_filter_admin: "Admin",
+  admin_dashboard_failed: "Unable to load admin dashboard."
 });
 
 Object.assign(window.RiftSkinTranslations.fr, {
-  admin_filter_admin: "Admin"
+  admin_filter_admin: "Admin",
+  admin_dashboard_failed: "Impossible de charger le tableau de bord admin."
 });
 
 Object.assign(window.RiftSkinTranslations.es, {
   admin_filter_admin: "Admin",
+  admin_dashboard_failed: "No se pudo cargar el panel admin.",
   account_download_app: "Descargar la app",
   admin_access_duration_label: "Duracion del acceso:",
   admin_access_table_unavailable: "Tabla de acceso no disponible.",
@@ -3562,6 +3565,7 @@ Object.assign(window.RiftSkinTranslations.es, {
 
 Object.assign(window.RiftSkinTranslations.pt, {
   admin_filter_admin: "Admin",
+  admin_dashboard_failed: "Nao foi possivel carregar o painel admin.",
   account_download_app: "Baixar a app",
   admin_access_duration_label: "Duracao do acesso:",
   admin_access_table_unavailable: "Tabela de acesso indisponivel.",
