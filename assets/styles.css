@@ -3209,6 +3209,19 @@ textarea {
   color: var(--text-primary);
 }
 
+.support-upload-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.support-upload-types {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
 .support-upload-hint {
   margin: 0;
 }

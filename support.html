@@ -101,7 +101,10 @@
               />
             </div>
             <div class="support-upload">
-              <label class="support-upload-label" for="support-files" data-i18n="site_support_files_label">Pièces jointes</label>
+              <label class="support-upload-label" for="support-files">
+                <span data-i18n="site_support_files_label">Pièces jointes</span>
+                <span class="support-upload-types" data-i18n="site_support_files_types">Images, vidéos, ZIP, TXT, LOG, JSON</span>
+              </label>
               <input id="support-files" name="attachments" type="file" accept="image/*,video/*,.zip,.txt,.log,.json" hidden />
               <div class="support-upload-actions" id="support-upload-actions">
                 <button class="btn btn-ghost" id="support-files-trigger" type="button" data-i18n="site_support_files_pick_one">Sélectionner un fichier</button>
@@ -134,9 +137,9 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/assets/config.js?v=20260401t"></script>
-  <script src="/assets/translations.js?v=20260401s"></script>
+  <script src="/assets/translations.js?v=20260401t"></script>
   <script src="/assets/i18n.js?v=20260401r"></script>
   <script src="/assets/site.js?v=20260401s"></script>
-  <script src="/assets/support.js?v=20260401p"></script>
+  <script src="/assets/support.js?v=20260401q"></script>
 </body>
 </html>
