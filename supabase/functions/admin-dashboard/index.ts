@@ -40,6 +40,53 @@ function isRecent(isoString: string | null, minutes: number) {
   return (Date.now() - value) <= minutes * 60 * 1000
 }
 
+function formatMonthKey(date: Date) {
+  const year = date.getUTCFullYear()
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0")
+  return `${year}-${month}`
+}
+
+function formatMonthLabelFromKey(key: string) {
+  const [yearRaw, monthRaw] = key.split("-")
+  const year = Number(yearRaw)
+  const month = Number(monthRaw)
+  if (!Number.isFinite(year) || !Number.isFinite(month)) return key
+  return new Intl.DateTimeFormat("en-GB", {
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(Date.UTC(year, month - 1, 1)))
+}
+
+function lastMonthKeys(count: number) {
+  const now = new Date()
+  const items: string[] = []
+  for (let index = count - 1; index >= 0; index -= 1) {
+    const current = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - index, 1))
+    items.push(formatMonthKey(current))
+  }
+  return items
+}
+
+function countByMonth<T>(rows: T[], keys: string[], pickIso: (row: T) => string | null) {
+  const counts = new Map<string, number>()
+  for (const key of keys) counts.set(key, 0)
+  for (const row of rows) {
+    const iso = pickIso(row)
+    if (!iso) continue
+    const dt = new Date(iso)
+    if (Number.isNaN(dt.getTime())) continue
+    const key = formatMonthKey(dt)
+    if (!counts.has(key)) continue
+    counts.set(key, (counts.get(key) || 0) + 1)
+  }
+  return keys.map((key) => ({
+    key,
+    label: formatMonthLabelFromKey(key),
+    value: counts.get(key) || 0,
+  }))
+}
+
 function isBillingStillActive(status: string, endsAt: string | null) {
   if (["active", "trialing"].includes(status)) return true
   if (["canceled", "cancelled", "past_due", "paused", "unpaid"].includes(status) && endsAt) {
@@ -189,6 +236,29 @@ Deno.serve(async (req) => {
       adminAccounts: accounts.filter((row) => row.isAdmin).length,
     }
 
+    const accountBreakdown = [
+      {
+        key: "free",
+        label: "Free mode",
+        value: accountSummary.noAccess,
+      },
+      {
+        key: "premium",
+        label: "Premium active",
+        value: accountSummary.activeAccess - accountSummary.adminAccounts,
+      },
+      {
+        key: "expired",
+        label: "Premium expired",
+        value: accountSummary.expiredAccess,
+      },
+      {
+        key: "admin",
+        label: "Admin",
+        value: accountSummary.adminAccounts,
+      },
+    ]
+
     const [{ data: stripeRows, error: stripeError }, { data: paddleRows, error: paddleError }] = await Promise.all([
       serviceClient
         .from("stripe_subscriptions")
@@ -255,12 +325,88 @@ Deno.serve(async (req) => {
       paddleSubscriptions: salesRows.filter((row) => row.provider === "paddle").length,
     }
 
+    const salesBreakdown = [
+      {
+        key: "active",
+        label: "Active",
+        value: salesSummary.activeSubscriptions - salesSummary.canceledButRunning,
+      },
+      {
+        key: "canceled_running",
+        label: "Cancelled, still active",
+        value: salesSummary.canceledButRunning,
+      },
+      {
+        key: "ended",
+        label: "Ended",
+        value: salesSummary.endedSubscriptions,
+      },
+    ]
+
+    const providerBreakdown = [
+      {
+        key: "stripe",
+        label: "Stripe",
+        value: salesSummary.stripeSubscriptions,
+      },
+      {
+        key: "paddle",
+        label: "Paddle",
+        value: salesSummary.paddleSubscriptions,
+      },
+    ]
+
+    const monthKeys = lastMonthKeys(6)
+    const accountTimeline = countByMonth(accounts, monthKeys, (row) => row.createdAt || null)
+    const salesTimeline = countByMonth(salesRows, monthKeys, (row) => row.activatedAt || row.createdAt || row.currentPeriodStartsAt)
+
+    let releaseSummary: Record<string, unknown> = {
+      latestTag: null,
+      latestPublishedAt: null,
+      releases: [],
+    }
+    try {
+      const ghResponse = await fetch("https://api.github.com/repos/tdaval-78/riftskin-updates/releases?per_page=10", {
+        headers: {
+          Accept: "application/vnd.github+json",
+          "User-Agent": "RIFTSKIN-admin-dashboard",
+        },
+      })
+      if (ghResponse.ok) {
+        const ghPayload = await ghResponse.json()
+        const releases = Array.isArray(ghPayload)
+          ? ghPayload.map((row: Record<string, unknown>) => ({
+            tag: normalizeText(row.tag_name),
+            name: normalizeText(row.name),
+            publishedAt: isoOrNull(row.published_at),
+            isDraft: row.draft === true,
+            isPrerelease: row.prerelease === true,
+            url: normalizeText(row.html_url),
+          })).filter((row) => row.tag)
+          : []
+        const latest = releases[0] || null
+        releaseSummary = {
+          latestTag: latest?.tag || null,
+          latestPublishedAt: latest?.publishedAt || null,
+          releases,
+        }
+      }
+    } catch (_error) {
+      // Best-effort only; dashboard still works without GitHub release data.
+    }
+
     return json({
       ok: true,
       accountSummary,
+      accountBreakdown,
+      accountTimeline,
       accounts,
       salesSummary,
+      salesBreakdown,
+      providerBreakdown,
+      salesTimeline,
       subscriptions: salesRows,
+      releaseSummary,
     })
   } catch (error) {
     return json({

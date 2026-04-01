@@ -2838,7 +2838,7 @@ textarea {
 
 .admin-nav-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 12px;
   margin-bottom: 12px;
 }
@@ -2872,6 +2872,14 @@ textarea {
   gap: 12px;
 }
 
+.admin-metric-grid-6 {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.admin-metric-grid-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .admin-metric-card {
   display: grid;
   gap: 10px;
@@ -2889,6 +2897,89 @@ textarea {
 
 .admin-table td strong {
   color: var(--text-primary);
+}
+
+.admin-visual-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.admin-chart-panel {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-chart-stack {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-chart-row {
+  display: grid;
+  gap: 6px;
+}
+
+.admin-chart-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.admin-chart-meta strong {
+  color: var(--text-primary);
+}
+
+.admin-chart-rail {
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+  overflow: hidden;
+}
+
+.admin-chart-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(93, 224, 205, 0.95), rgba(241, 221, 145, 0.95));
+}
+
+.admin-bar-chart {
+  display: flex;
+  align-items: end;
+  gap: 12px;
+  min-height: 220px;
+}
+
+.admin-bar-item {
+  flex: 1 1 0;
+  min-width: 0;
+  display: grid;
+  gap: 8px;
+  align-items: end;
+}
+
+.admin-bar-value {
+  text-align: center;
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+}
+
+.admin-bar-column {
+  width: 100%;
+  min-height: 6px;
+  border-radius: 18px 18px 6px 6px;
+  background: linear-gradient(180deg, rgba(241, 221, 145, 0.98), rgba(93, 224, 205, 0.78));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
+}
+
+.admin-bar-label {
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
 }
 
 .section-head.compact {
@@ -3620,8 +3711,15 @@ body[data-page="support"] .notice {
   .legal-hub-grid,
   .legal-doc-grid,
   .admin-nav-grid,
-  .admin-metric-grid {
+  .admin-metric-grid,
+  .admin-metric-grid-6,
+  .admin-metric-grid-3,
+  .admin-visual-grid {
     grid-template-columns: 1fr;
+  }
+
+  .admin-bar-chart {
+    min-height: 180px;
   }
 
   .steps-grid::before {

@@ -18,6 +18,19 @@
   const adminViewLinks = Array.from(document.querySelectorAll('[data-admin-view-link]'));
   const adminViews = Array.from(document.querySelectorAll('[data-admin-view]'));
 
+  const overviewAccountsEl = document.querySelector('[data-admin-overview-accounts]');
+  const overviewActiveWebEl = document.querySelector('[data-admin-overview-active-web]');
+  const overviewPremiumEl = document.querySelector('[data-admin-overview-premium]');
+  const overviewCanceledEl = document.querySelector('[data-admin-overview-canceled]');
+  const overviewReleaseEl = document.querySelector('[data-admin-overview-release]');
+  const overviewReleaseDateEl = document.querySelector('[data-admin-overview-release-date]');
+  const accountsChart = document.querySelector('[data-admin-chart-accounts]');
+  const salesChart = document.querySelector('[data-admin-chart-sales]');
+  const providerChart = document.querySelector('[data-admin-chart-provider]');
+  const salesDetailChart = document.querySelector('[data-admin-chart-sales-detail]');
+  const accountTimelineChart = document.querySelector('[data-admin-chart-account-timeline]');
+  const salesTimelineChart = document.querySelector('[data-admin-chart-sales-timeline]');
+
   const accountTotalEl = document.querySelector('[data-admin-accounts-total]');
   const accountConfirmedEl = document.querySelector('[data-admin-accounts-confirmed]');
   const accountConnectedEl = document.querySelector('[data-admin-accounts-connected]');
@@ -32,8 +45,14 @@
   const salesBody = document.querySelector('[data-admin-sales-body]');
   const salesMsg = document.querySelector('[data-admin-sales-msg]');
 
+  const releaseLatestEl = document.querySelector('[data-admin-release-latest]');
+  const releasePublishedEl = document.querySelector('[data-admin-release-published]');
+  const releaseCountEl = document.querySelector('[data-admin-release-count]');
+  const releasesBody = document.querySelector('[data-admin-releases-body]');
+  const releasesMsg = document.querySelector('[data-admin-releases-msg]');
+
   const CUSTOM_SERVICE_TEMPLATE = '__custom__';
-  const DEFAULT_ADMIN_VIEW = 'shared';
+  const DEFAULT_ADMIN_VIEW = 'overview';
   const SERVICE_MESSAGE_TEMPLATES = [
     {
       id: 'ok_general',
@@ -96,6 +115,10 @@
     return value ? t('site_admin_yes', 'Yes') : t('site_admin_no', 'No');
   }
 
+  function formatNumber(value) {
+    return new Intl.NumberFormat().format(Number(value || 0));
+  }
+
   function escapeHtml(value) {
     return String(value == null ? '' : value)
       .replace(/&/g, '&amp;')
@@ -108,7 +131,7 @@
   function currentAdminView() {
     const url = new URL(window.location.href);
     const view = (url.searchParams.get('view') || DEFAULT_ADMIN_VIEW).trim().toLowerCase();
-    return ['shared', 'access', 'sales'].includes(view) ? view : DEFAULT_ADMIN_VIEW;
+    return ['overview', 'shared', 'access', 'sales', 'releases'].includes(view) ? view : DEFAULT_ADMIN_VIEW;
   }
 
   function applyAdminView(view) {
@@ -268,6 +291,9 @@
   }
 
   function renderAccounts(data) {
+    if (overviewAccountsEl) overviewAccountsEl.textContent = formatNumber(data.accountSummary?.totalAccounts || 0);
+    if (overviewActiveWebEl) overviewActiveWebEl.textContent = formatNumber(data.accountSummary?.activeOnSite || 0);
+    if (overviewPremiumEl) overviewPremiumEl.textContent = formatNumber((data.accountSummary?.activeAccess || 0) - (data.accountSummary?.adminAccounts || 0));
     if (accountTotalEl) accountTotalEl.textContent = String(data.accountSummary?.totalAccounts || 0);
     if (accountConfirmedEl) accountConfirmedEl.textContent = String(data.accountSummary?.confirmedAccounts || 0);
     if (accountConnectedEl) accountConnectedEl.textContent = String(data.accountSummary?.connectedOnSite || 0);
@@ -297,6 +323,9 @@
         + '<td>' + access + '</td>'
         + '</tr>';
     }).join('');
+
+    renderStackChart(accountsChart, safeArray(data.accountBreakdown));
+    renderBarChart(accountTimelineChart, safeArray(data.accountTimeline));
   }
 
   function salesStatusLabel(row) {
@@ -306,6 +335,7 @@
   }
 
   function renderSales(data) {
+    if (overviewCanceledEl) overviewCanceledEl.textContent = formatNumber(data.salesSummary?.canceledButRunning || 0);
     if (salesActiveEl) salesActiveEl.textContent = String(data.salesSummary?.activeSubscriptions || 0);
     if (salesCanceledEl) salesCanceledEl.textContent = String(data.salesSummary?.canceledButRunning || 0);
     if (salesEndedEl) salesEndedEl.textContent = String(data.salesSummary?.endedSubscriptions || 0);
@@ -334,15 +364,89 @@
         + '<td>' + status + '</td>'
         + '</tr>';
     }).join('');
+
+    renderStackChart(salesChart, safeArray(data.salesBreakdown));
+    renderStackChart(providerChart, safeArray(data.providerBreakdown));
+    renderStackChart(salesDetailChart, safeArray(data.salesBreakdown));
+    renderBarChart(salesTimelineChart, safeArray(data.salesTimeline));
+  }
+
+  function renderReleases(data) {
+    const releaseSummary = data.releaseSummary || {};
+    if (overviewReleaseEl) overviewReleaseEl.textContent = releaseSummary.latestTag || '-';
+    if (overviewReleaseDateEl) overviewReleaseDateEl.textContent = releaseSummary.latestPublishedAt ? formatDate(releaseSummary.latestPublishedAt) : '-';
+    if (releaseLatestEl) releaseLatestEl.textContent = releaseSummary.latestTag || '-';
+    if (releasePublishedEl) releasePublishedEl.textContent = releaseSummary.latestPublishedAt ? formatDate(releaseSummary.latestPublishedAt) : '-';
+    if (releaseCountEl) releaseCountEl.textContent = formatNumber(safeArray(releaseSummary.releases).length);
+
+    if (!releasesBody) return;
+    const rows = safeArray(releaseSummary.releases);
+    if (!rows.length) {
+      releasesBody.innerHTML = '<tr><td colspan="4">' + escapeHtml(t('site_admin_empty_releases', 'No public releases loaded.')) + '</td></tr>';
+      return;
+    }
+    releasesBody.innerHTML = rows.map(function (row) {
+      const flags = [];
+      if (row.isDraft) flags.push(t('site_admin_release_flag_draft', 'Draft'));
+      if (row.isPrerelease) flags.push(t('site_admin_release_flag_prerelease', 'Prerelease'));
+      if (!flags.length) flags.push(t('site_admin_release_flag_public', 'Public'));
+      return '<tr>'
+        + '<td><strong>' + escapeHtml(row.tag || '-') + '</strong></td>'
+        + '<td>' + escapeHtml(row.name || '-') + '</td>'
+        + '<td>' + escapeHtml(formatDate(row.publishedAt)) + '</td>'
+        + '<td>' + escapeHtml(flags.join(' · ')) + '</td>'
+        + '</tr>';
+    }).join('');
+  }
+
+  function renderStackChart(target, items) {
+    if (!target) return;
+    const rows = safeArray(items);
+    const total = rows.reduce(function (sum, item) { return sum + Number(item.value || 0); }, 0);
+    if (!rows.length || total <= 0) {
+      target.innerHTML = '<p class="subtle">' + escapeHtml(t('site_admin_chart_empty', 'No data yet.')) + '</p>';
+      return;
+    }
+    target.innerHTML = rows.map(function (item) {
+      const value = Number(item.value || 0);
+      const width = total > 0 ? Math.max((value / total) * 100, value > 0 ? 3 : 0) : 0;
+      return '<div class="admin-chart-row">'
+        + '<div class="admin-chart-meta"><span>' + escapeHtml(item.label || '-') + '</span><strong>' + escapeHtml(formatNumber(value)) + '</strong></div>'
+        + '<div class="admin-chart-rail"><div class="admin-chart-fill" style="width:' + width.toFixed(2) + '%"></div></div>'
+        + '</div>';
+    }).join('');
+  }
+
+  function renderBarChart(target, items) {
+    if (!target) return;
+    const rows = safeArray(items);
+    const max = rows.reduce(function (highest, item) {
+      return Math.max(highest, Number(item.value || 0));
+    }, 0);
+    if (!rows.length || max <= 0) {
+      target.innerHTML = '<p class="subtle">' + escapeHtml(t('site_admin_chart_empty', 'No data yet.')) + '</p>';
+      return;
+    }
+    target.innerHTML = rows.map(function (item) {
+      const value = Number(item.value || 0);
+      const height = Math.max((value / max) * 100, value > 0 ? 8 : 0);
+      return '<div class="admin-bar-item">'
+        + '<div class="admin-bar-value">' + escapeHtml(formatNumber(value)) + '</div>'
+        + '<div class="admin-bar-column" style="height:' + height.toFixed(2) + '%"></div>'
+        + '<div class="admin-bar-label">' + escapeHtml(item.label || '-') + '</div>'
+        + '</div>';
+    }).join('');
   }
 
   async function loadAdminDashboard() {
     msg(accountsMsg, '');
     msg(salesMsg, '');
+    msg(releasesMsg, '');
 
     const data = await invokeAdminDashboard();
     renderAccounts(data);
     renderSales(data);
+    renderReleases(data);
   }
 
   function showGuard(title, message, kind) {
