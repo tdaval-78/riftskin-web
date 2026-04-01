@@ -27,6 +27,13 @@ function isoOrNull(value: unknown) {
   return Number.isNaN(dt.getTime()) ? null : dt.toISOString()
 }
 
+function unixToIso(value: unknown) {
+  const parsed = Number(value || 0)
+  if (!parsed) return null
+  const date = new Date(parsed * 1000)
+  return Number.isNaN(date.getTime()) ? null : date.toISOString()
+}
+
 function isFuture(isoString: string | null) {
   if (!isoString) return false
   const value = new Date(isoString).getTime()
@@ -87,6 +94,50 @@ function countByMonth<T>(rows: T[], keys: string[], pickIso: (row: T) => string 
   }))
 }
 
+async function stripeListAll(path: string, apiKey: string) {
+  let hasMore = true
+  let startingAfter = ""
+  const rows: Record<string, unknown>[] = []
+
+  while (hasMore) {
+    const separator = path.includes("?") ? "&" : "?"
+    const response = await fetch(`https://api.stripe.com${path}${separator}limit=100${startingAfter ? `&starting_after=${encodeURIComponent(startingAfter)}` : ""}`, {
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+      },
+    })
+    const payload = await response.json().catch(() => ({}))
+    if (!response.ok) {
+      const detail = payload?.error?.message || `Stripe request failed: ${path}`
+      throw new Error(detail)
+    }
+    const data = Array.isArray(payload.data) ? payload.data as Record<string, unknown>[] : []
+    rows.push(...data)
+    hasMore = payload.has_more === true && data.length > 0
+    startingAfter = hasMore ? String(data[data.length - 1]?.id || "").trim() : ""
+    if (hasMore && !startingAfter) break
+  }
+
+  return rows
+}
+
+function yearRange(year: number) {
+  const start = Date.UTC(year, 0, 1, 0, 0, 0)
+  const end = Date.UTC(year, 11, 31, 23, 59, 59)
+  return {
+    startUnix: Math.floor(start / 1000),
+    endUnix: Math.floor(end / 1000),
+  }
+}
+
+function formatMoneyMinorUnits(amountMinor: number, currency: string) {
+  const normalizedCurrency = String(currency || "EUR").trim().toUpperCase() || "EUR"
+  return new Intl.NumberFormat("fr-FR", {
+    style: "currency",
+    currency: normalizedCurrency,
+  }).format((amountMinor || 0) / 100)
+}
+
 function isBillingStillActive(status: string, endsAt: string | null) {
   if (["active", "trialing"].includes(status)) return true
   if (["canceled", "cancelled", "past_due", "paused", "unpaid"].includes(status) && endsAt) {
@@ -131,9 +182,11 @@ Deno.serve(async (req) => {
   }
 
   try {
+    const body = await req.json().catch(() => ({}))
     const supabaseUrl = Deno.env.get("SUPABASE_URL")
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")
     const anonKey = Deno.env.get("SUPABASE_ANON_KEY")
+    const stripeSecretKey = Deno.env.get("STRIPE_SECRET_KEY")
     const authHeader = req.headers.get("Authorization") || ""
     const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : ""
 
@@ -325,6 +378,90 @@ Deno.serve(async (req) => {
       paddleSubscriptions: salesRows.filter((row) => row.provider === "paddle").length,
     }
 
+    const availableYears = Array.from(new Set([
+      new Date().getUTCFullYear(),
+      ...accounts.map((row) => {
+        const source = row.createdAt || row.lastSignInAt || null
+        if (!source) return null
+        const dt = new Date(source)
+        return Number.isNaN(dt.getTime()) ? null : dt.getUTCFullYear()
+      }),
+      ...salesRows.map((row) => {
+        const source = row.activatedAt || row.createdAt || row.currentPeriodStartsAt || row.currentPeriodEndsAt || null
+        if (!source) return null
+        const dt = new Date(source)
+        return Number.isNaN(dt.getTime()) ? null : dt.getUTCFullYear()
+      }),
+    ].filter((value): value is number => Number.isFinite(value))))
+      .sort((a, b) => b - a)
+
+    const requestedYear = Number(body?.year || 0)
+    const selectedYear = availableYears.includes(requestedYear) ? requestedYear : availableYears[0] || new Date().getUTCFullYear()
+
+    const annualSalesRows = salesRows.filter((row) => {
+      const source = row.activatedAt || row.createdAt || row.currentPeriodStartsAt || null
+      if (!source) return false
+      const dt = new Date(source)
+      return !Number.isNaN(dt.getTime()) && dt.getUTCFullYear() === selectedYear
+    })
+
+    let annualRevenueSummary = {
+      year: selectedYear,
+      currency: "EUR",
+      revenueMinor: 0,
+      revenueDisplay: formatMoneyMinorUnits(0, "EUR"),
+      paidInvoices: 0,
+      salesRecorded: annualSalesRows.length,
+      stripeRevenueMinor: 0,
+      paddleRevenueMinor: 0,
+    }
+    let annualRevenueTimeline = Array.from({ length: 12 }, (_value, index) => ({
+      key: `${selectedYear}-${String(index + 1).padStart(2, "0")}`,
+      label: new Intl.DateTimeFormat("en-GB", { month: "short", timeZone: "UTC" }).format(new Date(Date.UTC(selectedYear, index, 1))),
+      value: 0,
+    }))
+
+    if (stripeSecretKey) {
+      const { startUnix, endUnix } = yearRange(selectedYear)
+      try {
+        const invoices = await stripeListAll(`/v1/invoices?status=paid&created[gte]=${startUnix}&created[lte]=${endUnix}`, stripeSecretKey)
+        const monthlyRevenue = new Map<string, number>()
+        let totalMinor = 0
+        let currency = "EUR"
+
+        for (const invoice of invoices) {
+          const paidAt = Number(((invoice.status_transitions || {}) as Record<string, unknown>).paid_at || 0)
+          const iso = unixToIso(paidAt || invoice.created)
+          if (!iso) continue
+          const dt = new Date(iso)
+          if (Number.isNaN(dt.getTime()) || dt.getUTCFullYear() !== selectedYear) continue
+          const amountPaid = Number(invoice.amount_paid || 0)
+          totalMinor += amountPaid
+          currency = String(invoice.currency || currency).toUpperCase()
+          const key = `${selectedYear}-${String(dt.getUTCMonth() + 1).padStart(2, "0")}`
+          monthlyRevenue.set(key, (monthlyRevenue.get(key) || 0) + amountPaid)
+        }
+
+        annualRevenueTimeline = annualRevenueTimeline.map((row) => ({
+          ...row,
+          value: monthlyRevenue.get(row.key) || 0,
+        }))
+
+        annualRevenueSummary = {
+          year: selectedYear,
+          currency,
+          revenueMinor: totalMinor,
+          revenueDisplay: formatMoneyMinorUnits(totalMinor, currency),
+          paidInvoices: invoices.length,
+          salesRecorded: annualSalesRows.length,
+          stripeRevenueMinor: totalMinor,
+          paddleRevenueMinor: 0,
+        }
+      } catch (_error) {
+        // Revenue stays available as zero rather than blocking the whole admin dashboard.
+      }
+    }
+
     const salesBreakdown = [
       {
         key: "active",
@@ -402,6 +539,10 @@ Deno.serve(async (req) => {
       accountTimeline,
       accounts,
       salesSummary,
+      availableYears,
+      selectedYear,
+      annualRevenueSummary,
+      annualRevenueTimeline,
       salesBreakdown,
       providerBreakdown,
       salesTimeline,

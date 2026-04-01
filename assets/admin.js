@@ -30,6 +30,7 @@
   const salesDetailChart = document.querySelector('[data-admin-chart-sales-detail]');
   const accountTimelineChart = document.querySelector('[data-admin-chart-account-timeline]');
   const salesTimelineChart = document.querySelector('[data-admin-chart-sales-timeline]');
+  const revenueTimelineChart = document.querySelector('[data-admin-chart-revenue-timeline]');
 
   const accountTotalEl = document.querySelector('[data-admin-accounts-total]');
   const accountConfirmedEl = document.querySelector('[data-admin-accounts-confirmed]');
@@ -42,6 +43,10 @@
   const salesCanceledEl = document.querySelector('[data-admin-sales-canceled-running]');
   const salesEndedEl = document.querySelector('[data-admin-sales-ended]');
   const salesTotalEl = document.querySelector('[data-admin-sales-total]');
+  const salesRevenueYearEl = document.querySelector('[data-admin-sales-revenue-year]');
+  const salesInvoicesYearEl = document.querySelector('[data-admin-sales-invoices-year]');
+  const salesNewYearEl = document.querySelector('[data-admin-sales-new-year]');
+  const salesYearSelect = document.querySelector('[data-admin-sales-year]');
   const salesBody = document.querySelector('[data-admin-sales-body]');
   const salesMsg = document.querySelector('[data-admin-sales-msg]');
 
@@ -117,6 +122,14 @@
 
   function formatNumber(value) {
     return new Intl.NumberFormat().format(Number(value || 0));
+  }
+
+  function formatMoney(valueMinor, currency) {
+    const normalizedCurrency = String(currency || 'EUR').trim().toUpperCase() || 'EUR';
+    return new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency: normalizedCurrency
+    }).format((Number(valueMinor || 0) || 0) / 100);
   }
 
   function escapeHtml(value) {
@@ -272,7 +285,9 @@
         'Content-Type': 'application/json',
         Authorization: 'Bearer ' + session.access_token
       },
-      body: JSON.stringify({})
+      body: JSON.stringify({
+        year: salesYearSelect ? (Number(salesYearSelect.value || 0) || undefined) : undefined
+      })
     });
 
     const payload = await response.json().catch(function () { return {}; });
@@ -340,6 +355,10 @@
     if (salesCanceledEl) salesCanceledEl.textContent = String(data.salesSummary?.canceledButRunning || 0);
     if (salesEndedEl) salesEndedEl.textContent = String(data.salesSummary?.endedSubscriptions || 0);
     if (salesTotalEl) salesTotalEl.textContent = String(data.salesSummary?.totalSubscriptions || 0);
+    if (salesRevenueYearEl) salesRevenueYearEl.textContent = data.annualRevenueSummary?.revenueDisplay || formatMoney(0, 'EUR');
+    if (salesInvoicesYearEl) salesInvoicesYearEl.textContent = formatNumber(data.annualRevenueSummary?.paidInvoices || 0);
+    if (salesNewYearEl) salesNewYearEl.textContent = formatNumber(data.annualRevenueSummary?.salesRecorded || 0);
+    renderYearOptions(data);
 
     if (!salesBody) return;
     const rows = safeArray(data.subscriptions);
@@ -369,6 +388,19 @@
     renderStackChart(providerChart, safeArray(data.providerBreakdown));
     renderStackChart(salesDetailChart, safeArray(data.salesBreakdown));
     renderBarChart(salesTimelineChart, safeArray(data.salesTimeline));
+    renderBarChart(revenueTimelineChart, safeArray(data.annualRevenueTimeline), function (item) {
+      return formatMoney(item.value || 0, data.annualRevenueSummary?.currency || 'EUR');
+    });
+  }
+
+  function renderYearOptions(data) {
+    if (!salesYearSelect) return;
+    const years = safeArray(data.availableYears);
+    const currentValue = String(data.selectedYear || '');
+    salesYearSelect.innerHTML = years.map(function (year) {
+      const stringYear = String(year);
+      return '<option value="' + escapeHtml(stringYear) + '"' + (stringYear === currentValue ? ' selected' : '') + '>' + escapeHtml(stringYear) + '</option>';
+    }).join('');
   }
 
   function renderReleases(data) {
@@ -417,7 +449,7 @@
     }).join('');
   }
 
-  function renderBarChart(target, items) {
+  function renderBarChart(target, items, formatValue) {
     if (!target) return;
     const rows = safeArray(items);
     const max = rows.reduce(function (highest, item) {
@@ -431,7 +463,7 @@
       const value = Number(item.value || 0);
       const height = Math.max((value / max) * 100, value > 0 ? 8 : 0);
       return '<div class="admin-bar-item">'
-        + '<div class="admin-bar-value">' + escapeHtml(formatNumber(value)) + '</div>'
+        + '<div class="admin-bar-value">' + escapeHtml(typeof formatValue === 'function' ? formatValue(item) : formatNumber(value)) + '</div>'
         + '<div class="admin-bar-column" style="height:' + height.toFixed(2) + '%"></div>'
         + '<div class="admin-bar-label">' + escapeHtml(item.label || '-') + '</div>'
         + '</div>';
@@ -538,6 +570,12 @@
     adminRefreshBtn.addEventListener('click', async function () {
       msg(adminServiceMsg, '');
       await refreshAdminPage();
+    });
+  }
+
+  if (salesYearSelect) {
+    salesYearSelect.addEventListener('change', async function () {
+      await loadAdminDashboard();
     });
   }
 

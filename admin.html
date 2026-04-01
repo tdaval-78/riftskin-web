@@ -7,7 +7,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self' mailto:; img-src 'self' data: https://www.google-analytics.com https://jfmrwxmlncvzoremcmbi.supabase.co; style-src 'self' 'unsafe-inline'; script-src 'self' https://cdn.jsdelivr.net https://cdn.paddle.com https://www.googletagmanager.com; connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://analytics.google.com https://jfmrwxmlncvzoremcmbi.supabase.co https://api.paddle.com https://sandbox-api.paddle.com https://checkout.paddle.com https://sandbox-checkout.paddle.com; frame-src https://checkout.paddle.com https://sandbox-checkout.paddle.com https://www.googletagmanager.com;" />
   <title data-i18n="site_admin_title">RIFTSKIN - Admin</title>
   <meta name="description" data-i18n-content="site_admin_meta_desc" content="Gérez le statut desktop public de RiftSkin et le message de service depuis la console admin." />
-  <link rel="stylesheet" href="/assets/styles.css?v=20260401m" />
+  <link rel="stylesheet" href="/assets/styles.css?v=20260401n" />
   <!-- Google Tag Manager -->
   <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-TBCZT7QR');</script>
   <!-- End Google Tag Manager -->
@@ -246,6 +246,10 @@
               <h3 data-i18n="site_admin_view_sales_title">Suivi des ventes</h3>
               <p class="subtle" data-i18n="site_admin_view_sales_intro">Suivez les abonnements premium en cours, les résiliations programmées et l'état global des ventes.</p>
             </div>
+            <div class="admin-year-filter">
+              <label class="subtle" for="admin-sales-year" data-i18n="site_admin_sales_year_label">Exercice</label>
+              <select id="admin-sales-year" data-admin-sales-year></select>
+            </div>
           </div>
 
           <div class="admin-metric-grid">
@@ -253,6 +257,13 @@
             <div class="panel admin-metric-card"><span class="legal-card-kicker" data-i18n="site_admin_sales_metric_canceled">Annulés mais encore en cours</span><strong data-admin-sales-canceled-running>-</strong></div>
             <div class="panel admin-metric-card"><span class="legal-card-kicker" data-i18n="site_admin_sales_metric_ended">Abonnements terminés</span><strong data-admin-sales-ended>-</strong></div>
             <div class="panel admin-metric-card"><span class="legal-card-kicker" data-i18n="site_admin_sales_metric_total">Ventes enregistrées</span><strong data-admin-sales-total>-</strong></div>
+          </div>
+
+          <div class="admin-metric-grid admin-metric-grid-4" style="margin-top:12px;">
+            <div class="panel admin-metric-card"><span class="legal-card-kicker" data-i18n="site_admin_sales_metric_revenue_year">CA encaissé sur l'exercice</span><strong data-admin-sales-revenue-year>-</strong></div>
+            <div class="panel admin-metric-card"><span class="legal-card-kicker" data-i18n="site_admin_sales_metric_invoices_year">Factures payées sur l'exercice</span><strong data-admin-sales-invoices-year>-</strong></div>
+            <div class="panel admin-metric-card"><span class="legal-card-kicker" data-i18n="site_admin_sales_metric_new_year">Nouvelles ventes sur l'exercice</span><strong data-admin-sales-new-year>-</strong></div>
+            <div class="panel admin-metric-card"><span class="legal-card-kicker" data-i18n="site_admin_sales_metric_scope">Périmètre du CA</span><strong data-admin-sales-scope data-i18n="site_admin_sales_metric_scope_value">Stripe payé</strong></div>
           </div>
 
           <div class="admin-visual-grid" style="margin-top:12px;">
@@ -273,6 +284,29 @@
                 </div>
               </div>
               <div class="admin-chart-stack" data-admin-chart-sales-detail></div>
+            </div>
+          </div>
+
+          <div class="admin-visual-grid" style="margin-top:12px;">
+            <div class="panel admin-chart-panel">
+              <div class="section-head compact">
+                <div>
+                  <h3 data-i18n="site_admin_chart_revenue_timeline_title">CA mensuel sur l'exercice</h3>
+                  <p class="subtle" data-i18n="site_admin_chart_revenue_timeline_intro">Montant encaissé par mois sur l'exercice sélectionné, basé sur les factures Stripe payées.</p>
+                </div>
+              </div>
+              <div class="admin-bar-chart" data-admin-chart-revenue-timeline></div>
+            </div>
+            <div class="panel admin-chart-panel">
+              <div class="section-head compact">
+                <div>
+                  <h3 data-i18n="site_admin_chart_revenue_note_title">Lecture du chiffre</h3>
+                  <p class="subtle" data-i18n="site_admin_chart_revenue_note_intro">Ce CA représente l'encaissement réel connu côté Stripe sur l'exercice sélectionné, et non une simple projection d'abonnements.</p>
+                </div>
+              </div>
+              <div class="notice admin-service-live-block">
+                <p class="subtle" data-i18n="site_admin_chart_revenue_note_body">Les abonnements actifs suivent l'état courant. Le CA annuel est calculé séparément depuis les factures Stripe payées pour que vous puissiez piloter un vrai exercice annuel du 01/01 au 31/12.</p>
+              </div>
             </div>
           </div>
 
@@ -341,9 +375,9 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/assets/config.js?v=20260401t"></script>
-  <script src="/assets/translations.js?v=20260401w"></script>
+  <script src="/assets/translations.js?v=20260401x"></script>
   <script src="/assets/i18n.js?v=20260401r"></script>
   <script src="/assets/site.js?v=20260401s"></script>
-  <script src="/assets/admin.js?v=20260401j"></script>
+  <script src="/assets/admin.js?v=20260401k"></script>
 </body>
 </html>

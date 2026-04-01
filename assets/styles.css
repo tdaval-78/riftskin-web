@@ -2880,6 +2880,10 @@ textarea {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.admin-metric-grid-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .admin-metric-card {
   display: grid;
   gap: 10px;
@@ -2909,6 +2913,16 @@ textarea {
 .admin-chart-panel {
   display: grid;
   gap: 12px;
+}
+
+.admin-year-filter {
+  display: grid;
+  gap: 6px;
+  min-width: 220px;
+}
+
+.admin-year-filter select {
+  min-width: 180px;
 }
 
 .admin-chart-stack {
@@ -3714,6 +3728,7 @@ body[data-page="support"] .notice {
   .admin-metric-grid,
   .admin-metric-grid-6,
   .admin-metric-grid-3,
+  .admin-metric-grid-4,
   .admin-visual-grid {
     grid-template-columns: 1fr;
   }
