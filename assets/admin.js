@@ -50,6 +50,11 @@
   const salesRenewalsEl = document.querySelector('[data-admin-sales-renewals]');
   const salesBillingIssuesEl = document.querySelector('[data-admin-sales-billing-issues]');
   const salesYearSelect = document.querySelector('[data-admin-sales-year]');
+  const salesFilterEmail = document.querySelector('[data-admin-sales-filter-email]');
+  const salesFilterProvider = document.querySelector('[data-admin-sales-filter-provider]');
+  const salesFilterStatus = document.querySelector('[data-admin-sales-filter-status]');
+  const salesFilterCanceled = document.querySelector('[data-admin-sales-filter-canceled]');
+  const salesFilterCount = document.querySelector('[data-admin-sales-filter-count]');
   const salesBody = document.querySelector('[data-admin-sales-body]');
   const salesMsg = document.querySelector('[data-admin-sales-msg]');
 
@@ -61,6 +66,7 @@
 
   const CUSTOM_SERVICE_TEMPLATE = '__custom__';
   const DEFAULT_ADMIN_VIEW = 'overview';
+  let latestSalesRows = [];
   const SERVICE_MESSAGE_TEMPLATES = [
     {
       id: 'ok_general',
@@ -368,23 +374,36 @@
     return t('site_admin_sales_status_ended', 'Terminé');
   }
 
-  function renderSales(data) {
-    if (overviewCanceledEl) overviewCanceledEl.textContent = formatNumber(data.salesSummary?.canceledButRunning || 0);
-    if (salesActiveEl) salesActiveEl.textContent = String(data.salesSummary?.activeSubscriptions || 0);
-    if (salesCanceledEl) salesCanceledEl.textContent = String(data.salesSummary?.canceledButRunning || 0);
-    if (salesEndedEl) salesEndedEl.textContent = String(data.salesSummary?.endedSubscriptions || 0);
-    if (salesTotalEl) salesTotalEl.textContent = String(data.salesSummary?.totalSubscriptions || 0);
-    if (salesRevenueYearEl) salesRevenueYearEl.textContent = data.annualRevenueSummary?.revenueDisplay || formatMoney(0, 'EUR');
-    if (salesInvoicesYearEl) salesInvoicesYearEl.textContent = formatNumber(data.annualRevenueSummary?.paidInvoices || 0);
-    if (salesNewYearEl) salesNewYearEl.textContent = formatNumber(data.annualRevenueSummary?.salesRecorded || 0);
-    if (salesRenewalsEl) salesRenewalsEl.textContent = formatNumber(data.salesSummary?.renewalsNext30Days || 0);
-    if (salesBillingIssuesEl) salesBillingIssuesEl.textContent = formatNumber(data.salesSummary?.billingIssueSubscriptions || 0);
-    renderYearOptions(data);
+  function filterSalesRows(rows) {
+    const emailNeedle = (salesFilterEmail && salesFilterEmail.value ? String(salesFilterEmail.value) : '').trim().toLowerCase();
+    const providerNeedle = (salesFilterProvider && salesFilterProvider.value ? String(salesFilterProvider.value) : '').trim().toLowerCase();
+    const statusNeedle = (salesFilterStatus && salesFilterStatus.value ? String(salesFilterStatus.value) : '').trim().toLowerCase();
+    const canceledNeedle = (salesFilterCanceled && salesFilterCanceled.value ? String(salesFilterCanceled.value) : '').trim().toLowerCase();
 
+    return safeArray(rows).filter(function (row) {
+      const email = String(row.customerEmail || '').trim().toLowerCase();
+      const provider = String(row.provider || '').trim().toLowerCase();
+      const canceled = !!row.canceledButStillRunning || !!row.canceledAt;
+      const status = row.canceledButStillRunning ? 'canceled_running' : (row.active ? 'active' : 'ended');
+
+      if (emailNeedle && !email.includes(emailNeedle)) return false;
+      if (providerNeedle && provider !== providerNeedle) return false;
+      if (statusNeedle && status !== statusNeedle) return false;
+      if (canceledNeedle === 'yes' && !canceled) return false;
+      if (canceledNeedle === 'no' && canceled) return false;
+      return true;
+    });
+  }
+
+  function renderSalesRows(rows) {
     if (!salesBody) return;
-    const rows = safeArray(data.subscriptions);
+    if (salesFilterCount) {
+      salesFilterCount.textContent = t('site_admin_sales_filter_count', '{{shown}} / {{total}} ventes')
+        .replace('{{shown}}', formatNumber(rows.length))
+        .replace('{{total}}', formatNumber(latestSalesRows.length));
+    }
     if (!rows.length) {
-      salesBody.innerHTML = '<tr><td colspan="6">' + escapeHtml(t('site_admin_empty_sales', 'Aucun abonnement enregistré pour le moment.')) + '</td></tr>';
+      salesBody.innerHTML = '<tr><td colspan="6">' + escapeHtml(t('site_admin_sales_filter_empty', 'Aucune vente ne correspond aux filtres actuels.')) + '</td></tr>';
       return;
     }
 
@@ -404,6 +423,37 @@
         + '<td>' + status + '</td>'
         + '</tr>';
     }).join('');
+  }
+
+  function syncSalesFilters() {
+    renderSalesRows(filterSalesRows(latestSalesRows));
+  }
+
+  function renderSales(data) {
+    if (overviewCanceledEl) overviewCanceledEl.textContent = formatNumber(data.salesSummary?.canceledButRunning || 0);
+    if (salesActiveEl) salesActiveEl.textContent = String(data.salesSummary?.activeSubscriptions || 0);
+    if (salesCanceledEl) salesCanceledEl.textContent = String(data.salesSummary?.canceledButRunning || 0);
+    if (salesEndedEl) salesEndedEl.textContent = String(data.salesSummary?.endedSubscriptions || 0);
+    if (salesTotalEl) salesTotalEl.textContent = String(data.salesSummary?.totalSubscriptions || 0);
+    if (salesRevenueYearEl) salesRevenueYearEl.textContent = data.annualRevenueSummary?.revenueDisplay || formatMoney(0, 'EUR');
+    if (salesInvoicesYearEl) salesInvoicesYearEl.textContent = formatNumber(data.annualRevenueSummary?.paidInvoices || 0);
+    if (salesNewYearEl) salesNewYearEl.textContent = formatNumber(data.annualRevenueSummary?.salesRecorded || 0);
+    if (salesRenewalsEl) salesRenewalsEl.textContent = formatNumber(data.salesSummary?.renewalsNext30Days || 0);
+    if (salesBillingIssuesEl) salesBillingIssuesEl.textContent = formatNumber(data.salesSummary?.billingIssueSubscriptions || 0);
+    renderYearOptions(data);
+
+    if (!salesBody) return;
+    latestSalesRows = safeArray(data.subscriptions);
+    if (!latestSalesRows.length) {
+      if (salesFilterCount) {
+        salesFilterCount.textContent = t('site_admin_sales_filter_count', '{{shown}} / {{total}} ventes')
+          .replace('{{shown}}', '0')
+          .replace('{{total}}', '0');
+      }
+      salesBody.innerHTML = '<tr><td colspan="6">' + escapeHtml(t('site_admin_empty_sales', 'Aucun abonnement enregistré pour le moment.')) + '</td></tr>';
+      return;
+    }
+    syncSalesFilters();
 
     renderStackChart(salesChart, safeArray(data.salesBreakdown));
     renderStackChart(providerChart, safeArray(data.providerBreakdown));
@@ -608,6 +658,12 @@
       await loadAdminDashboard();
     });
   }
+
+  [salesFilterEmail, salesFilterProvider, salesFilterStatus, salesFilterCanceled].forEach(function (input) {
+    if (!input) return;
+    input.addEventListener('input', syncSalesFilters);
+    input.addEventListener('change', syncSalesFilters);
+  });
 
   if (adminServiceForm) {
     const serviceMessageInput = getServiceMessageInput();

@@ -3013,6 +3013,15 @@ textarea {
   min-height: 52px;
 }
 
+.admin-sales-filters {
+  display: grid;
+  gap: 14px;
+}
+
+.admin-sales-filter-count {
+  white-space: nowrap;
+}
+
 .admin-chart-stack {
   display: grid;
   gap: 12px;
@@ -3103,6 +3112,10 @@ textarea {
 
 .field-row-3 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.field-row-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .checkbox-row {

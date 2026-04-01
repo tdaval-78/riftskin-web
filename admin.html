@@ -319,6 +319,35 @@
             </div>
           </div>
 
+          <div class="panel admin-sales-filters" style="margin-top:12px;">
+            <div class="section-head compact">
+              <div>
+                <h3 data-i18n="site_admin_sales_filters_title">Filtres des ventes</h3>
+                <p class="subtle" data-i18n="site_admin_sales_filters_intro">Filtrez rapidement les ventes par email, canal, statut ou annulation.</p>
+              </div>
+              <p class="subtle admin-sales-filter-count" data-admin-sales-filter-count>-</p>
+            </div>
+            <div class="field-row field-row-4">
+              <input type="search" data-admin-sales-filter-email data-i18n-placeholder="site_admin_sales_filter_email" placeholder="Rechercher un email" />
+              <select data-admin-sales-filter-provider>
+                <option value="" data-i18n="site_admin_sales_filter_all_channels">Tous les canaux</option>
+                <option value="stripe">Stripe</option>
+                <option value="paddle">Paddle</option>
+              </select>
+              <select data-admin-sales-filter-status>
+                <option value="" data-i18n="site_admin_sales_filter_all_statuses">Tous les statuts</option>
+                <option value="active" data-i18n="site_admin_sales_status_active">Actif</option>
+                <option value="canceled_running" data-i18n="site_admin_sales_status_canceled_running">Annulé, encore actif</option>
+                <option value="ended" data-i18n="site_admin_sales_status_ended">Terminé</option>
+              </select>
+              <select data-admin-sales-filter-canceled>
+                <option value="" data-i18n="site_admin_sales_filter_all_cancellations">Annulation : tout</option>
+                <option value="yes" data-i18n="site_admin_yes">Oui</option>
+                <option value="no" data-i18n="site_admin_no">Non</option>
+              </select>
+            </div>
+          </div>
+
           <div class="keys-table-wrap admin-table-wrap" style="margin-top:12px;">
             <table class="keys-table admin-table">
               <thead>
