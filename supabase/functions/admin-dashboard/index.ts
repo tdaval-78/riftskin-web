@@ -121,6 +121,33 @@ async function stripeListAll(path: string, apiKey: string) {
   return rows
 }
 
+async function listAllAuthUsers(adminClient: any) {
+  const rows: Record<string, unknown>[] = []
+  let page = 1
+
+  while (page <= 50) {
+    const { data, error } = await adminClient.auth.admin.listUsers({
+      page,
+      perPage: 200,
+    })
+    if (error) throw error
+    const users = Array.isArray(data?.users)
+      ? data.users.map((user: any) => ({
+          id: user.id,
+          email: user.email,
+          created_at: user.created_at,
+          email_confirmed_at: user.email_confirmed_at,
+          last_sign_in_at: user.last_sign_in_at,
+        }))
+      : []
+    rows.push(...users)
+    if (users.length < 200) break
+    page += 1
+  }
+
+  return rows
+}
+
 function yearRange(year: number) {
   const start = Date.UTC(year, 0, 1, 0, 0, 0)
   const end = Date.UTC(year, 11, 31, 23, 59, 59)
@@ -181,6 +208,55 @@ type AccountRow = {
   latest_key_redeemed_at: string | null
 }
 
+function buildStripeSubscriptionRow(row: Record<string, unknown>) {
+  const customer = row.customer && typeof row.customer === "object"
+    ? row.customer as Record<string, unknown>
+    : null
+  const metadata = row.metadata && typeof row.metadata === "object"
+    ? row.metadata as Record<string, unknown>
+    : null
+  const status = normalizeText(row.status).toLowerCase()
+  const currentPeriodStartsAt = unixToIso(row.current_period_start)
+  const currentPeriodEndsAt = unixToIso(row.current_period_end)
+  const canceledAt = unixToIso(row.canceled_at)
+  const activatedAt = unixToIso(row.start_date) || currentPeriodStartsAt
+  const createdAt = unixToIso(row.created)
+  const updatedAt = unixToIso(row.created)
+  const raw = row
+
+  return {
+    provider: "stripe",
+    subscriptionId: normalizeText(row.id),
+    customerEmail: normalizeText(customer?.email || row.customer_email || metadata?.email),
+    status,
+    currentPeriodStartsAt,
+    currentPeriodEndsAt,
+    canceledAt,
+    activatedAt,
+    createdAt,
+    updatedAt,
+    raw,
+    active: isBillingStillActive(status, currentPeriodEndsAt),
+    canceledButStillRunning: isCanceledButStillRunning(status, currentPeriodEndsAt, canceledAt, raw),
+  }
+}
+
+type SalesRow = {
+  provider: string
+  subscriptionId: string
+  customerEmail: string
+  status: string
+  currentPeriodStartsAt: string | null
+  currentPeriodEndsAt: string | null
+  canceledAt: string | null
+  activatedAt: string | null
+  createdAt: string | null
+  updatedAt: string | null
+  raw: Record<string, unknown>
+  active: boolean
+  canceledButStillRunning: boolean
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders })
@@ -226,31 +302,90 @@ Deno.serve(async (req) => {
       return json({ error: "not_admin" }, 403)
     }
 
-    const scopedClient = createClient(supabaseUrl, anonKey, {
-      global: {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-      auth: { persistSession: false },
-    })
-
-    const { data: accountRows, error: accountError } = await scopedClient.rpc("admin_list_accounts", {
-      p_search: null,
-      p_filter: "all",
-    })
-
-    if (accountError) {
-      return json({ error: "load_accounts_failed", detail: accountError.message }, 500)
-    }
-
-    const { data: sessionRows, error: sessionError } = await serviceClient
+    const [
+      authUsers,
+      profilesResult,
+      adminUsersResult,
+      accessResult,
+      keyRedemptionsResult,
+      sessionResult,
+    ] = await Promise.all([
+      listAllAuthUsers(serviceClient),
+      serviceClient.from("profiles").select("id, username"),
+      serviceClient.from("app_admins").select("user_id"),
+      serviceClient.from("user_access").select("user_id, source, granted_at, expires_at, is_active"),
+      serviceClient.from("key_redemptions").select("user_id, key_id, redeemed_at").order("redeemed_at", { ascending: false }),
+      serviceClient
       .schema("auth")
       .from("sessions")
-      .select("user_id, updated_at, created_at, not_after")
+      .select("user_id, updated_at, created_at, not_after"),
+    ])
 
-    if (sessionError) {
-      return json({ error: "load_sessions_failed", detail: sessionError.message }, 500)
+    if (profilesResult.error) {
+      return json({ error: "load_profiles_failed", detail: profilesResult.error.message }, 500)
+    }
+    if (adminUsersResult.error) {
+      return json({ error: "load_admin_users_failed", detail: adminUsersResult.error.message }, 500)
+    }
+    if (accessResult.error) {
+      return json({ error: "load_access_failed", detail: accessResult.error.message }, 500)
+    }
+    if (keyRedemptionsResult.error) {
+      return json({ error: "load_key_redemptions_failed", detail: keyRedemptionsResult.error.message }, 500)
+    }
+    if (sessionResult.error) {
+      return json({ error: "load_sessions_failed", detail: sessionResult.error.message }, 500)
+    }
+
+    const accountRows = authUsers
+    const sessionRows = sessionResult.data || []
+
+    const profileByUserId = new Map<string, string>()
+    for (const row of profilesResult.data || []) {
+      const userId = normalizeText(row.id)
+      if (userId) profileByUserId.set(userId, normalizeText(row.username))
+    }
+
+    const adminUserIds = new Set<string>()
+    for (const row of adminUsersResult.data || []) {
+      const userId = normalizeText(row.user_id)
+      if (userId) adminUserIds.add(userId)
+    }
+
+    const accessByUserId = new Map<string, Record<string, unknown>>()
+    for (const row of accessResult.data || []) {
+      const userId = normalizeText(row.user_id)
+      if (userId && !accessByUserId.has(userId)) {
+        accessByUserId.set(userId, row)
+      }
+    }
+
+    const latestRedemptionByUserId = new Map<string, { keyId: number, redeemedAt: string | null }>()
+    const activationKeyIds = new Set<number>()
+    for (const row of keyRedemptionsResult.data || []) {
+      const userId = normalizeText(row.user_id)
+      const keyId = Number(row.key_id || 0)
+      if (!userId || !keyId || latestRedemptionByUserId.has(userId)) continue
+      latestRedemptionByUserId.set(userId, {
+        keyId,
+        redeemedAt: isoOrNull(row.redeemed_at),
+      })
+      activationKeyIds.add(keyId)
+    }
+
+    const activationKeyCodeById = new Map<number, string>()
+    if (activationKeyIds.size) {
+      const { data: activationKeys, error: activationKeyError } = await serviceClient
+        .from("activation_keys")
+        .select("id, code")
+        .in("id", Array.from(activationKeyIds))
+      if (activationKeyError) {
+        return json({ error: "load_activation_keys_failed", detail: activationKeyError.message }, 500)
+      }
+      for (const row of activationKeys || []) {
+        const id = Number(row.id || 0)
+        if (id) activationKeyCodeById.set(id, normalizeText(row.code))
+      }
     }
 
     const latestSessionByUser = new Map<string, string>()
@@ -265,22 +400,37 @@ Deno.serve(async (req) => {
       }
     })
 
-    const accounts = ((accountRows || []) as AccountRow[]).map((row) => {
-      const siteLastSeenAt = latestSessionByUser.get(row.user_id) || null
+    const accounts = ((accountRows || []) as Record<string, unknown>[]).map((row) => {
+      const userId = normalizeText(row.id)
+      const access = accessByUserId.get(userId)
+      const latestRedemption = latestRedemptionByUserId.get(userId)
+      const siteLastSeenAt = latestSessionByUser.get(userId) || null
+      const accessSource = normalizeText(access?.source) || null
+      const accessGrantedAt = isoOrNull(access?.granted_at)
+      const accessExpiresAt = isoOrNull(access?.expires_at)
+      const isAccessEnabled = access?.is_active !== false
+      const isAdmin = adminUserIds.has(userId)
+      const accessState = isAdmin
+        ? "admin"
+        : !access || !isAccessEnabled
+          ? "no_access"
+          : accessExpiresAt && !isFuture(accessExpiresAt)
+            ? "expired"
+            : "active"
       return {
-        userId: row.user_id,
-        email: row.email,
-        username: row.username,
-        createdAt: row.created_at,
-        emailConfirmedAt: row.email_confirmed_at,
-        lastSignInAt: row.last_sign_in_at,
-        isAdmin: row.is_admin === true,
-        accessState: row.access_state || "no_access",
-        accessSource: row.access_source,
-        accessGrantedAt: row.access_granted_at,
-        accessExpiresAt: row.access_expires_at,
-        latestKeyCode: row.latest_key_code,
-        latestKeyRedeemedAt: row.latest_key_redeemed_at,
+        userId,
+        email: normalizeText(row.email) || null,
+        username: profileByUserId.get(userId) || null,
+        createdAt: isoOrNull(row.created_at),
+        emailConfirmedAt: isoOrNull(row.email_confirmed_at),
+        lastSignInAt: isoOrNull(row.last_sign_in_at),
+        isAdmin,
+        accessState,
+        accessSource,
+        accessGrantedAt,
+        accessExpiresAt,
+        latestKeyCode: latestRedemption ? activationKeyCodeById.get(latestRedemption.keyId) || null : null,
+        latestKeyRedeemedAt: latestRedemption?.redeemedAt || null,
         siteLastSeenAt,
         siteConnected: isRecent(siteLastSeenAt, 30),
         siteActive: isRecent(siteLastSeenAt, 5),
@@ -337,8 +487,19 @@ Deno.serve(async (req) => {
       return json({ error: "load_paddle_subscriptions_failed", detail: paddleError.message }, 500)
     }
 
-    const salesRows = [
-      ...((stripeRows || []).map((row: Record<string, unknown>) => ({
+    let liveStripeRows: SalesRow[] = []
+    if (stripeSecretKey) {
+      try {
+        const stripeSubscriptions = await stripeListAll("/v1/subscriptions?status=all&expand[]=data.customer", stripeSecretKey)
+        liveStripeRows = stripeSubscriptions
+          .map((row) => buildStripeSubscriptionRow(row))
+          .filter((row) => !!row.subscriptionId)
+      } catch (_error) {
+        liveStripeRows = []
+      }
+    }
+
+    const localStripeRows: SalesRow[] = ((stripeRows || []).map((row: Record<string, unknown>) => ({
         provider: "stripe",
         subscriptionId: normalizeText(row.stripe_subscription_id),
         customerEmail: normalizeText(row.customer_email),
@@ -350,7 +511,37 @@ Deno.serve(async (req) => {
         createdAt: isoOrNull(row.created_at),
         updatedAt: isoOrNull(row.updated_at),
         raw: (row.raw && typeof row.raw === "object") ? row.raw as Record<string, unknown> : {},
-      })) || []),
+      })) || []).map((row) => {
+        const active = isBillingStillActive(row.status, row.currentPeriodEndsAt)
+        const canceledButStillRunning = isCanceledButStillRunning(row.status, row.currentPeriodEndsAt, row.canceledAt, row.raw)
+        return {
+          ...row,
+          active,
+          canceledButStillRunning,
+        }
+      })
+
+    const mergedStripeById = new Map<string, SalesRow>()
+    for (const row of liveStripeRows) {
+      mergedStripeById.set(row.subscriptionId, row)
+    }
+    for (const row of localStripeRows) {
+      if (!row.subscriptionId) continue
+      const existing = mergedStripeById.get(row.subscriptionId)
+      mergedStripeById.set(row.subscriptionId, existing
+        ? {
+            ...row,
+            ...existing,
+            customerEmail: existing.customerEmail || row.customerEmail,
+            activatedAt: existing.activatedAt || row.activatedAt,
+            createdAt: existing.createdAt || row.createdAt,
+            updatedAt: existing.updatedAt || row.updatedAt,
+          }
+        : row)
+    }
+
+    const salesRows = [
+      ...Array.from(mergedStripeById.values()),
       ...((paddleRows || []).map((row: Record<string, unknown>) => ({
         provider: "paddle",
         subscriptionId: normalizeText(row.paddle_subscription_id),

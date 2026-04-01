@@ -496,10 +496,17 @@
     msg(salesMsg, '');
     msg(releasesMsg, '');
 
-    const data = await invokeAdminDashboard();
-    renderAccounts(data);
-    renderSales(data);
-    renderReleases(data);
+    try {
+      const data = await invokeAdminDashboard();
+      renderAccounts(data);
+      renderSales(data);
+      renderReleases(data);
+    } catch (error) {
+      const detail = error && error.message ? error.message : t('admin_dashboard_failed', 'Unable to load admin dashboard.');
+      msg(accountsMsg, detail, 'error');
+      msg(salesMsg, detail, 'error');
+      msg(releasesMsg, detail, 'error');
+    }
   }
 
   function showGuard(title, message, kind) {
