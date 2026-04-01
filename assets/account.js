@@ -613,7 +613,9 @@
       ]);
       return;
     }
-    applyMaintenanceLoggedOutState();
+    if (cfg.siteMaintenanceEnabled) {
+      applyMaintenanceLoggedOutState();
+    }
   }
 
   async function refreshAdminEntry() {
