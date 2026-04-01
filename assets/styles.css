@@ -1549,8 +1549,11 @@ body.has-overlay {
 }
 
 .premium-activation-shot-image-settings {
-  object-position: center 16%;
-  transform: scale(1.03);
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center top;
+  transform: none;
   transform-origin: center center;
 }
 
