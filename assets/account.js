@@ -62,8 +62,8 @@
     {
       id: 'ok_general',
       state: 'ok',
-      message: 'Injection is fully operational on the latest League of Legends patch. You can use RiftSkin normally.',
-      translation: "L'injection est entierement fonctionnelle sur le dernier patch de League of Legends. Vous pouvez utiliser RiftSkin normalement."
+      message: 'Injection is fully operational on the latest League of Legends patch. You can use RIFTSKIN normally.',
+      translation: "L'injection est entierement fonctionnelle sur le dernier patch de League of Legends. Vous pouvez utiliser RIFTSKIN normalement."
     },
     {
       id: 'ok_update_deployed',
@@ -80,8 +80,8 @@
     {
       id: 'maintenance_testing',
       state: 'maintenance',
-      message: 'Our team has completed the main fix and is currently testing the next RiftSkin update before release.',
-      translation: "Notre equipe a termine le correctif principal et teste actuellement la prochaine mise a jour de RiftSkin avant sa publication."
+      message: 'Our team has completed the main fix and is currently testing the next RIFTSKIN update before release.',
+      translation: "Notre equipe a termine le correctif principal et teste actuellement la prochaine mise a jour de RIFTSKIN avant sa publication."
     }
   ];
 
