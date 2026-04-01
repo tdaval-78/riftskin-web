@@ -2815,10 +2815,6 @@ textarea {
 }
 
 .account-cta-row .btn {
-  min-width: 280px;
-}
-
-.account-cta-row .btn:only-child {
   min-width: 360px;
 }
 
