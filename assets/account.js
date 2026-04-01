@@ -37,6 +37,8 @@
   const myKeysMsg = document.querySelector('[data-my-keys-msg]');
   const myKeysDateHeader = document.querySelector('[data-my-keys-date-header]');
   const adminEntry = document.querySelector('[data-admin-entry]');
+  const adminEntryHeading = document.querySelector('[data-admin-entry-heading]');
+  const adminTab = document.querySelector('[data-admin-tab]');
 
   const adminPanel = document.querySelector('[data-admin-only]');
   const adminRefreshBtn = document.querySelector('[data-admin-refresh]');
@@ -162,6 +164,12 @@
     billingPortalBtns.forEach(function (btn) {
       btn.style.display = 'none';
     });
+  }
+
+  function setAdminUi(isAdmin) {
+    if (adminEntry) adminEntry.style.display = isAdmin ? 'block' : 'none';
+    if (adminEntryHeading) adminEntryHeading.style.display = isAdmin ? 'block' : 'none';
+    if (adminTab) adminTab.style.display = isAdmin ? 'inline-flex' : 'none';
   }
 
   function resetAccountManagementUi() {
@@ -585,7 +593,7 @@
   async function refreshAdminEntry() {
     if (!adminEntry) return;
     const isAdmin = await checkIsAdmin();
-    adminEntry.style.display = isAdmin ? 'block' : 'none';
+    setAdminUi(isAdmin);
   }
 
   async function refreshAccessStatus(userId) {
@@ -995,6 +1003,7 @@
     if (!adminPanel) return;
     const isAdmin = await checkIsAdmin();
     adminPanel.style.display = isAdmin ? 'block' : 'none';
+    setAdminUi(isAdmin);
     if (!isAdmin) return;
     await loadAdminKeys();
     await loadAdminServiceStatus();
