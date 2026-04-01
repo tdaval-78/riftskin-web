@@ -82,12 +82,24 @@
             </div>
             <select name="topic" required>
               <option value="" data-i18n="site_support_topic_ph">Choisir un sujet</option>
-              <option value="billing" data-i18n="site_support_topic_1">Facturation et abonnement</option>
-              <option value="premium" data-i18n="site_support_topic_2">Activation du code premium</option>
-              <option value="import" data-i18n="site_support_topic_3">Import ou application du skin</option>
-              <option value="bug" data-i18n="site_support_topic_4">Signaler un bug</option>
-              <option value="other" data-i18n="site_support_topic_5">Autre</option>
+              <option value="application" data-i18n="site_support_topic_1">Application</option>
+              <option value="website" data-i18n="site_support_topic_2">Site internet</option>
+              <option value="subscription" data-i18n="site_support_topic_3">Abonnement</option>
+              <option value="other" data-i18n="site_support_topic_4">Autre</option>
             </select>
+            <div class="support-app-version" id="support-app-version" hidden>
+              <p class="mini-note support-app-version-note" data-i18n="site_support_app_version_help">Merci de renseigner la version actuelle de votre application.</p>
+              <select name="app_version" id="support-app-version-select">
+                <option value="" data-i18n="site_support_app_version_ph">Choisir une version</option>
+              </select>
+              <input
+                name="app_version_other"
+                id="support-app-version-other"
+                data-i18n-placeholder="site_support_app_version_other_ph"
+                placeholder="Renseigner une autre version"
+                hidden
+              />
+            </div>
             <div class="support-upload">
               <label class="support-upload-label" for="support-files" data-i18n="site_support_files_label">Pièces jointes</label>
               <input id="support-files" name="attachments" type="file" accept="image/*,video/*,.zip,.txt,.log,.json" hidden />
@@ -122,9 +134,9 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/assets/config.js?v=20260331p"></script>
-  <script src="/assets/translations.js?v=20260401k"></script>
-  <script src="/assets/i18n.js?v=20260401j"></script>
+  <script src="/assets/translations.js?v=20260401l"></script>
+  <script src="/assets/i18n.js?v=20260401l"></script>
   <script src="/assets/site.js?v=20260401d"></script>
-  <script src="/assets/support.js?v=20260401j"></script>
+  <script src="/assets/support.js?v=20260401l"></script>
 </body>
 </html>

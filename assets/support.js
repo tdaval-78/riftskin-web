@@ -5,6 +5,9 @@
   const out = document.getElementById('support-msg');
   const emailInput = form ? form.querySelector('[name="email"]') : null;
   const topicSelect = form ? form.querySelector('[name="topic"]') : null;
+  const appVersionWrap = document.getElementById('support-app-version');
+  const appVersionSelect = document.getElementById('support-app-version-select');
+  const appVersionOtherInput = document.getElementById('support-app-version-other');
   const fileInput = form ? form.querySelector('[name="attachments"]') : null;
   const fileList = document.getElementById('support-files-list');
   const fileTrigger = document.getElementById('support-files-trigger');
@@ -12,6 +15,18 @@
   const i18n = window.RiftSkinI18n;
   const t = function (key) { return i18n ? i18n.t(key) : key; };
   const MAX_ATTACHMENTS = 5;
+  const APP_VERSION_OPTIONS = [
+    'v26.3.33',
+    'v26.3.32',
+    'v26.3.31',
+    'v26.3.30',
+    'v26.3.29',
+    'v26.3.28',
+    'v26.3.27',
+    'v26.3.26',
+    'v26.3.25',
+    'v26.3.24'
+  ];
   let selectedFiles = [];
   let objectUrls = new Map();
 
@@ -59,6 +74,61 @@
   function formatFileCount(count) {
     if (count <= 1) return '1 ' + t('site_support_files_count_single');
     return count + ' ' + t('site_support_files_count_plural');
+  }
+
+  function renderAppVersionOptions() {
+    if (!appVersionSelect) return;
+    const currentValue = appVersionSelect.value;
+    const placeholder = appVersionSelect.querySelector('option[value=""]');
+    appVersionSelect.textContent = '';
+    if (placeholder) {
+      placeholder.textContent = t('site_support_app_version_ph');
+      appVersionSelect.appendChild(placeholder);
+    } else {
+      const option = document.createElement('option');
+      option.value = '';
+      option.textContent = t('site_support_app_version_ph');
+      appVersionSelect.appendChild(option);
+    }
+
+    APP_VERSION_OPTIONS.forEach(function (version) {
+      const option = document.createElement('option');
+      option.value = version;
+      option.textContent = version;
+      appVersionSelect.appendChild(option);
+    });
+
+    const unknownOption = document.createElement('option');
+    unknownOption.value = 'unknown';
+    unknownOption.textContent = t('site_support_app_version_unknown');
+    appVersionSelect.appendChild(unknownOption);
+
+    const otherOption = document.createElement('option');
+    otherOption.value = 'other';
+    otherOption.textContent = t('site_support_app_version_other');
+    appVersionSelect.appendChild(otherOption);
+
+    if (currentValue) {
+      appVersionSelect.value = currentValue;
+    }
+  }
+
+  function syncAppVersionVisibility() {
+    if (!topicSelect || !appVersionWrap || !appVersionSelect || !appVersionOtherInput) return;
+    const requiresVersion = topicSelect.value === 'application';
+    appVersionWrap.hidden = !requiresVersion;
+    appVersionSelect.required = requiresVersion;
+
+    const wantsOther = requiresVersion && appVersionSelect.value === 'other';
+    appVersionOtherInput.hidden = !wantsOther;
+    appVersionOtherInput.required = wantsOther;
+
+    if (!requiresVersion) {
+      appVersionSelect.value = '';
+      appVersionOtherInput.value = '';
+      appVersionOtherInput.hidden = true;
+      appVersionOtherInput.required = false;
+    }
   }
 
   function removeSelectedFile(fileKey) {
@@ -237,8 +307,22 @@
   }
 
   renderSelectedFiles();
+  renderAppVersionOptions();
+  syncAppVersionVisibility();
   prefillAccountEmail();
-  document.addEventListener('riftskin:language-changed', renderSelectedFiles);
+  document.addEventListener('riftskin:language-changed', function () {
+    renderSelectedFiles();
+    renderAppVersionOptions();
+    syncAppVersionVisibility();
+  });
+
+  if (topicSelect) {
+    topicSelect.addEventListener('change', syncAppVersionVisibility);
+  }
+
+  if (appVersionSelect) {
+    appVersionSelect.addEventListener('change', syncAppVersionVisibility);
+  }
 
   form.addEventListener('submit', async function (e) {
     e.preventDefault();
@@ -256,6 +340,9 @@
     const selectedTopicLabel = topicSelect && topicSelect.selectedIndex >= 0
       ? topicSelect.options[topicSelect.selectedIndex].textContent.trim()
       : topic;
+    const appVersion = (data.get('app_version') || '').toString().trim();
+    const appVersionOther = (data.get('app_version_other') || '').toString().trim();
+    const resolvedAppVersion = appVersion === 'other' ? appVersionOther : appVersion;
     const message = (data.get('message') || '').toString().trim();
     const supportData = new FormData();
     const attachments = getSelectedFiles();
@@ -264,6 +351,7 @@
     supportData.append('email', email);
     supportData.append('topic', topic);
     supportData.append('topic_label', selectedTopicLabel);
+    supportData.append('app_version', resolvedAppVersion);
     supportData.append('message', message);
     supportData.append('website', website);
 
@@ -318,6 +406,8 @@
       });
       selectedFiles = [];
       renderSelectedFiles();
+      renderAppVersionOptions();
+      syncAppVersionVisibility();
       prefillAccountEmail();
       out.textContent = t('site_support_submit_success');
       out.className = 'msg ok';

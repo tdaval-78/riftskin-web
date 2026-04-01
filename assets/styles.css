@@ -2916,6 +2916,15 @@ textarea {
   gap: 12px;
 }
 
+.support-app-version {
+  display: grid;
+  gap: 10px;
+}
+
+.support-app-version-note {
+  margin: 0;
+}
+
 .support-upload-label,
 .support-files-title {
   font-size: 0.92rem;

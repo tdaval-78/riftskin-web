@@ -154,6 +154,7 @@ async function sendSupportEmail(params: {
   name: string
   email: string
   topicLabel: string
+  appVersion: string
   message: string
   attachments: Array<Record<string, unknown>>
 }) {
@@ -188,7 +189,8 @@ async function sendSupportEmail(params: {
         <div style="margin:0 0 6px;"><strong>Sent at:</strong> ${escapeHtml(params.createdAt)}</div>
         <div style="margin:0 0 6px;"><strong>Name:</strong> ${escapeHtml(params.name)}</div>
         <div style="margin:0 0 6px;"><strong>Email:</strong> ${escapeHtml(params.email)}</div>
-        <div><strong>Topic:</strong> ${escapeHtml(params.topicLabel)}</div>
+        <div style="margin:0 0 6px;"><strong>Topic:</strong> ${escapeHtml(params.topicLabel)}</div>
+        <div><strong>App version:</strong> ${escapeHtml(params.appVersion || "Not provided")}</div>
       </div>
       <div style="margin:0 0 18px;">
         <div style="font-size:12px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#c6a756;margin:0 0 10px;">Message</div>
@@ -217,6 +219,7 @@ async function sendSupportEmail(params: {
     `Name: ${params.name}`,
     `Email: ${params.email}`,
     `Topic: ${params.topicLabel}`,
+    `App version: ${params.appVersion || "Not provided"}`,
     "",
     params.message,
     "",
@@ -270,6 +273,7 @@ Deno.serve(async (req) => {
     const email = String(formData.get("email") || "").trim()
     const topic = String(formData.get("topic") || "").trim()
     const topicLabel = String(formData.get("topic_label") || topic).trim()
+    const appVersion = String(formData.get("app_version") || "").trim()
     const message = String(formData.get("message") || "").trim()
     const honeypot = String(formData.get("website") || "").trim()
 
@@ -342,6 +346,7 @@ Deno.serve(async (req) => {
       email,
       topic,
       topic_label: topicLabel,
+      app_version: appVersion,
       message,
       attachment_count: attachmentMeta.length,
       attachments: attachmentMeta,
@@ -372,6 +377,7 @@ Deno.serve(async (req) => {
       name,
       email,
       topicLabel,
+      appVersion,
       message,
       attachments: attachmentMeta,
     })
