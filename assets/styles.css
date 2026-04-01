@@ -2954,10 +2954,14 @@ textarea {
 }
 
 .admin-metric-card strong {
-  font-size: clamp(1.6rem, 2vw, 2rem);
-  line-height: 1.05;
+  font-size: clamp(1.28rem, 1.5vw, 1.72rem);
+  line-height: 1.12;
   color: var(--text-primary);
   max-width: none;
+  align-self: end;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  text-wrap: balance;
 }
 
 .admin-table-wrap {
