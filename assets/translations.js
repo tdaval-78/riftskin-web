@@ -2356,6 +2356,7 @@ Object.assign(window.RiftSkinTranslations.en, {
   site_account_attach_code_btn: "Attach premium code",
   site_account_codes_title: "My premium codes",
   site_account_codes_intro: "Your license stays the same while the subscription remains active. Use it inside the desktop app to unlock premium features."
+  ,account_download_app: "Download the app"
 });
 
 Object.assign(window.RiftSkinTranslations.fr, {
@@ -2775,6 +2776,7 @@ Object.assign(window.RiftSkinTranslations.fr, {
   site_account_attach_code_btn: "Associer un code premium",
   site_account_codes_title: "Mes codes premium",
   site_account_codes_intro: "Votre licence reste la même tant que l'abonnement est actif. Utilisez-la dans l'application desktop pour débloquer les fonctions premium."
+  ,account_download_app: "Télécharger l'application"
 });
 
 Object.assign(window.RiftSkinTranslations.es, {
