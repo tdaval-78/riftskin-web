@@ -15,8 +15,25 @@
   const adminServiceTemplate = document.querySelector('[data-admin-service-template]');
   const adminServiceTemplatePreview = document.querySelector('[data-admin-service-template-preview]');
   const adminServiceTemplateTranslation = document.querySelector('[data-admin-service-template-translation]');
+  const adminViewLinks = Array.from(document.querySelectorAll('[data-admin-view-link]'));
+  const adminViews = Array.from(document.querySelectorAll('[data-admin-view]'));
+
+  const accountTotalEl = document.querySelector('[data-admin-accounts-total]');
+  const accountConfirmedEl = document.querySelector('[data-admin-accounts-confirmed]');
+  const accountConnectedEl = document.querySelector('[data-admin-accounts-connected]');
+  const accountActiveEl = document.querySelector('[data-admin-accounts-active]');
+  const accountsBody = document.querySelector('[data-admin-accounts-body]');
+  const accountsMsg = document.querySelector('[data-admin-accounts-msg]');
+
+  const salesActiveEl = document.querySelector('[data-admin-sales-active]');
+  const salesCanceledEl = document.querySelector('[data-admin-sales-canceled-running]');
+  const salesEndedEl = document.querySelector('[data-admin-sales-ended]');
+  const salesTotalEl = document.querySelector('[data-admin-sales-total]');
+  const salesBody = document.querySelector('[data-admin-sales-body]');
+  const salesMsg = document.querySelector('[data-admin-sales-msg]');
 
   const CUSTOM_SERVICE_TEMPLATE = '__custom__';
+  const DEFAULT_ADMIN_VIEW = 'shared';
   const SERVICE_MESSAGE_TEMPLATES = [
     {
       id: 'ok_general',
@@ -73,6 +90,34 @@
     const dt = new Date(isoString);
     if (Number.isNaN(dt.getTime())) return isoString;
     return dt.toLocaleString();
+  }
+
+  function formatBooleanLabel(value) {
+    return value ? t('site_admin_yes', 'Yes') : t('site_admin_no', 'No');
+  }
+
+  function escapeHtml(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function currentAdminView() {
+    const url = new URL(window.location.href);
+    const view = (url.searchParams.get('view') || DEFAULT_ADMIN_VIEW).trim().toLowerCase();
+    return ['shared', 'access', 'sales'].includes(view) ? view : DEFAULT_ADMIN_VIEW;
+  }
+
+  function applyAdminView(view) {
+    adminViewLinks.forEach(function (link) {
+      link.classList.toggle('is-active', link.getAttribute('data-admin-view-link') === view);
+    });
+    adminViews.forEach(function (section) {
+      section.style.display = section.getAttribute('data-admin-view') === view ? '' : 'none';
+    });
   }
 
   function serviceStateInfo(state) {
@@ -192,6 +237,114 @@
     renderAdminServiceStatus(row);
   }
 
+  async function invokeAdminDashboard() {
+    const session = await getSession();
+    if (!session || !session.access_token) {
+      throw new Error('not_authenticated');
+    }
+
+    const response = await fetch(cfg.supabaseUrl.replace(/\/+$/, '') + '/functions/v1/admin-dashboard', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + session.access_token
+      },
+      body: JSON.stringify({})
+    });
+
+    const payload = await response.json().catch(function () { return {}; });
+    if (!response.ok) {
+      throw new Error(payload.detail || payload.error || 'admin_dashboard_failed');
+    }
+    return payload;
+  }
+
+  function accessStateLabel(value) {
+    const key = String(value || '').trim().toLowerCase();
+    if (key === 'admin') return t('site_admin_access_admin', 'Admin');
+    if (key === 'active') return t('site_admin_access_active', 'Premium actif');
+    if (key === 'expired') return t('site_admin_access_expired', 'Premium expiré');
+    return t('site_admin_access_none', 'Mode gratuit');
+  }
+
+  function renderAccounts(data) {
+    if (accountTotalEl) accountTotalEl.textContent = String(data.accountSummary?.totalAccounts || 0);
+    if (accountConfirmedEl) accountConfirmedEl.textContent = String(data.accountSummary?.confirmedAccounts || 0);
+    if (accountConnectedEl) accountConnectedEl.textContent = String(data.accountSummary?.connectedOnSite || 0);
+    if (accountActiveEl) accountActiveEl.textContent = String(data.accountSummary?.activeOnSite || 0);
+
+    if (!accountsBody) return;
+    const rows = safeArray(data.accounts);
+    if (!rows.length) {
+      accountsBody.innerHTML = '<tr><td colspan="6">' + escapeHtml(t('site_admin_empty_accounts', 'Aucun compte pour le moment.')) + '</td></tr>';
+      return;
+    }
+
+    accountsBody.innerHTML = rows.map(function (row) {
+      const email = escapeHtml(row.email || '-');
+      const username = row.username ? '<div class="subtle">@' + escapeHtml(row.username) + '</div>' : '';
+      const created = escapeHtml(formatDate(row.createdAt));
+      const lastSignIn = escapeHtml(formatDate(row.lastSignInAt));
+      const connected = escapeHtml(formatBooleanLabel(!!row.siteConnected));
+      const active = escapeHtml(formatBooleanLabel(!!row.siteActive));
+      const access = escapeHtml(accessStateLabel(row.accessState));
+      return '<tr>'
+        + '<td><strong>' + email + '</strong>' + username + '</td>'
+        + '<td>' + created + '</td>'
+        + '<td>' + lastSignIn + '</td>'
+        + '<td>' + connected + '</td>'
+        + '<td>' + active + '</td>'
+        + '<td>' + access + '</td>'
+        + '</tr>';
+    }).join('');
+  }
+
+  function salesStatusLabel(row) {
+    if (row.canceledButStillRunning) return t('site_admin_sales_status_canceled_running', 'Annulé, encore actif');
+    if (row.active) return t('site_admin_sales_status_active', 'Actif');
+    return t('site_admin_sales_status_ended', 'Terminé');
+  }
+
+  function renderSales(data) {
+    if (salesActiveEl) salesActiveEl.textContent = String(data.salesSummary?.activeSubscriptions || 0);
+    if (salesCanceledEl) salesCanceledEl.textContent = String(data.salesSummary?.canceledButRunning || 0);
+    if (salesEndedEl) salesEndedEl.textContent = String(data.salesSummary?.endedSubscriptions || 0);
+    if (salesTotalEl) salesTotalEl.textContent = String(data.salesSummary?.totalSubscriptions || 0);
+
+    if (!salesBody) return;
+    const rows = safeArray(data.subscriptions);
+    if (!rows.length) {
+      salesBody.innerHTML = '<tr><td colspan="6">' + escapeHtml(t('site_admin_empty_sales', 'Aucun abonnement enregistré pour le moment.')) + '</td></tr>';
+      return;
+    }
+
+    salesBody.innerHTML = rows.map(function (row) {
+      const email = escapeHtml(row.customerEmail || '-');
+      const provider = escapeHtml(String(row.provider || '').toUpperCase() || '-');
+      const started = escapeHtml(formatDate(row.activatedAt || row.createdAt || row.currentPeriodStartsAt));
+      const canceled = escapeHtml(formatBooleanLabel(!!row.canceledButStillRunning || !!row.canceledAt));
+      const ends = escapeHtml(formatDate(row.currentPeriodEndsAt));
+      const status = escapeHtml(salesStatusLabel(row));
+      return '<tr>'
+        + '<td><strong>' + email + '</strong></td>'
+        + '<td>' + provider + '</td>'
+        + '<td>' + started + '</td>'
+        + '<td>' + canceled + '</td>'
+        + '<td>' + ends + '</td>'
+        + '<td>' + status + '</td>'
+        + '</tr>';
+    }).join('');
+  }
+
+  async function loadAdminDashboard() {
+    msg(accountsMsg, '');
+    msg(salesMsg, '');
+
+    const data = await invokeAdminDashboard();
+    renderAccounts(data);
+    renderSales(data);
+  }
+
   function showGuard(title, message, kind) {
     if (adminGuard) adminGuard.style.display = 'block';
     if (adminContent) adminContent.style.display = 'none';
@@ -240,7 +393,11 @@
     if (adminGuard) adminGuard.style.display = 'none';
     if (adminContent) adminContent.style.display = 'grid';
     setSessionBadge(t('msg_status_connected', 'Connected'), 'ok');
-    await loadAdminServiceStatus();
+    applyAdminView(currentAdminView());
+    await Promise.all([
+      loadAdminServiceStatus(),
+      loadAdminDashboard()
+    ]);
   }
 
   if (!window.supabase || !cfg.supabaseUrl || !cfg.supabaseAnonKey) {
@@ -260,6 +417,17 @@
       autoRefreshToken: true,
       detectSessionInUrl: false
     }
+  });
+
+  adminViewLinks.forEach(function (link) {
+    link.addEventListener('click', function (event) {
+      event.preventDefault();
+      const view = link.getAttribute('data-admin-view-link') || DEFAULT_ADMIN_VIEW;
+      const url = new URL(window.location.href);
+      url.searchParams.set('view', view);
+      window.history.replaceState({}, '', url.toString());
+      applyAdminView(view);
+    });
   });
 
   if (adminRefreshBtn) {

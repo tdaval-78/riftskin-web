@@ -2836,6 +2836,65 @@ textarea {
   margin: 0;
 }
 
+.admin-nav-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.admin-nav-card {
+  display: grid;
+  gap: 12px;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.admin-nav-card:hover {
+  transform: translate3d(0, -1px, 0);
+  border-color: rgba(241, 221, 145, 0.26);
+}
+
+.admin-nav-card.is-active {
+  border-color: rgba(241, 221, 145, 0.34);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 16px 34px rgba(0, 0, 0, 0.18);
+}
+
+.admin-nav-card h3,
+.admin-metric-card strong {
+  margin: 0;
+}
+
+.admin-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.admin-metric-card {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-metric-card strong {
+  font-size: clamp(1.6rem, 2vw, 2rem);
+  line-height: 1;
+  color: var(--text-primary);
+}
+
+.admin-table-wrap {
+  overflow-x: auto;
+}
+
+.admin-table td strong {
+  color: var(--text-primary);
+}
+
+.section-head.compact {
+  margin-bottom: 12px;
+}
+
 .field-row-3 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
@@ -3559,7 +3618,9 @@ body[data-page="support"] .notice {
   }
 
   .legal-hub-grid,
-  .legal-doc-grid {
+  .legal-doc-grid,
+  .admin-nav-grid,
+  .admin-metric-grid {
     grid-template-columns: 1fr;
   }
 

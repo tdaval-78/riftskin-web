@@ -7,7 +7,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self' mailto:; img-src 'self' data: https://www.google-analytics.com https://jfmrwxmlncvzoremcmbi.supabase.co; style-src 'self' 'unsafe-inline'; script-src 'self' https://cdn.jsdelivr.net https://cdn.paddle.com https://www.googletagmanager.com; connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://analytics.google.com https://jfmrwxmlncvzoremcmbi.supabase.co https://api.paddle.com https://sandbox-api.paddle.com https://checkout.paddle.com https://sandbox-checkout.paddle.com; frame-src https://checkout.paddle.com https://sandbox-checkout.paddle.com https://www.googletagmanager.com;" />
   <title data-i18n="site_admin_title">RIFTSKIN - Admin</title>
   <meta name="description" data-i18n-content="site_admin_meta_desc" content="Gérez le statut desktop public de RiftSkin et le message de service depuis la console admin." />
-  <link rel="stylesheet" href="/assets/styles.css?v=20260401e" />
+  <link rel="stylesheet" href="/assets/styles.css?v=20260401l" />
   <!-- Google Tag Manager -->
   <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-TBCZT7QR');</script>
   <!-- End Google Tag Manager -->
@@ -68,7 +68,7 @@
           <div>
             <h3 data-i18n="admin_console_title">Console admin</h3>
             <p class="subtle"><span data-i18n="site_admin_connected_as">Connecté en tant que</span> <strong data-admin-email>-</strong></p>
-            <p class="subtle" data-i18n="site_admin_status_intro">Mettez à jour l'état d'injection desktop et le message de service public affichés à la fois dans l'application et sur le site.</p>
+            <p class="subtle" data-i18n="site_admin_console_intro">Choisissez une section admin pour piloter l'état partagé, suivre les accès web et surveiller les ventes premium.</p>
           </div>
           <div class="admin-console-actions">
             <a class="btn btn-ghost" href="/account.html" data-i18n="site_admin_back_account">Retour à mon compte</a>
@@ -76,7 +76,27 @@
           </div>
         </div>
 
-        <section class="panel admin-panel-block">
+        <div class="admin-nav-grid">
+          <a class="panel admin-nav-card is-active" href="/admin.html?view=shared" data-admin-view-link="shared">
+            <span class="legal-card-kicker" data-i18n="site_admin_nav_shared_kicker">ADMIN 01</span>
+            <h3 data-i18n="site_admin_nav_shared_title">État partagé</h3>
+            <p class="subtle" data-i18n="site_admin_nav_shared_desc">Publiez le statut public partagé entre le site et l'application desktop.</p>
+          </a>
+          <a class="panel admin-nav-card" href="/admin.html?view=access" data-admin-view-link="access">
+            <span class="legal-card-kicker" data-i18n="site_admin_nav_access_kicker">ADMIN 02</span>
+            <h3 data-i18n="site_admin_nav_access_title">Suivi des accès</h3>
+            <p class="subtle" data-i18n="site_admin_nav_access_desc">Suivez les comptes créés, les connexions récentes au site et l'activité web récente.</p>
+          </a>
+          <a class="panel admin-nav-card" href="/admin.html?view=sales" data-admin-view-link="sales">
+            <span class="legal-card-kicker" data-i18n="site_admin_nav_sales_kicker">ADMIN 03</span>
+            <h3 data-i18n="site_admin_nav_sales_title">Suivi des ventes</h3>
+            <p class="subtle" data-i18n="site_admin_nav_sales_desc">Contrôlez les abonnements, les annulations en cours et l'état commercial des ventes premium.</p>
+          </a>
+        </div>
+
+        <section class="panel admin-panel-block" data-admin-view="shared">
+          <h3 data-i18n="site_admin_view_shared_title">État partagé</h3>
+          <p class="subtle" data-i18n="site_admin_status_intro">Mettez à jour l'état d'injection desktop et le message de service public affichés à la fois dans l'application et sur le site.</p>
           <div class="notice admin-service-live-block">
             <div class="admin-service-live-meta">
               <span class="status-badge" data-admin-service-live data-i18n="admin_loading">Loading...</span>
@@ -116,6 +136,72 @@
             <div class="msg" data-admin-service-msg></div>
           </form>
         </section>
+
+        <section class="panel admin-panel-block" data-admin-view="access" style="display:none;">
+          <div class="section-head compact">
+            <div>
+              <h3 data-i18n="site_admin_view_access_title">Suivi des accès</h3>
+              <p class="subtle" data-i18n="site_admin_view_access_intro">Vue d'ensemble des comptes créés, des accès premium et de la présence récente sur le site.</p>
+            </div>
+          </div>
+
+          <div class="admin-metric-grid">
+            <div class="panel admin-metric-card"><span class="legal-card-kicker" data-i18n="site_admin_accounts_metric_total">Comptes créés</span><strong data-admin-accounts-total>-</strong></div>
+            <div class="panel admin-metric-card"><span class="legal-card-kicker" data-i18n="site_admin_accounts_metric_confirmed">Emails confirmés</span><strong data-admin-accounts-confirmed>-</strong></div>
+            <div class="panel admin-metric-card"><span class="legal-card-kicker" data-i18n="site_admin_accounts_metric_connected">Connectés sur le site</span><strong data-admin-accounts-connected>-</strong></div>
+            <div class="panel admin-metric-card"><span class="legal-card-kicker" data-i18n="site_admin_accounts_metric_active">Actifs il y a moins de 5 min</span><strong data-admin-accounts-active>-</strong></div>
+          </div>
+
+          <div class="keys-table-wrap admin-table-wrap" style="margin-top:12px;">
+            <table class="keys-table admin-table">
+              <thead>
+                <tr>
+                  <th data-i18n="site_admin_accounts_col_email">Compte</th>
+                  <th data-i18n="site_admin_accounts_col_created">Créé le</th>
+                  <th data-i18n="site_admin_accounts_col_signed_in">Dernière connexion</th>
+                  <th data-i18n="site_admin_accounts_col_connected">Site connecté</th>
+                  <th data-i18n="site_admin_accounts_col_active">Site actif</th>
+                  <th data-i18n="site_admin_accounts_col_access">Accès</th>
+                </tr>
+              </thead>
+              <tbody data-admin-accounts-body></tbody>
+            </table>
+          </div>
+          <div class="msg" data-admin-accounts-msg></div>
+        </section>
+
+        <section class="panel admin-panel-block" data-admin-view="sales" style="display:none;">
+          <div class="section-head compact">
+            <div>
+              <h3 data-i18n="site_admin_view_sales_title">Suivi des ventes</h3>
+              <p class="subtle" data-i18n="site_admin_view_sales_intro">Suivez les abonnements premium en cours, les résiliations programmées et l'état global des ventes.</p>
+            </div>
+          </div>
+
+          <div class="admin-metric-grid">
+            <div class="panel admin-metric-card"><span class="legal-card-kicker" data-i18n="site_admin_sales_metric_active">Abonnements actifs</span><strong data-admin-sales-active>-</strong></div>
+            <div class="panel admin-metric-card"><span class="legal-card-kicker" data-i18n="site_admin_sales_metric_canceled">Annulés mais encore en cours</span><strong data-admin-sales-canceled-running>-</strong></div>
+            <div class="panel admin-metric-card"><span class="legal-card-kicker" data-i18n="site_admin_sales_metric_ended">Abonnements terminés</span><strong data-admin-sales-ended>-</strong></div>
+            <div class="panel admin-metric-card"><span class="legal-card-kicker" data-i18n="site_admin_sales_metric_total">Ventes enregistrées</span><strong data-admin-sales-total>-</strong></div>
+          </div>
+
+          <div class="keys-table-wrap admin-table-wrap" style="margin-top:12px;">
+            <table class="keys-table admin-table">
+              <thead>
+                <tr>
+                  <th data-i18n="site_admin_sales_col_email">Email</th>
+                  <th data-i18n="site_admin_sales_col_provider">Canal</th>
+                  <th data-i18n="site_admin_sales_col_started">Souscrit le</th>
+                  <th data-i18n="site_admin_sales_col_canceled">Annulé</th>
+                  <th data-i18n="site_admin_sales_col_ends">Fin d'abonnement</th>
+                  <th data-i18n="site_admin_sales_col_status">Statut</th>
+                </tr>
+              </thead>
+              <tbody data-admin-sales-body></tbody>
+            </table>
+          </div>
+          <div class="msg" data-admin-sales-msg></div>
+        </section>
       </article>
     </section>
 
@@ -134,9 +220,9 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/assets/config.js?v=20260401t"></script>
-  <script src="/assets/translations.js?v=20260401s"></script>
+  <script src="/assets/translations.js?v=20260401v"></script>
   <script src="/assets/i18n.js?v=20260401r"></script>
   <script src="/assets/site.js?v=20260401s"></script>
-  <script src="/assets/admin.js?v=20260401h"></script>
+  <script src="/assets/admin.js?v=20260401i"></script>
 </body>
 </html>
