@@ -1,6 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 import { createClient } from "npm:@supabase/supabase-js@2"
-import { escapeHtml, renderEmailLayout } from "../_shared/email-template.ts"
+import { escapeHtml, getAutomatedFromEmail, getSupportReplyToEmail, renderEmailLayout } from "../_shared/email-template.ts"
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -163,8 +163,8 @@ async function sendSupportEmail(params: {
     return { sent: false, reason: "missing_resend_api_key" }
   }
 
-  const supportToEmail = Deno.env.get("SUPPORT_TO_EMAIL") || "support@riftskin.com"
-  const supportFromEmail = Deno.env.get("SUPPORT_FROM_EMAIL") || "RIFTSKIN <no-reply@riftskin.com>"
+  const supportToEmail = getSupportReplyToEmail()
+  const supportFromEmail = getAutomatedFromEmail()
 
   const attachmentItems = params.attachments.length
     ? params.attachments.map((attachment) => {
@@ -249,6 +249,88 @@ async function sendSupportEmail(params: {
   }
 
   const payload = await response.json()
+  return { sent: true, id: payload.id || null }
+}
+
+async function sendSupportAcknowledgementEmail(params: {
+  requestId: string
+  name: string
+  email: string
+  topicLabel: string
+  appVersion: string
+  message: string
+}) {
+  const resendApiKey = Deno.env.get("RESEND_API_KEY")
+  if (!resendApiKey) {
+    return { sent: false, reason: "missing_resend_api_key" }
+  }
+
+  const supportFromEmail = getAutomatedFromEmail()
+  const supportReplyToEmail = getSupportReplyToEmail()
+  const appVersionLine = params.appVersion
+    ? `<div style="margin:0 0 6px;"><strong>App version:</strong> ${escapeHtml(params.appVersion)}</div>`
+    : ""
+
+  const html = renderEmailLayout({
+    previewText: "Nous avons bien recu votre demande de support RIFTSKIN.",
+    eyebrow: "Support",
+    title: "Nous avons bien recu votre demande",
+    lead: "Votre demande de support a bien ete recue et sera traitee dans les plus brefs delais.",
+    bodyHtml: `
+      <div style="margin:0 0 18px;padding:18px 20px;background:#111c31;border:1px solid #22314d;border-radius:18px;">
+        <div style="font-size:12px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#c6a756;margin:0 0 10px;">Recapitulatif</div>
+        <div style="margin:0 0 6px;"><strong>ID:</strong> ${escapeHtml(params.requestId)}</div>
+        <div style="margin:0 0 6px;"><strong>Nom:</strong> ${escapeHtml(params.name)}</div>
+        <div style="margin:0 0 6px;"><strong>Email de contact:</strong> ${escapeHtml(params.email)}</div>
+        <div style="margin:0 0 6px;"><strong>Sujet:</strong> ${escapeHtml(params.topicLabel)}</div>
+        ${appVersionLine}
+      </div>
+      <div style="margin:0 0 18px;">
+        <div style="font-size:12px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#c6a756;margin:0 0 10px;">Votre message</div>
+        <div style="white-space:pre-wrap;padding:16px 18px;background:#0b1323;border:1px solid #22314d;border-radius:16px;">${escapeHtml(params.message)}</div>
+      </div>
+      <p style="margin:0;">Notre equipe va examiner votre demande au plus vite. Si nous avons besoin d'informations complementaires, nous vous recontacterons a cette adresse.</p>
+    `,
+    footerNote: "Ceci est un email automatique RIFTSKIN. Si vous souhaitez ajouter des details, utilisez la page support.",
+  })
+
+  const text = [
+    "Nous avons bien recu votre demande de support RIFTSKIN.",
+    "",
+    `Request ID: ${params.requestId}`,
+    `Nom: ${params.name}`,
+    `Email de contact: ${params.email}`,
+    `Sujet: ${params.topicLabel}`,
+    `App version: ${params.appVersion || "Not provided"}`,
+    "",
+    "Votre message :",
+    params.message,
+    "",
+    "Notre equipe va examiner votre demande dans les plus brefs delais.",
+  ].join("\n")
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${resendApiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: supportFromEmail,
+      to: [params.email],
+      reply_to: supportReplyToEmail,
+      subject: "Nous avons bien recu votre demande de support RIFTSKIN",
+      html,
+      text,
+    }),
+  })
+
+  if (!response.ok) {
+    const errorText = await response.text()
+    throw new Error(`resend_error:${response.status}:${errorText}`)
+  }
+
+  const payload = await response.json().catch(() => ({}))
   return { sent: true, id: payload.id || null }
 }
 
@@ -381,12 +463,21 @@ Deno.serve(async (req) => {
       message,
       attachments: attachmentMeta,
     })
+    const acknowledgementResult = await sendSupportAcknowledgementEmail({
+      requestId,
+      name,
+      email,
+      topicLabel,
+      appVersion,
+      message,
+    })
 
     return json({
       ok: true,
       request_id: requestId,
       attachments_uploaded: attachmentMeta.length,
       email_sent: emailResult.sent,
+      acknowledgement_sent: acknowledgementResult.sent,
     })
   } catch (error) {
     console.error("support-request error", error)

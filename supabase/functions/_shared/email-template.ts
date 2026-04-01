@@ -25,6 +25,14 @@ export function escapeHtml(value: unknown) {
     .replaceAll("'", "&#39;")
 }
 
+export function getAutomatedFromEmail() {
+  return Deno.env.get("NO_REPLY_FROM_EMAIL") || "RIFTSKIN <no-reply@riftskin.com>"
+}
+
+export function getSupportReplyToEmail() {
+  return Deno.env.get("SUPPORT_TO_EMAIL") || "support@riftskin.com"
+}
+
 export function renderEmailButton(label: string, href: string) {
   return `
     <a

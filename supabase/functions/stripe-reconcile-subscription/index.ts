@@ -1,6 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 import { createClient } from "npm:@supabase/supabase-js@2"
-import { escapeHtml, renderEmailButton, renderEmailLayout } from "../_shared/email-template.ts"
+import { escapeHtml, getAutomatedFromEmail, getSupportReplyToEmail, renderEmailButton, renderEmailLayout } from "../_shared/email-template.ts"
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -391,10 +391,8 @@ async function sendBillingEmail(params: {
     return { sent: false, reason: "missing_resend_api_key" }
   }
 
-  const fromEmail = Deno.env.get("BILLING_FROM_EMAIL")
-    || Deno.env.get("SUPPORT_FROM_EMAIL")
-    || "RIFTSKIN <no-reply@riftskin.com>"
-  const replyToEmail = Deno.env.get("SUPPORT_TO_EMAIL") || "support@riftskin.com"
+  const fromEmail = getAutomatedFromEmail()
+  const replyToEmail = getSupportReplyToEmail()
 
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
