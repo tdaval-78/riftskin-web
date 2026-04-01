@@ -7,6 +7,7 @@
   const adminContent = document.querySelector('[data-admin-content]');
   const adminEmail = document.querySelector('[data-admin-email]');
   const adminRefreshBtn = document.querySelector('[data-admin-refresh]');
+  const adminStripeLinks = Array.from(document.querySelectorAll('[data-admin-stripe-link]'));
   const adminServiceForm = document.querySelector('[data-admin-service-form]');
   const adminServiceMsg = document.querySelector('[data-admin-service-msg]');
   const adminServiceLive = document.querySelector('[data-admin-service-live]');
@@ -93,6 +94,22 @@
       return translated === key && typeof fallback === 'string' ? fallback : translated;
     }
     return typeof fallback === 'string' ? fallback : key;
+  }
+
+  function getStripeDashboardUrl() {
+    const environment = String(cfg.stripeEnvironment || 'live').trim().toLowerCase();
+    return environment === 'test'
+      ? 'https://dashboard.stripe.com/test'
+      : 'https://dashboard.stripe.com';
+  }
+
+  function syncStripeDashboardLinks() {
+    const href = getStripeDashboardUrl();
+    const enabled = String(cfg.billingProvider || '').trim().toLowerCase() === 'stripe';
+    adminStripeLinks.forEach(function (link) {
+      link.href = href;
+      link.style.display = enabled ? '' : 'none';
+    });
   }
 
   function msg(target, text, type) {
@@ -539,6 +556,8 @@
       loadAdminDashboard()
     ]);
   }
+
+  syncStripeDashboardLinks();
 
   if (!window.supabase || !cfg.supabaseUrl || !cfg.supabaseAnonKey) {
     showGuard(

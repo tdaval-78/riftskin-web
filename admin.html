@@ -71,6 +71,7 @@
             <p class="subtle" data-i18n="site_admin_console_intro">Choisissez une section admin pour piloter l'état partagé, suivre les accès web et surveiller les ventes premium.</p>
           </div>
           <div class="admin-console-actions">
+            <a class="btn btn-ghost" href="#" target="_blank" rel="noreferrer noopener" data-admin-stripe-link data-i18n="site_admin_open_stripe">Ouvrir Stripe</a>
             <a class="btn btn-ghost" href="/account.html" data-i18n="site_admin_back_account">Retour à mon compte</a>
             <button class="btn btn-ghost" type="button" data-admin-refresh data-i18n="admin_console_refresh">Actualiser</button>
           </div>
@@ -251,9 +252,12 @@
               <h3 data-i18n="site_admin_view_sales_title">Suivi des ventes</h3>
               <p class="subtle" data-i18n="site_admin_view_sales_intro">Suivez les abonnements premium en cours, les résiliations programmées et l'état global des ventes.</p>
             </div>
-            <div class="admin-year-filter">
-              <label class="subtle" for="admin-sales-year" data-i18n="site_admin_sales_year_label">Exercice</label>
-              <select id="admin-sales-year" data-admin-sales-year></select>
+            <div class="admin-sales-head-actions">
+              <div class="admin-year-filter">
+                <label class="subtle" for="admin-sales-year" data-i18n="site_admin_sales_year_label">Exercice</label>
+                <select id="admin-sales-year" data-admin-sales-year></select>
+              </div>
+              <a class="btn btn-ghost" href="#" target="_blank" rel="noreferrer noopener" data-admin-stripe-link data-i18n="site_admin_open_stripe">Ouvrir Stripe</a>
             </div>
           </div>
 
@@ -381,9 +385,9 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/assets/config.js?v=20260401t"></script>
-  <script src="/assets/translations.js?v=20260401y"></script>
+  <script src="/assets/translations.js?v=20260401z"></script>
   <script src="/assets/i18n.js?v=20260401r"></script>
   <script src="/assets/site.js?v=20260401s"></script>
-  <script src="/assets/admin.js?v=20260401l"></script>
+  <script src="/assets/admin.js?v=20260401m"></script>
 </body>
 </html>

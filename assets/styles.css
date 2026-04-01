@@ -2993,6 +2993,14 @@ textarea {
   min-width: 220px;
 }
 
+.admin-sales-head-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: end;
+  gap: 12px;
+}
+
 .admin-year-filter select {
   min-width: 180px;
   min-height: 52px;
@@ -3853,7 +3861,13 @@ body[data-page="support"] .notice {
     justify-content: stretch;
   }
 
+  .admin-sales-head-actions {
+    justify-content: stretch;
+    align-items: stretch;
+  }
+
   .admin-console-actions .btn,
+  .admin-sales-head-actions .btn,
   .admin-panel-block .field-row:last-child .btn {
     width: 100%;
     min-width: 0;
