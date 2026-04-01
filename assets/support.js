@@ -117,7 +117,7 @@
 
   function syncAppVersionVisibility() {
     if (!topicSelect || !appVersionWrap || !appVersionSelect || !appVersionOtherInput) return;
-    const requiresVersion = topicSelect.value === 'application' || topicSelect.value === 'subscription';
+    const requiresVersion = topicSelect.value === 'application';
     appVersionWrap.hidden = !requiresVersion;
     appVersionSelect.required = requiresVersion;
 
@@ -139,7 +139,7 @@
     const email = form && form.elements.email ? String(form.elements.email.value || '').trim() : '';
     const topic = topicSelect ? String(topicSelect.value || '').trim() : '';
     const message = messageInput ? String(messageInput.value || '').trim() : '';
-    const requiresVersion = topic === 'application' || topic === 'subscription';
+    const requiresVersion = topic === 'application';
     const appVersion = appVersionSelect ? String(appVersionSelect.value || '').trim() : '';
     const appVersionOther = appVersionOtherInput ? String(appVersionOtherInput.value || '').trim() : '';
     const hasVersion = !requiresVersion || (appVersion && (appVersion !== 'other' || appVersionOther));
