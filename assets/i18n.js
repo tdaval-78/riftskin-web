@@ -14,17 +14,6 @@
     return '';
   }
 
-  function detectBrowserLanguage() {
-    const list = [];
-    if (Array.isArray(navigator.languages)) list.push.apply(list, navigator.languages);
-    if (navigator.language) list.push(navigator.language);
-    for (let i = 0; i < list.length; i += 1) {
-      const normalized = normalizeLanguageCode(list[i]);
-      if (SUPPORTED.indexOf(normalized) !== -1) return normalized;
-    }
-    return 'en';
-  }
-
   function getLanguage() {
     if (currentLanguage && SUPPORTED.indexOf(currentLanguage) !== -1) return currentLanguage;
 
@@ -34,7 +23,7 @@
       return currentLanguage;
     }
 
-    currentLanguage = detectBrowserLanguage();
+    currentLanguage = 'en';
     return currentLanguage;
   }
 
@@ -155,7 +144,7 @@
     if (select) {
       select.value = getLanguage();
       const labels = {
-        en: '🇺🇸',
+        en: '🇬🇧',
         fr: '🇫🇷'
       };
       const titles = {
