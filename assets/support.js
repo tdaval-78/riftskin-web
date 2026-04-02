@@ -17,7 +17,8 @@
   const i18n = window.RiftSkinI18n;
   const t = function (key) { return i18n ? i18n.t(key) : key; };
   const MAX_ATTACHMENTS = 5;
-  const APP_VERSION_OPTIONS = [
+  const DEFAULT_APP_VERSION_OPTIONS = [
+    'v26.3.34',
     'v26.3.33',
     'v26.3.32',
     'v26.3.31',
@@ -29,11 +30,61 @@
     'v26.3.25',
     'v26.3.24'
   ];
+  let appVersionOptions = DEFAULT_APP_VERSION_OPTIONS.slice();
+  let appVersionOptionsLoaded = false;
+  let appVersionOptionsPromise = null;
   let selectedFiles = [];
   let objectUrls = new Map();
   let submitInFlight = false;
 
   if (!form) return;
+
+  function getPublicReleasesListApiUrl() {
+    const configured = String(cfg.publicReleasesApiUrl || '').trim();
+    if (configured) {
+      return configured.replace(/\/latest\/?$/, '');
+    }
+    return 'https://api.github.com/repos/tdaval-78/riftskin-updates/releases';
+  }
+
+  async function ensureAppVersionOptionsLoaded() {
+    if (appVersionOptionsLoaded) return appVersionOptions.slice();
+    if (appVersionOptionsPromise) return appVersionOptionsPromise;
+
+    appVersionOptionsPromise = fetch(getPublicReleasesListApiUrl() + '?per_page=10', {
+      headers: {
+        Accept: 'application/vnd.github+json'
+      }
+    }).then(async function (response) {
+      if (!response.ok) {
+        throw new Error('support_release_versions_fetch_failed');
+      }
+      const payload = await response.json().catch(function () { return []; });
+      const releases = Array.isArray(payload) ? payload : [];
+      const versions = releases
+        .filter(function (item) {
+          return item && item.draft !== true;
+        })
+        .map(function (item) {
+          return String(item.tag_name || '').trim();
+        })
+        .filter(Boolean)
+        .slice(0, 10);
+
+      if (versions.length) {
+        appVersionOptions = versions;
+      }
+      appVersionOptionsLoaded = true;
+      return appVersionOptions.slice();
+    }).catch(function () {
+      appVersionOptionsLoaded = true;
+      return appVersionOptions.slice();
+    }).finally(function () {
+      appVersionOptionsPromise = null;
+    });
+
+    return appVersionOptionsPromise;
+  }
 
   function pushAnalyticsEvent(eventName, params) {
     if (!eventName) return;
@@ -94,7 +145,7 @@
       appVersionSelect.appendChild(option);
     }
 
-    APP_VERSION_OPTIONS.forEach(function (version) {
+    appVersionOptions.forEach(function (version) {
       const option = document.createElement('option');
       option.value = version;
       option.textContent = version;
@@ -331,10 +382,15 @@
     });
   }
 
-    renderSelectedFiles();
+  renderSelectedFiles();
+  renderAppVersionOptions();
+  syncAppVersionVisibility();
+  prefillAccountEmail();
+  ensureAppVersionOptionsLoaded().then(function () {
     renderAppVersionOptions();
     syncAppVersionVisibility();
-    prefillAccountEmail();
+    refreshSubmitStateSoon();
+  });
   document.addEventListener('riftskin:language-changed', function () {
     renderSelectedFiles();
     renderAppVersionOptions();
