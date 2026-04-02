@@ -266,6 +266,24 @@ type SalesRow = {
   canceledButStillRunning: boolean
 }
 
+type AuditRow = {
+  customerEmail: string
+  subscriptionActive: boolean
+  subscriptionStatus: string
+  activationKeyCode: string | null
+  machineLicenseActive: boolean
+  machineActivationCount: number
+  anomaly: boolean
+  anomalyReason: string
+}
+
+function subscriptionAuditPriority(row: { status: string, currentPeriodEndsAt: string | null, updatedAt: string | null, createdAt: string | null }) {
+  if (isBillingStillActive(row.status, row.currentPeriodEndsAt)) {
+    return ["active", "trialing"].includes(row.status) ? 0 : 1
+  }
+  return 2
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders })
@@ -468,13 +486,29 @@ Deno.serve(async (req) => {
       },
     ]
 
-    const [{ data: stripeRows, error: stripeError }, { data: paddleRows, error: paddleError }] = await Promise.all([
+    const [
+      { data: stripeRows, error: stripeError },
+      { data: paddleRows, error: paddleError },
+      { data: activationKeysRows, error: activationKeysError },
+      { data: licenseKeyRows, error: licenseKeyError },
+      { data: deviceActivationRows, error: deviceActivationError },
+    ] = await Promise.all([
       serviceClient
         .from("stripe_subscriptions")
-        .select("stripe_subscription_id, customer_email, status, current_period_starts_at, current_period_ends_at, canceled_at, activated_at, created_at, updated_at, raw"),
+        .select("stripe_subscription_id, customer_email, status, current_period_starts_at, current_period_ends_at, canceled_at, activated_at, created_at, updated_at, activation_key_id, raw"),
       serviceClient
         .from("paddle_subscriptions")
         .select("paddle_subscription_id, customer_email, status, current_period_starts_at, current_period_ends_at, canceled_at, activated_at, created_at, updated_at, raw"),
+      serviceClient
+        .from("activation_keys")
+        .select("id, code, created_for_email, is_active"),
+      serviceClient
+        .from("license_keys")
+        .select("id, license_key, is_active, expires_at, license_type")
+        .eq("license_type", "premium"),
+      serviceClient
+        .from("device_activations")
+        .select("id, license_key_id"),
     ])
 
     if (stripeError) {
@@ -482,6 +516,15 @@ Deno.serve(async (req) => {
     }
     if (paddleError) {
       return json({ error: "load_paddle_subscriptions_failed", detail: paddleError.message }, 500)
+    }
+    if (activationKeysError) {
+      return json({ error: "load_activation_keys_failed", detail: activationKeysError.message }, 500)
+    }
+    if (licenseKeyError) {
+      return json({ error: "load_license_keys_failed", detail: licenseKeyError.message }, 500)
+    }
+    if (deviceActivationError) {
+      return json({ error: "load_device_activations_failed", detail: deviceActivationError.message }, 500)
     }
 
     let liveStripeRows: SalesRow[] = []
@@ -584,6 +627,127 @@ Deno.serve(async (req) => {
       const aTs = new Date(a.createdAt || a.activatedAt || 0).getTime()
       const bTs = new Date(b.createdAt || b.activatedAt || 0).getTime()
       return bTs - aTs
+    })
+
+    const activationKeyById = new Map<number, { code: string, createdForEmail: string | null, isActive: boolean }>()
+    const activationKeyByCode = new Map<string, { id: number, createdForEmail: string | null, isActive: boolean }>()
+    for (const row of activationKeysRows || []) {
+      const id = Number(row.id || 0)
+      const code = normalizeText(row.code)
+      if (!id || !code) continue
+      const record = {
+        id,
+        code,
+        createdForEmail: normalizeText(row.created_for_email) || null,
+        isActive: row.is_active === true,
+      }
+      activationKeyById.set(id, { code: record.code, createdForEmail: record.createdForEmail, isActive: record.isActive })
+      activationKeyByCode.set(code, record)
+    }
+
+    const machineActivationCountByLicenseId = new Map<string, number>()
+    for (const row of deviceActivationRows || []) {
+      const licenseKeyId = normalizeText(row.license_key_id)
+      if (!licenseKeyId) continue
+      machineActivationCountByLicenseId.set(licenseKeyId, (machineActivationCountByLicenseId.get(licenseKeyId) || 0) + 1)
+    }
+
+    const licenseActivityByCode = new Map<string, { isActive: boolean, expiresAt: string | null, machineActivationCount: number }>()
+    for (const row of licenseKeyRows || []) {
+      const code = normalizeText(row.license_key)
+      const licenseKeyId = normalizeText(row.id)
+      if (!code || !licenseKeyId) continue
+      licenseActivityByCode.set(code, {
+        isActive: row.is_active === true,
+        expiresAt: isoOrNull(row.expires_at),
+        machineActivationCount: machineActivationCountByLicenseId.get(licenseKeyId) || 0,
+      })
+    }
+
+    const latestStripeByEmail = new Map<string, {
+      customerEmail: string
+      status: string
+      currentPeriodEndsAt: string | null
+      updatedAt: string | null
+      createdAt: string | null
+      activationKeyId: number | null
+    }>()
+    for (const row of stripeRows || []) {
+      const customerEmail = normalizeText(row.customer_email).toLowerCase()
+      if (!customerEmail) continue
+      const candidate = {
+        customerEmail,
+        status: normalizeText(row.status).toLowerCase(),
+        currentPeriodEndsAt: isoOrNull(row.current_period_ends_at),
+        updatedAt: isoOrNull(row.updated_at),
+        createdAt: isoOrNull(row.created_at),
+        activationKeyId: Number(row.activation_key_id || 0) || null,
+      }
+      const existing = latestStripeByEmail.get(customerEmail)
+      if (!existing) {
+        latestStripeByEmail.set(customerEmail, candidate)
+        continue
+      }
+
+      const candidatePriority = subscriptionAuditPriority(candidate)
+      const existingPriority = subscriptionAuditPriority(existing)
+      const candidateTs = new Date(candidate.updatedAt || candidate.createdAt || 0).getTime()
+      const existingTs = new Date(existing.updatedAt || existing.createdAt || 0).getTime()
+      if (candidatePriority < existingPriority || (candidatePriority === existingPriority && candidateTs > existingTs)) {
+        latestStripeByEmail.set(customerEmail, candidate)
+      }
+    }
+
+    const subscriptionLicenseAudit: AuditRow[] = []
+    const coveredLicenseCodes = new Set<string>()
+
+    for (const row of latestStripeByEmail.values()) {
+      const activationKey = row.activationKeyId ? activationKeyById.get(row.activationKeyId) || null : null
+      const licenseActivity = activationKey ? licenseActivityByCode.get(activationKey.code) || null : null
+      const subscriptionActive = isBillingStillActive(row.status, row.currentPeriodEndsAt)
+      const machineActivationCount = licenseActivity?.machineActivationCount || 0
+      const machineLicenseActive = !!(
+        licenseActivity?.isActive
+        && machineActivationCount > 0
+        && (!licenseActivity.expiresAt || isFuture(licenseActivity.expiresAt))
+      )
+      if (activationKey?.code) coveredLicenseCodes.add(activationKey.code)
+      subscriptionLicenseAudit.push({
+        customerEmail: row.customerEmail || activationKey?.createdForEmail || "-",
+        subscriptionActive,
+        subscriptionStatus: row.status || "missing",
+        activationKeyCode: activationKey?.code || null,
+        machineLicenseActive,
+        machineActivationCount,
+        anomaly: machineLicenseActive && !subscriptionActive,
+        anomalyReason: machineLicenseActive && !subscriptionActive ? "machine_active_without_subscription" : "none",
+      })
+    }
+
+    for (const [licenseCode, licenseActivity] of licenseActivityByCode.entries()) {
+      if (!licenseActivity.machineActivationCount || coveredLicenseCodes.has(licenseCode)) continue
+      const activationKey = activationKeyByCode.get(licenseCode) || null
+      const machineLicenseActive = !!(
+        licenseActivity.isActive
+        && licenseActivity.machineActivationCount > 0
+        && (!licenseActivity.expiresAt || isFuture(licenseActivity.expiresAt))
+      )
+      subscriptionLicenseAudit.push({
+        customerEmail: activationKey?.createdForEmail || "-",
+        subscriptionActive: false,
+        subscriptionStatus: "missing",
+        activationKeyCode: licenseCode,
+        machineLicenseActive,
+        machineActivationCount: licenseActivity.machineActivationCount,
+        anomaly: machineLicenseActive,
+        anomalyReason: machineLicenseActive ? "machine_active_without_subscription" : "none",
+      })
+    }
+
+    subscriptionLicenseAudit.sort((a, b) => {
+      if (a.anomaly !== b.anomaly) return a.anomaly ? -1 : 1
+      if (a.machineLicenseActive !== b.machineLicenseActive) return a.machineLicenseActive ? -1 : 1
+      return a.customerEmail.localeCompare(b.customerEmail)
     })
 
     const salesSummary = {
@@ -767,6 +931,7 @@ Deno.serve(async (req) => {
       providerBreakdown,
       salesTimeline,
       subscriptions: salesRows,
+      subscriptionLicenseAudit,
       releaseSummary,
     })
   } catch (error) {

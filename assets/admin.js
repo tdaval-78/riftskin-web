@@ -57,6 +57,12 @@
   const salesFilterCount = document.querySelector('[data-admin-sales-filter-count]');
   const salesBody = document.querySelector('[data-admin-sales-body]');
   const salesMsg = document.querySelector('[data-admin-sales-msg]');
+  const salesAuditRowsEl = document.querySelector('[data-admin-sales-audit-rows]');
+  const salesAuditAnomaliesEl = document.querySelector('[data-admin-sales-audit-anomalies]');
+  const salesAuditSubscriptionsEl = document.querySelector('[data-admin-sales-audit-subscriptions]');
+  const salesAuditMachineLicensesEl = document.querySelector('[data-admin-sales-audit-machine-licenses]');
+  const salesAuditBody = document.querySelector('[data-admin-sales-audit-body]');
+  const salesAuditMsg = document.querySelector('[data-admin-sales-audit-msg]');
 
   const releaseLatestEl = document.querySelector('[data-admin-release-latest]');
   const releasePublishedEl = document.querySelector('[data-admin-release-published]');
@@ -374,6 +380,67 @@
     return t('site_admin_sales_status_ended', 'Terminé');
   }
 
+  function auditStatusLabel(value) {
+    const normalized = String(value || '').trim().toLowerCase();
+    if (!normalized || normalized === 'missing') {
+      return t('site_admin_audit_status_missing', 'No linked subscription');
+    }
+    return normalized.replace(/_/g, ' ');
+  }
+
+  function auditIssueLabel(value) {
+    if (value === 'machine_active_without_subscription') {
+      return t('site_admin_audit_issue_machine_active_without_subscription', 'Machine active while subscription is inactive');
+    }
+    return t('site_admin_audit_issue_none', 'None');
+  }
+
+  function renderAuditBadge(value) {
+    return '<span class="status-badge ' + (value ? 'ok' : '') + '">' + escapeHtml(formatBooleanLabel(!!value)) + '</span>';
+  }
+
+  function renderSalesAudit(rows) {
+    if (salesAuditRowsEl) salesAuditRowsEl.textContent = formatNumber(rows.length);
+    if (salesAuditAnomaliesEl) {
+      salesAuditAnomaliesEl.textContent = formatNumber(rows.filter(function (row) { return !!row.anomaly; }).length);
+    }
+    if (salesAuditSubscriptionsEl) {
+      salesAuditSubscriptionsEl.textContent = formatNumber(rows.filter(function (row) { return !!row.subscriptionActive; }).length);
+    }
+    if (salesAuditMachineLicensesEl) {
+      salesAuditMachineLicensesEl.textContent = formatNumber(rows.filter(function (row) { return !!row.machineLicenseActive; }).length);
+    }
+
+    if (!salesAuditBody) return;
+    if (!rows.length) {
+      salesAuditBody.innerHTML = '<tr><td colspan="7">' + escapeHtml(t('site_admin_audit_empty', 'No subscription or machine license to audit yet.')) + '</td></tr>';
+      return;
+    }
+
+    salesAuditBody.innerHTML = rows.map(function (row) {
+      const email = escapeHtml(row.customerEmail || '-');
+      const subscription = renderAuditBadge(!!row.subscriptionActive);
+      const machine = renderAuditBadge(!!row.machineLicenseActive);
+      const stripeStatus = escapeHtml(auditStatusLabel(row.subscriptionStatus));
+      const license = row.activationKeyCode
+        ? '<strong>' + escapeHtml(row.activationKeyCode) + '</strong>'
+        : '-';
+      const machines = escapeHtml(formatNumber(row.machineActivationCount || 0));
+      const anomaly = row.anomaly
+        ? '<span class="status-badge warning">' + escapeHtml(auditIssueLabel(row.anomalyReason)) + '</span>'
+        : '<span class="subtle">' + escapeHtml(auditIssueLabel(row.anomalyReason)) + '</span>';
+      return '<tr>'
+        + '<td><strong>' + email + '</strong></td>'
+        + '<td>' + subscription + '</td>'
+        + '<td>' + machine + '</td>'
+        + '<td>' + stripeStatus + '</td>'
+        + '<td>' + license + '</td>'
+        + '<td>' + machines + '</td>'
+        + '<td>' + anomaly + '</td>'
+        + '</tr>';
+    }).join('');
+  }
+
   function filterSalesRows(rows) {
     const emailNeedle = (salesFilterEmail && salesFilterEmail.value ? String(salesFilterEmail.value) : '').trim().toLowerCase();
     const providerNeedle = (salesFilterProvider && salesFilterProvider.value ? String(salesFilterProvider.value) : '').trim().toLowerCase();
@@ -545,17 +612,21 @@
     msg(accountsMsg, '');
     msg(salesMsg, '');
     msg(releasesMsg, '');
+    msg(salesAuditMsg, '');
 
     try {
       const data = await invokeAdminDashboard();
       renderAccounts(data);
       renderSales(data);
       renderReleases(data);
+      renderSalesAudit(safeArray(data.subscriptionLicenseAudit || []));
     } catch (error) {
       const detail = error && error.message ? error.message : t('admin_dashboard_failed', 'Unable to load admin dashboard.');
       msg(accountsMsg, detail, 'error');
       msg(salesMsg, detail, 'error');
       msg(releasesMsg, detail, 'error');
+      msg(salesAuditMsg, detail, 'error');
+      renderSalesAudit([]);
     }
   }
 
