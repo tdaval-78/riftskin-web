@@ -461,16 +461,55 @@ body[data-page="account"] .section-intro {
 body[data-page="seo-article"] .section-head,
 body[data-page="seo-article"] .section-head > div,
 body[data-page="seo-article"] .section-head h1,
-body[data-page="seo-article"] .section-intro {
+body[data-page="seo-article"] .section-intro,
+body[data-page="seo-guide"] .section-head,
+body[data-page="seo-guide"] .section-head > div,
+body[data-page="seo-guide"] .section-head h1,
+body[data-page="seo-guide"] .section-intro,
+body[data-page="use-guide"] .section-head,
+body[data-page="use-guide"] .section-head > div,
+body[data-page="use-guide"] .section-head h1,
+body[data-page="use-guide"] .section-intro,
+body[data-page="video-guide"] .section-head,
+body[data-page="video-guide"] .section-head > div,
+body[data-page="video-guide"] .section-head h1,
+body[data-page="video-guide"] .section-intro {
   max-width: none;
 }
 
-body[data-page="seo-article"] .section-head h1 {
+body[data-page="seo-article"] .section-head h1,
+body[data-page="seo-guide"] .section-head h1,
+body[data-page="use-guide"] .section-head h1,
+body[data-page="video-guide"] .section-head h1 {
   text-wrap: balance;
 }
 
-body[data-page="seo-article"] .section-intro {
+body[data-page="seo-article"] .section-intro,
+body[data-page="seo-guide"] .section-intro,
+body[data-page="use-guide"] .section-intro,
+body[data-page="video-guide"] .section-intro {
   line-height: 1.82;
+}
+
+body[data-page="seo-article"] .grid-2:not(.faq-grid):not(.steps-grid),
+body[data-page="seo-guide"] .grid-2:not(.faq-grid):not(.steps-grid),
+body[data-page="use-guide"] .grid-2:not(.faq-grid):not(.steps-grid),
+body[data-page="video-guide"] .grid-2:not(.faq-grid):not(.steps-grid) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+body[data-page="seo-article"] .panel,
+body[data-page="seo-guide"] .panel,
+body[data-page="use-guide"] .panel,
+body[data-page="video-guide"] .panel {
+  padding: 26px 28px;
+}
+
+body[data-page="seo-article"] .panel .subtle,
+body[data-page="seo-guide"] .panel .subtle,
+body[data-page="use-guide"] .panel .subtle,
+body[data-page="video-guide"] .panel .subtle {
+  line-height: 1.78;
 }
 
 .hero-actions,
