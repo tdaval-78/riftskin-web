@@ -39,7 +39,7 @@ function isFutureDate(value: string | null) {
 async function loadLicenseByCode(adminClient: any, code: string) {
   const { data, error } = await adminClient
     .from("license_keys")
-    .select("id, license_key, license_type, is_active, expires_at")
+    .select("id, license_key, license_type, is_active, expires_at, notes")
     .eq("license_key", code)
     .limit(1)
     .maybeSingle()
@@ -81,7 +81,7 @@ async function ensureLegacyLicenseFromActivation(adminClient: any, activationKey
       .from("license_keys")
       .update(payload)
       .eq("id", existing.id)
-      .select("id, license_key, license_type, is_active, expires_at")
+      .select("id, license_key, license_type, is_active, expires_at, notes")
       .single()
 
     if (error) throw error
@@ -91,7 +91,7 @@ async function ensureLegacyLicenseFromActivation(adminClient: any, activationKey
   const { data, error } = await adminClient
     .from("license_keys")
     .insert(payload)
-    .select("id, license_key, license_type, is_active, expires_at")
+    .select("id, license_key, license_type, is_active, expires_at, notes")
     .single()
 
   if (error) throw error
@@ -120,13 +120,82 @@ async function loadDeviceActivationsForLicense(adminClient: any, licenseKeyId: s
   return Array.isArray(data) ? data : []
 }
 
-function buildPremiumState(license: {
+async function resolveLicenseAccessSource(adminClient: any, license: {
   license_type: string
+  notes?: string | null
+}) {
+  const isAdmin = String(license.license_type || "").trim().toLowerCase() === "admin"
+  if (isAdmin) return "admin"
+
+  const notes = String(license.notes || "").trim()
+  const now = Date.now()
+
+  if (notes.startsWith("[stripe-subscription:") && notes.endsWith("]")) {
+    const subscriptionId = notes.slice("[stripe-subscription:".length, -1).trim()
+    if (subscriptionId) {
+      const { data, error } = await adminClient
+        .from("stripe_subscriptions")
+        .select("status, current_period_ends_at, canceled_at, raw")
+        .eq("stripe_subscription_id", subscriptionId)
+        .limit(1)
+        .maybeSingle()
+
+      if (error) throw error
+      if (data) {
+        const raw = data.raw && typeof data.raw === "object" ? data.raw as Record<string, unknown> : {}
+        const endsAt = data.current_period_ends_at ? new Date(String(data.current_period_ends_at)).getTime() : null
+        const canceled =
+          raw.cancel_at_period_end === true ||
+          raw.cancel_at_period_end === "true" ||
+          raw.cancel_at_period_end === 1 ||
+          !!raw.cancel_at ||
+          !!data.canceled_at ||
+          ["canceled", "cancelled"].includes(String(data.status || "").trim().toLowerCase())
+
+        if (canceled && (!endsAt || endsAt > now)) {
+          return "subscription_canceled"
+        }
+      }
+    }
+  }
+
+  if (notes.startsWith("[paddle-subscription:") && notes.endsWith("]")) {
+    const subscriptionId = notes.slice("[paddle-subscription:".length, -1).trim()
+    if (subscriptionId) {
+      const { data, error } = await adminClient
+        .from("paddle_subscriptions")
+        .select("status, current_period_ends_at, canceled_at")
+        .eq("paddle_subscription_id", subscriptionId)
+        .limit(1)
+        .maybeSingle()
+
+      if (error) throw error
+      if (data) {
+        const endsAt = data.current_period_ends_at ? new Date(String(data.current_period_ends_at)).getTime() : null
+        const canceled =
+          !!data.canceled_at ||
+          ["canceled", "cancelled"].includes(String(data.status || "").trim().toLowerCase())
+
+        if (canceled && (!endsAt || endsAt > now)) {
+          return "subscription_canceled"
+        }
+      }
+    }
+  }
+
+  return "subscription"
+}
+
+async function buildPremiumState(adminClient: any, license: {
+  license_type: string
+  notes?: string | null
   expires_at?: string | null
 }) {
   const isAdmin = String(license.license_type || "").trim().toLowerCase() === "admin"
+  const accessSource = await resolveLicenseAccessSource(adminClient, license)
   return {
     access_mode: isAdmin ? "admin" : "premium",
+    access_source: accessSource,
     subscription_active: !isAdmin,
     expires_at: isAdmin ? null : (license.expires_at || null),
     daily_injection_limit: null,
@@ -198,7 +267,7 @@ Deno.serve(async (req) => {
 
     return json({
       ok: true,
-      state: buildPremiumState(license),
+      state: await buildPremiumState(adminClient, license),
     })
   } catch (error) {
     return json({
