@@ -295,18 +295,14 @@ Deno.serve(async (req) => {
     const notificationState = getNotificationState(raw)
     let notificationEmail = null
     const nextNotificationState: Record<string, unknown> = { ...notificationState }
+    let pendingNotificationType: "cancellation" | "expired" | null = null
 
     if (cancellationScheduled && active && notificationState.cancellation_period_end !== currentPeriodEndsAt) {
-      notificationEmail = await sendCancellationAcknowledgedEmail({
-        toEmail: targetEmail,
-        currentPeriodEndsAt,
-      })
       nextNotificationState.cancellation_period_end = currentPeriodEndsAt
+      pendingNotificationType = "cancellation"
     } else if (!active && notificationState.expired_period_end !== currentPeriodEndsAt) {
-      notificationEmail = await sendSubscriptionExpiredEmail({
-        toEmail: targetEmail,
-      })
       nextNotificationState.expired_period_end = currentPeriodEndsAt
+      pendingNotificationType = "expired"
     }
 
     if (JSON.stringify(nextNotificationState) !== JSON.stringify(notificationState)) {
@@ -314,16 +310,49 @@ Deno.serve(async (req) => {
         ...raw,
         _riftskin_notifications: nextNotificationState,
       }
-      const { error: updateError } = await adminClient
+      const claimedAt = new Date().toISOString()
+      const { data: claimedRow, error: updateError } = await adminClient
         .from("stripe_subscriptions")
         .update({
           raw: nextRaw,
-          updated_at: new Date().toISOString(),
+          updated_at: claimedAt,
         })
         .eq("id", data.id)
+        .eq("updated_at", data.updated_at)
+        .select("id")
+        .maybeSingle()
 
       if (updateError) {
         return json({ error: "update_subscription_failed", detail: updateError.message }, 500)
+      }
+
+      if (claimedRow && pendingNotificationType === "cancellation") {
+        try {
+          notificationEmail = await sendCancellationAcknowledgedEmail({
+            toEmail: targetEmail,
+            currentPeriodEndsAt,
+          })
+        } catch (error) {
+          notificationEmail = {
+            sent: false,
+            reason: error instanceof Error ? error.message : String(error),
+          }
+        }
+      } else if (claimedRow && pendingNotificationType === "expired") {
+        try {
+          notificationEmail = await sendSubscriptionExpiredEmail({
+            toEmail: targetEmail,
+          })
+        } catch (error) {
+          notificationEmail = {
+            sent: false,
+            reason: error instanceof Error ? error.message : String(error),
+          }
+        }
+      }
+
+      if (claimedRow) {
+        data.updated_at = claimedAt
       }
     }
 
