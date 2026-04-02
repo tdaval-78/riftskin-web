@@ -7,8 +7,8 @@ window.RiftSkinConfig = {
   supabaseAnonKey: "sb_publishable_SP6Tibi0ck1Qy3zSzn_YbQ_uAcTe9aV",
 
   billingProvider: "stripe",
-  stripeEnvironment: "test",
-  stripePriceId: "price_1TGi4REJ00CrmjiEqYx971oz",
+  stripeEnvironment: "live",
+  stripePriceId: "price_1TGhrrE3MrKszoeSTAxpfjt5",
   stripeCheckoutSuccessUrl: "/checkout/success/",
   stripeCheckoutCancelUrl: "/pricing.html?checkout=canceled",
   stripeBillingReturnUrl: "/account.html",
