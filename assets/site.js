@@ -604,6 +604,9 @@
     let pendingProgress = null;
     let isPrimingVideo = false;
     let hasPrimedVideo = false;
+    const initialTourRect = productTour.getBoundingClientRect();
+    let isTourVisible = !('IntersectionObserver' in window)
+      || (initialTourRect.bottom > 0 && initialTourRect.top < window.innerHeight);
 
     function clamp(value, min, max) {
       return Math.min(Math.max(value, min), max);
@@ -651,7 +654,9 @@
         return;
       }
       pendingProgress = null;
-      const targetTime = safeProgress * productVideo.duration;
+      const targetTime = safeProgress >= 1
+        ? Math.max(productVideo.duration - 0.016, 0)
+        : safeProgress * productVideo.duration;
       if (Math.abs((productVideo.currentTime || 0) - targetTime) > 0.033) {
         try {
           productVideo.currentTime = targetTime;
@@ -665,7 +670,7 @@
     }
 
     function syncTourFromScroll() {
-      if (!isScrollScrubMode() || isDraggingProgress) return;
+      if (!isScrollScrubMode() || isDraggingProgress || !isTourVisible) return;
       if (!canScrubVideo()) {
         pendingProgress = getTourProgressFromScroll();
         setTourUi(pendingProgress);
@@ -690,12 +695,15 @@
       setTourProgress(progress);
     }
 
-    async function primeVideoForScrub() {
+    async function primeVideoForScrub(force) {
       if (document.hidden || isPrimingVideo) return;
-      if (hasPrimedVideo && canScrubVideo()) return;
+      if (!force && hasPrimedVideo && canScrubVideo()) return;
       isPrimingVideo = true;
       let warmedUp = false;
       try {
+        if (canScrubVideo() && productVideo.duration && (productVideo.currentTime || 0) >= productVideo.duration - 0.016) {
+          productVideo.currentTime = Math.max(productVideo.duration - 0.032, 0);
+        }
         const playResult = productVideo.play();
         if (playResult && typeof playResult.then === 'function') {
           await playResult;
@@ -727,7 +735,9 @@
         productVideo.loop = false;
         primeVideoForScrub();
         productVideo.pause();
-        requestTourSync();
+        if (isTourVisible) {
+          requestTourSync();
+        }
         return;
       }
 
@@ -750,6 +760,11 @@
     productVideo.addEventListener('timeupdate', function () {
       if (isScrollScrubMode() || !productVideo.duration) return;
       setTourUi((productVideo.currentTime || 0) / productVideo.duration);
+    });
+
+    productVideo.addEventListener('ended', function () {
+      if (!isScrollScrubMode() || !productVideo.duration) return;
+      setTourProgress(getTourProgressFromScroll());
     });
 
     productProgressTrack.addEventListener('pointerdown', function (event) {
@@ -833,6 +848,40 @@
       try {
         productVideo.load();
       } catch (_err) {}
+    }
+
+    if ('IntersectionObserver' in window) {
+      const productTourObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          const becameVisible = entry.isIntersecting && entry.intersectionRatio > 0.12;
+          isTourVisible = becameVisible;
+
+          if (!becameVisible) {
+            if (isScrollScrubMode()) {
+              productVideo.pause();
+            }
+            return;
+          }
+
+          if (isScrollScrubMode()) {
+            if (canScrubVideo()) {
+              setTourProgress(getTourProgressFromScroll());
+            } else {
+              pendingProgress = getTourProgressFromScroll();
+              setTourUi(pendingProgress);
+            }
+            primeVideoForScrub(true);
+            requestTourSync();
+            return;
+          }
+
+          applyProductTourMode();
+        });
+      }, {
+        threshold: [0, 0.12, 0.35]
+      });
+
+      productTourObserver.observe(productTour);
     }
   }
 
