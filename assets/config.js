@@ -12,7 +12,7 @@ window.RiftSkinConfig = {
   stripeCheckoutSuccessUrl: "/checkout/success/",
   stripeCheckoutCancelUrl: "/pricing.html?checkout=canceled",
   stripeBillingReturnUrl: "/account.html",
-  siteMaintenanceEnabled: true,
+  siteMaintenanceEnabled: false,
   siteMaintenanceAllowedEmails: ["contact@riftskin.com"],
   subscriptionMaintenanceEnabled: false,
   downloadMaintenanceEnabled: false,
