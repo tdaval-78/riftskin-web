@@ -577,6 +577,11 @@
     myKeysDateHeader.textContent = t(key);
   }
 
+  function shouldShowCanonicalSubscriptionKey(summary) {
+    if (!summary || !summary.activationKeyCode) return false;
+    return summary.active === true;
+  }
+
   async function loadSubscriptionSummary() {
     try {
       const result = await supabaseClient.functions.invoke('account-subscription-summary', { body: {} });
@@ -1094,7 +1099,7 @@
       return true;
     });
 
-    if (latestSubscriptionSummary && latestSubscriptionSummary.activationKeyCode) {
+    if (shouldShowCanonicalSubscriptionKey(latestSubscriptionSummary)) {
       const canonicalCode = String(latestSubscriptionSummary.activationKeyCode || '').trim();
       const canonicalId = Number(latestSubscriptionSummary.activationKeyId || 0) || null;
       const canonicalMatch = rows.find(function (row) {
