@@ -623,8 +623,8 @@
     }
     setSessionUi(session);
     if (session && session.user) {
+      await refreshAccessStatus(session.user.id);
       await Promise.all([
-        refreshAccessStatus(session.user.id),
         loadMyKeys(session.user.id),
         refreshAdminEntry()
       ]);
@@ -1173,8 +1173,9 @@
   supabaseClient.auth.onAuthStateChange(function (_event, session) {
     setSessionUi(session);
     if (session && session.user) {
-      refreshAccessStatus(session.user.id);
-      loadMyKeys(session.user.id);
+      refreshAccessStatus(session.user.id).then(function () {
+        return loadMyKeys(session.user.id);
+      });
       refreshAdminEntry();
     }
   });

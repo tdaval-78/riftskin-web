@@ -110,7 +110,7 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json().catch(() => ({}))
-    const successUrl = normalizeRiftskinUrl(body.successUrl, "https://riftskin.com/account.html?checkout=success#account-subscription")
+    const successUrl = normalizeRiftskinUrl(body.successUrl, "https://riftskin.com/checkout/success/")
     const cancelUrl = normalizeRiftskinUrl(body.cancelUrl, "https://riftskin.com/pricing.html?checkout=canceled")
 
     let customerId = await findExistingCustomerId(adminClient, userEmail)

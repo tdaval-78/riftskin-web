@@ -131,6 +131,33 @@
     return new URL(target, window.location.origin).toString();
   }
 
+  function currentLanguageCode() {
+    const api = window.RiftSkinI18n;
+    if (api && typeof api.getLanguage === 'function') {
+      const lang = String(api.getLanguage() || '').trim().toLowerCase();
+      if (lang === 'fr' || lang === 'en' || lang === 'es' || lang === 'pt') return lang;
+    }
+
+    try {
+      const saved = String((window.localStorage && window.localStorage.getItem('riftskin_lang')) || '').trim().toLowerCase();
+      if (saved === 'fr' || saved === 'en' || saved === 'es' || saved === 'pt') return saved;
+    } catch (_err) {
+      // Ignore storage read failures and fall back to English.
+    }
+
+    return 'en';
+  }
+
+  function withLanguageParam(urlValue) {
+    try {
+      const url = new URL(urlValue, window.location.origin);
+      url.searchParams.set('lang', currentLanguageCode());
+      return url.toString();
+    } catch (_err) {
+      return urlValue;
+    }
+  }
+
   function accountCheckoutLaunchUrl() {
     return '/account.html?checkout=launch#account-subscription';
   }
@@ -239,7 +266,7 @@
     setAlert('');
     try {
       const data = await invokeFunction('create-stripe-checkout-session', {
-        successUrl: absoluteUrl(cfg.stripeCheckoutSuccessUrl, '/account.html?checkout=success'),
+        successUrl: withLanguageParam(absoluteUrl(cfg.stripeCheckoutSuccessUrl, '/checkout/success/')),
         cancelUrl: absoluteUrl(cfg.stripeCheckoutCancelUrl, '/pricing.html?checkout=canceled')
       }, session);
 
@@ -258,7 +285,7 @@
         if (refreshedSession && refreshedSession.user) {
           try {
             const retryData = await invokeFunction('create-stripe-checkout-session', {
-              successUrl: absoluteUrl(cfg.stripeCheckoutSuccessUrl, '/account.html?checkout=success'),
+              successUrl: withLanguageParam(absoluteUrl(cfg.stripeCheckoutSuccessUrl, '/checkout/success/')),
               cancelUrl: absoluteUrl(cfg.stripeCheckoutCancelUrl, '/pricing.html?checkout=canceled')
             }, refreshedSession);
 
@@ -317,8 +344,7 @@
     if (checkoutState === 'success') {
       clearCheckoutIntent();
       markCheckoutPending();
-      setAlert('Payment received. Your premium access is being activated. If the key does not appear within a minute, refresh the page.', 'ok');
-      reconcileSubscription();
+      window.location.replace(withLanguageParam(absoluteUrl(cfg.stripeCheckoutSuccessUrl, '/checkout/success/')));
       return;
     }
 

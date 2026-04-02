@@ -9,7 +9,7 @@ window.RiftSkinConfig = {
   billingProvider: "stripe",
   stripeEnvironment: "test",
   stripePriceId: "price_1TGi4REJ00CrmjiEqYx971oz",
-  stripeCheckoutSuccessUrl: "/account.html?checkout=success",
+  stripeCheckoutSuccessUrl: "/checkout/success/",
   stripeCheckoutCancelUrl: "/pricing.html?checkout=canceled",
   stripeBillingReturnUrl: "/account.html",
   siteMaintenanceEnabled: false,

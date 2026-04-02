@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; img-src 'self' data: https://www.google-analytics.com https://riftskin.com https://jfmrwxmlncvzoremcmbi.supabase.co; style-src 'self' 'unsafe-inline'; script-src 'self' https://cdn.jsdelivr.net https://www.googletagmanager.com; connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://analytics.google.com https://jfmrwxmlncvzoremcmbi.supabase.co;" />
+  <title data-i18n="order_confirm_title">RIFTSKIN - Order confirmed</title>
+  <style>
+    :root {
+      --bg: #06070a;
+      --panel: rgba(15, 19, 27, 0.82);
+      --panel-strong: rgba(16, 21, 30, 0.92);
+      --stroke: rgba(255, 255, 255, 0.12);
+      --stroke-strong: rgba(255, 255, 255, 0.18);
+      --text-primary: #f6f8fc;
+      --text-secondary: #a6b0bf;
+      --accent: #d3b04b;
+      --accent-soft: #f1dd91;
+      --danger: #ff8a7a;
+      --ok: #63e2b8;
+      --warning: #f4d37f;
+      --radius-xl: 28px;
+      --radius: 16px;
+      --shadow-lg: 0 28px 80px rgba(0, 0, 0, 0.4);
+    }
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; margin: 0; }
+    body {
+      font-family: "Avenir Next", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text-primary);
+      background:
+        linear-gradient(180deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.48)),
+        radial-gradient(circle at 18% 8%, rgba(211, 176, 75, 0.1), transparent 22%),
+        radial-gradient(circle at 84% 14%, rgba(131, 140, 154, 0.08), transparent 20%),
+        radial-gradient(circle at 52% 100%, rgba(255, 255, 255, 0.035), transparent 28%),
+        linear-gradient(180deg, #090c11 0%, #0b0f15 24%, #0c1118 62%, #090c12 100%);
+      background-color: var(--bg);
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+    .shell {
+      width: min(860px, 100%);
+      border: 1px solid var(--stroke);
+      border-radius: var(--radius-xl);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.02)),
+        linear-gradient(135deg, rgba(18, 23, 32, 0.96), rgba(10, 13, 19, 0.94));
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+    }
+    .hero {
+      padding: 30px 30px 18px;
+      border-bottom: 1px solid var(--stroke);
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0));
+      text-align: center;
+    }
+    .logo {
+      width: 168px;
+      height: 168px;
+      object-fit: contain;
+      margin: 0 auto 12px;
+      display: block;
+    }
+    .eyebrow {
+      display: inline-block;
+      padding: 8px 14px;
+      border: 1px solid rgba(211, 176, 75, 0.28);
+      border-radius: 999px;
+      background: rgba(211, 176, 75, 0.1);
+      color: var(--accent-soft);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .content {
+      padding: 28px 30px 34px;
+      text-align: center;
+    }
+    h1 {
+      margin: 0 0 14px;
+      font-size: clamp(34px, 5vw, 54px);
+      line-height: 1.02;
+      letter-spacing: -0.03em;
+    }
+    p {
+      margin: 0 auto 16px;
+      max-width: 660px;
+      color: var(--text-secondary);
+      font-size: 18px;
+      line-height: 1.65;
+    }
+    .license-card,
+    .panel {
+      max-width: 660px;
+      margin: 24px auto 0;
+      padding: 20px 22px;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 22px;
+      background: rgba(255,255,255,0.03);
+      text-align: left;
+    }
+    .panel-title {
+      margin: 0 0 10px;
+      color: var(--accent-soft);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    .panel-copy {
+      margin: 0;
+      color: #c8d0dd;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+    .license-code {
+      display: block;
+      margin-top: 10px;
+      color: #ffffff;
+      font-size: clamp(24px, 4vw, 34px);
+      line-height: 1.15;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      word-break: break-word;
+    }
+    .license-meta {
+      margin-top: 10px;
+      color: #c8d0dd;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .msg {
+      margin-top: 18px;
+      font-size: 15px;
+      line-height: 1.6;
+      text-align: center;
+    }
+    .msg.error { color: var(--danger); }
+    .msg.ok { color: var(--ok); }
+    .msg.warning { color: var(--warning); }
+    .actions {
+      margin-top: 22px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .ghost-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 54px;
+      padding: 0 26px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(255,255,255,0.02);
+      color: var(--text-primary);
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.01em;
+    }
+    @media (max-width: 640px) {
+      .hero, .content { padding-left: 20px; padding-right: 20px; }
+      .logo { width: 132px; height: 132px; }
+      h1 { font-size: 36px; }
+      p { font-size: 16px; }
+      .license-code { font-size: 24px; letter-spacing: 0.08em; }
+    }
+  </style>
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-TBCZT7QR');</script>
+  <!-- End Google Tag Manager -->
+</head>
+<body>
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TBCZT7QR" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+  <main class="shell">
+    <section class="hero">
+      <img class="logo" src="https://riftskin.com/assets/logo.png" alt="RIFTSKIN logo" />
+      <div class="eyebrow" data-i18n="order_confirm_badge">Order confirmed</div>
+    </section>
+
+    <section class="content">
+      <h1 data-i18n="order_confirm_h1">Your Premium order is confirmed</h1>
+      <p data-i18n="order_confirm_lead">Your payment has been received. Your Premium license is ready and matches the one sent by email and available in your account.</p>
+
+      <div class="license-card">
+        <div class="panel-title" data-i18n="order_confirm_license_label">Premium license</div>
+        <span class="license-code" data-license-code data-i18n="order_confirm_license_pending">Searching for your license...</span>
+        <div class="license-meta" data-license-meta></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title" data-i18n="order_confirm_panel_title">What happens next</div>
+        <p class="panel-copy" data-i18n="order_confirm_panel_copy">Use this same license inside the desktop app to unlock Premium features, then open your account whenever you want to manage billing or review your subscription.</p>
+      </div>
+
+      <div class="msg" data-order-status></div>
+      <div class="actions">
+        <a class="ghost-btn" href="/account.html" data-i18n="cb_back_account">Back to account</a>
+      </div>
+    </section>
+  </main>
+
+  <script src="/assets/config.js?v=20260402v"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/assets/translations.js?v=20260402c"></script>
+  <script src="/assets/i18n.js?v=20260402c"></script>
+  <script src="/assets/checkout-success.js?v=20260402a"></script>
+</body>
+</html>
