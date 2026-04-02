@@ -582,6 +582,15 @@
     return summary.active === true;
   }
 
+  function keyRowIdentity(row) {
+    const keyObj = row && row.activation_keys ? row.activation_keys : {};
+    const keyId = Number(keyObj.id || 0) || 0;
+    const code = String(keyObj.code || '').trim();
+    if (keyId) return 'id:' + String(keyId);
+    if (code) return 'code:' + code;
+    return '';
+  }
+
   async function loadSubscriptionSummary() {
     try {
       const result = await supabaseClient.functions.invoke('account-subscription-summary', { body: {} });
@@ -1110,7 +1119,7 @@
         );
       });
 
-      const canonicalRows = canonicalMatch ? [canonicalMatch] : [{
+      const canonicalRow = canonicalMatch || {
         redeemed_at: latestSubscriptionSummary.currentPeriodStartsAt || latestSubscriptionSummary.updatedAt || null,
         activation_keys: {
           id: canonicalId,
@@ -1118,9 +1127,13 @@
           expires_at: latestSubscriptionSummary.activationKeyExpiresAt || latestSubscriptionSummary.currentPeriodEndsAt || null,
           is_active: latestSubscriptionSummary.activationKeyActive !== false
         }
-      }];
+      };
 
-      rows = canonicalRows;
+      const canonicalIdentity = keyRowIdentity(canonicalRow);
+      const otherRows = rows.filter(function (row) {
+        return keyRowIdentity(row) !== canonicalIdentity;
+      });
+      rows = [canonicalRow].concat(otherRows);
     }
 
     if (!rows.length) {
