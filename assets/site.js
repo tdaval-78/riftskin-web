@@ -288,14 +288,14 @@
   function getPublicServiceStateInfo(state) {
     if (state === 'ok') {
       return {
-        label: 'INJECTION & SOFTWARE FUNCTIONAL',
+        label: t('site_status_badge_ok', 'INJECTION & SOFTWARE FUNCTIONAL'),
         kind: 'ok',
         dot: 'ok'
       };
     }
 
     return {
-      label: 'INJECTION CURRENTLY BEING PATCHED BY OUR TEAM',
+      label: t('site_status_badge_warning', 'INJECTION CURRENTLY BEING PATCHED BY OUR TEAM'),
       kind: 'warning',
       dot: 'warning'
     };
@@ -303,9 +303,9 @@
 
   function getDefaultPublicServiceMessage(state) {
     if (state === 'ok') {
-      return 'Skin injection is currently functional.';
+      return t('site_status_default_ok', 'Skin injection is currently functional.');
     }
-    return 'Skin injection is currently unavailable. Our team is actively working on a compatibility update.';
+    return t('site_status_default_warning', 'Skin injection is currently unavailable. Our team is actively working on a compatibility update.');
   }
 
   function formatPublicTimestamp(value) {

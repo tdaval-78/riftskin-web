@@ -1,27 +1,27 @@
 <!doctype html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self' mailto:; img-src 'self' data: https://www.google-analytics.com https://jfmrwxmlncvzoremcmbi.supabase.co https://ddragon.leagueoflegends.com; style-src 'self' 'unsafe-inline'; script-src 'self' https://cdn.jsdelivr.net https://cdn.paddle.com https://www.googletagmanager.com; connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://analytics.google.com https://jfmrwxmlncvzoremcmbi.supabase.co https://api.paddle.com https://sandbox-api.paddle.com https://checkout.paddle.com https://sandbox-checkout.paddle.com; frame-src https://checkout.paddle.com https://sandbox-checkout.paddle.com https://www.googletagmanager.com;" />
-  <title>Comment utiliser des skins custom sur LoL Mac - RIFTSKIN</title>
-  <meta name="description" content="Guide complet pour utiliser des skins custom sur League of Legends sur Mac avec RIFTSKIN : import, bibliothèque, injection, limites du gratuit et workflow conseillé." />
+  <title data-i18n="seo_use_title">How to use custom skins on LoL Mac - RIFTSKIN</title>
+  <meta name="description" data-i18n-content="seo_use_meta_desc" content="Complete guide to using custom skins on League of Legends on Mac with RIFTSKIN: import, library, injection, free-mode limits, and the recommended workflow." />
   <link rel="canonical" href="https://riftskin.com/utiliser-skins-custom-lol-mac.html" />
-  <meta property="og:title" content="Comment utiliser des skins custom sur LoL Mac - RIFTSKIN" />
-  <meta property="og:description" content="Comprenez le vrai workflow RIFTSKIN sur Mac : importer des skins custom, organiser votre bibliothèque, injecter proprement et jouer avec le bon setup." />
+  <meta property="og:title" data-i18n-content="seo_use_title" content="How to use custom skins on LoL Mac - RIFTSKIN" />
+  <meta property="og:description" data-i18n-content="seo_use_meta_desc" content="Complete guide to using custom skins on League of Legends on Mac with RIFTSKIN: import, library, injection, free-mode limits, and the recommended workflow." />
   <meta property="og:url" content="https://riftskin.com/utiliser-skins-custom-lol-mac.html" />
   <meta property="og:type" content="article" />
   <meta property="og:image" content="https://riftskin.com/assets/logo-search-dark.png" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Comment utiliser des skins custom sur LoL Mac - RIFTSKIN" />
-  <meta name="twitter:description" content="Workflow complet RIFTSKIN sur Mac pour utiliser des skins custom sur League of Legends." />
+  <meta name="twitter:title" data-i18n-content="seo_use_title" content="How to use custom skins on LoL Mac - RIFTSKIN" />
+  <meta name="twitter:description" data-i18n-content="seo_use_meta_desc" content="Complete guide to using custom skins on League of Legends on Mac with RIFTSKIN: import, library, injection, free-mode limits, and the recommended workflow." />
   <meta name="twitter:image" content="https://riftskin.com/assets/logo-search-dark.png" />
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "Article",
-      "headline": "Comment utiliser des skins custom sur League of Legends sur Mac",
-      "description": "Guide RIFTSKIN pour importer, organiser et injecter des skins custom sur League of Legends sur Mac.",
+      "headline": "How to use custom skins on League of Legends on Mac",
+      "description": "RIFTSKIN guide to import, organize, and inject custom skins on League of Legends on Mac.",
       "mainEntityOfPage": "https://riftskin.com/utiliser-skins-custom-lol-mac.html",
       "author": {
         "@type": "Organization",
@@ -45,19 +45,19 @@
         {
           "@type": "ListItem",
           "position": 1,
-          "name": "Accueil",
+          "name": "Home",
           "item": "https://riftskin.com/"
         },
         {
           "@type": "ListItem",
           "position": 2,
-          "name": "Skins custom League of Legends (LoL) sur Mac",
+          "name": "Custom League of Legends (LoL) skins on Mac",
           "item": "https://riftskin.com/skins-custom-lol-mac.html"
         },
         {
           "@type": "ListItem",
           "position": 3,
-          "name": "Comment utiliser des skins custom sur LoL Mac",
+          "name": "How to use custom skins on LoL Mac",
           "item": "https://riftskin.com/utiliser-skins-custom-lol-mac.html"
         }
       ]
@@ -78,55 +78,58 @@
         <img class="brand-mark" src="/assets/logo.png" alt="RIFTSKIN logo" />
         <span class="brand-copy">
           <span class="brand-wordmark">RIFTSKIN</span>
-          <span class="brand-subtitle">INJECTEUR DE SKINS CUSTOM POUR LEAGUE OF LEGENDS</span>
+          <span class="brand-subtitle" data-i18n="site_brand_tagline">CUSTOM SKIN INJECTOR FOR LOL</span>
         </span>
       </a>
-      <button class="btn btn-ghost burger" data-burger type="button">Menu</button>
+      <button class="btn btn-ghost burger" data-burger type="button" data-i18n="nav_menu">Menu</button>
       <nav class="nav" data-nav>
-        <a href="/">Accueil</a>
-        <a href="/download.html">Télécharger</a>
-        <a href="/pricing.html">Abonnement</a>
-        <a href="/faq.html">FAQ</a>
-        <a href="/support.html">Support</a>
-        <a href="/status.html">Statut</a>
-        <a href="/account.html">Mon compte</a>
+        <a data-link="home" href="/" data-i18n="nav_home">Home</a>
+        <a data-link="download" href="/download.html" data-i18n="nav_download">Download</a>
+        <a data-link="pricing" href="/pricing.html" data-i18n="nav_pricing">Pricing</a>
+        <a data-link="faq" href="/faq.html" data-i18n="nav_faq">FAQ</a>
+        <a data-link="support" href="/support.html" data-i18n="nav_support">Support</a>
+        <a data-link="status" href="/status.html" class="nav-status-link">
+          <span data-i18n="nav_status">Status</span>
+          <span class="nav-status-dot" data-site-status-dot aria-hidden="true"></span>
+        </a>
+        <a data-link="account" href="/account.html" data-i18n="nav_account">My account</a>
       </nav>
       <div class="cta-row">
-        <a class="btn btn-primary" href="/download.html">Télécharger</a>
-        <a class="btn btn-ghost" href="/account.html">Mon compte</a>
+        <a class="btn btn-primary" href="/download.html" data-i18n="site_home_cta_download">Download for Mac</a>
+        <a class="btn btn-ghost" href="/account.html" data-i18n="nav_account">My account</a>
       </div>
     </header>
 
     <section class="section">
       <div class="section-head">
         <div>
-          <span class="eyebrow">Guide d'utilisation LoL skins custom sur Mac</span>
-          <h1>Comment utiliser des skins custom sur League of Legends sur Mac</h1>
-          <p class="section-intro">Le point important avec RIFTSKIN n'est pas seulement l'installation. Le vrai sujet, c'est le workflow : importer les bons fichiers, garder une bibliothèque propre, injecter au bon moment et lancer le jeu avec le bon setup pour que le remplacement visuel s'applique correctement.</p>
+          <span class="eyebrow" data-i18n="seo_use_eyebrow">LoL custom skin usage guide on Mac</span>
+          <h1 data-i18n="seo_use_h1">How to use custom skins on League of Legends on Mac</h1>
+          <p class="section-intro" data-i18n="seo_use_intro">The key point with RIFTSKIN is not only installation. The real subject is the workflow: import the right files, keep a clean library, inject at the right moment, and launch the game with the right setup so the visual replacement applies correctly.</p>
         </div>
       </div>
 
       <div class="grid-2">
         <article class="panel">
-          <h2>Le workflow conseillé avec RIFTSKIN</h2>
-          <p class="subtle">Sur Mac, l'expérience est plus stable quand vous suivez toujours la même séquence. Cela évite les erreurs inutiles et réduit les faux diagnostics.</p>
+          <h2 data-i18n="seo_use_workflow_title">The recommended workflow with RIFTSKIN</h2>
+          <p class="subtle" data-i18n="seo_use_workflow_intro">On Mac, the experience is more stable when you always follow the same sequence. That avoids unnecessary mistakes and false diagnostics.</p>
           <ol class="list">
-            <li>Téléchargez et installez RIFTSKIN depuis la page officielle.</li>
-            <li>Importez uniquement des skins custom compatibles dans votre bibliothèque.</li>
-            <li>Préparez votre champion et votre skin dans l'application.</li>
-            <li>Lancez l'injection depuis RIFTSKIN.</li>
-            <li>En jeu ou dans le lobby, gardez le skin de base du champion pour que le remplacement s'affiche correctement.</li>
+            <li data-i18n="seo_use_workflow_li1">Download and install RIFTSKIN from the official page.</li>
+            <li data-i18n="seo_use_workflow_li2">Import only compatible custom skins into your library.</li>
+            <li data-i18n="seo_use_workflow_li3">Prepare your champion and your skin in the app.</li>
+            <li data-i18n="seo_use_workflow_li4">Run the injection from RIFTSKIN.</li>
+            <li data-i18n="seo_use_workflow_li5">In game or in the lobby, keep the champion's base skin so the replacement displays correctly.</li>
           </ol>
         </article>
 
         <article class="panel">
-          <h2>Ce que RIFTSKIN fait et ce qu'il ne fait pas</h2>
+          <h2 data-i18n="seo_use_what_title">What RIFTSKIN does and does not do</h2>
           <ul class="list">
-            <li>RIFTSKIN ne fournit pas de skins préinstallés.</li>
-            <li>RIFTSKIN sert à importer, organiser et injecter vos skins custom compatibles.</li>
-            <li>Le mode gratuit couvre le cœur du workflow.</li>
-            <li>Le premium supprime surtout des frictions de confort pour un usage régulier.</li>
-            <li>Le compte web sert au premium, à la facturation et à la gestion du compte, pas à rendre l'application utilisable en gratuit.</li>
+            <li data-i18n="seo_use_what_li1">RIFTSKIN does not provide pre-installed skins.</li>
+            <li data-i18n="seo_use_what_li2">RIFTSKIN is used to import, organize, and inject your compatible custom skins.</li>
+            <li data-i18n="seo_use_what_li3">Free mode covers the core workflow.</li>
+            <li data-i18n="seo_use_what_li4">Premium mainly removes comfort friction for regular use.</li>
+            <li data-i18n="seo_use_what_li5">The web account is for Premium, billing, and account management, not for making the app usable in free mode.</li>
           </ul>
         </article>
       </div>
@@ -135,27 +138,27 @@
     <section class="section">
       <div class="grid-2">
         <article class="panel">
-          <h2>Comment bien organiser sa bibliothèque de skins</h2>
-          <p class="subtle">Le meilleur moyen de garder un usage propre, c'est d'éviter d'accumuler des imports inutiles. Une bibliothèque claire fait gagner du temps et réduit les erreurs d'injection.</p>
+          <h2 data-i18n="seo_use_library_title">How to keep your skin library organized</h2>
+          <p class="subtle" data-i18n="seo_use_library_intro">The best way to keep usage clean is to avoid piling up unnecessary imports. A clear library saves time and reduces injection mistakes.</p>
           <ul class="list">
-            <li>Importez seulement les skins que vous utilisez vraiment.</li>
-            <li>Regroupez votre sélection autour de vos champions principaux.</li>
-            <li>Supprimez les doublons et les essais que vous n'utilisez plus.</li>
-            <li>Si vous êtes premium, utilisez les favoris pour accélérer le workflow quotidien.</li>
+            <li data-i18n="seo_use_library_li1">Import only the skins you actually use.</li>
+            <li data-i18n="seo_use_library_li2">Center your selection around your main champions.</li>
+            <li data-i18n="seo_use_library_li3">Delete duplicates and tests you no longer use.</li>
+            <li data-i18n="seo_use_library_li4">If you are Premium, use favorites to speed up your daily workflow.</li>
           </ul>
         </article>
 
         <article class="panel">
-          <h2>Quand le gratuit suffit déjà</h2>
-          <p class="subtle">Beaucoup d'utilisateurs n'ont pas besoin de premium au début. Le gratuit permet déjà de comprendre le produit, de tester l'import et de jouer avec votre bibliothèque.</p>
+          <h2 data-i18n="seo_use_free_title">When free mode is already enough</h2>
+          <p class="subtle" data-i18n="seo_use_free_intro">Many users do not need Premium at first. Free mode already lets you understand the product, test imports, and play with your library.</p>
           <ul class="list">
-            <li>Jusqu'à 5 injections par jour.</li>
-            <li>Import et navigation dans votre bibliothèque.</li>
-            <li>Usage suffisant pour un test réel du produit sur Mac.</li>
+            <li data-i18n="seo_use_free_li1">Up to 5 injections per day.</li>
+            <li data-i18n="seo_use_free_li2">Import and browse your library.</li>
+            <li data-i18n="seo_use_free_li3">Enough for a real product test on Mac.</li>
           </ul>
           <div class="hero-actions" style="justify-content:flex-start">
-            <a class="btn btn-primary" href="/download.html">Commencer gratuitement</a>
-            <a class="btn btn-ghost" href="/riftskin-premium-vs-free.html">Comparer Free et Premium</a>
+            <a class="btn btn-primary" href="/download.html" data-i18n="seo_use_free_cta">Start for free</a>
+            <a class="btn btn-ghost" href="/riftskin-premium-vs-free.html" data-i18n="seo_use_free_compare">Compare Free and Premium</a>
           </div>
         </article>
       </div>
@@ -164,21 +167,21 @@
     <section class="section">
       <div class="grid-2">
         <article class="panel">
-          <h2>Les erreurs les plus fréquentes</h2>
+          <h2 data-i18n="seo_use_errors_title">Most common mistakes</h2>
           <ul class="list">
-            <li>Lancer le jeu sans avoir injecté depuis RIFTSKIN.</li>
-            <li>Sélectionner un skin officiel autre que le skin de base du champion.</li>
-            <li>Penser qu'un blocage macOS signifie que l'application est cassée, alors qu'il faut juste l'autoriser dans Confidentialité et sécurité.</li>
-            <li>Utiliser une bibliothèque trop chargée ou mal triée.</li>
+            <li data-i18n="seo_use_errors_li1">Launching the game without injecting from RIFTSKIN first.</li>
+            <li data-i18n="seo_use_errors_li2">Selecting an official skin other than the champion's base skin.</li>
+            <li data-i18n="seo_use_errors_li3">Thinking a macOS block means the app is broken, when it just needs to be allowed in Privacy &amp; Security.</li>
+            <li data-i18n="seo_use_errors_li4">Using a library that is too heavy or badly organized.</li>
           </ul>
         </article>
 
         <article class="panel">
-          <h2>Que faire si macOS bloque l'application</h2>
-          <p class="subtle">C'est une vraie requête de support fréquente, surtout après téléchargement initial. Ce n'est pas nécessairement un bug produit.</p>
+          <h2 data-i18n="seo_use_macos_title">What to do if macOS blocks the app</h2>
+          <p class="subtle" data-i18n="seo_use_macos_intro">This is a common support request, especially after the first download. It is not necessarily a product bug.</p>
           <div class="hero-actions" style="justify-content:flex-start">
-            <a class="btn btn-primary" href="/macos-bloque-riftskin-comment-autoriser-app.html">Voir le guide macOS</a>
-            <a class="btn btn-ghost" href="/download.html">Revenir au guide d'installation</a>
+            <a class="btn btn-primary" href="/macos-bloque-riftskin-comment-autoriser-app.html" data-i18n="seo_use_macos_cta">View the macOS guide</a>
+            <a class="btn btn-ghost" href="/download.html" data-i18n="seo_use_macos_back">Back to the install guide</a>
           </div>
         </article>
       </div>
@@ -186,32 +189,36 @@
 
     <section class="section">
       <div class="panel">
-        <h2>Liens utiles pour aller plus loin</h2>
+        <h2 data-i18n="seo_use_links_title">Useful links to go further</h2>
         <div class="hero-actions" style="justify-content:flex-start">
-          <a class="btn btn-primary" href="/comment-installer-skins-custom-lol-mac.html">Guide d'installation complet</a>
-          <a class="btn btn-ghost" href="/skins-custom-lol-mac.html">Vue d'ensemble skins custom sur Mac</a>
+          <a class="btn btn-primary" href="/comment-installer-skins-custom-lol-mac.html" data-i18n="seo_use_link_install">Complete installation guide</a>
+          <a class="btn btn-ghost" href="/skins-custom-lol-mac.html" data-i18n="seo_use_link_overview">Custom skins overview on Mac</a>
         </div>
         <div class="hero-actions" style="justify-content:flex-start">
-          <a class="btn btn-ghost" href="/riftskin-premium-vs-free.html">RIFTSKIN Premium vs Free</a>
-          <a class="btn btn-ghost" href="/support.html">Contacter le support</a>
+          <a class="btn btn-ghost" href="/riftskin-premium-vs-free.html" data-i18n="seo_use_link_compare">RIFTSKIN Premium vs Free</a>
+          <a class="btn btn-ghost" href="/support.html" data-i18n="seo_use_link_support">Contact support</a>
         </div>
       </div>
     </section>
 
     <footer class="footer">
-      <div>Copyright © <span data-year></span> RIFTSKIN</div>
+      <div><span data-i18n="footer_rights">Copyright</span> © <span data-year></span> RIFTSKIN</div>
       <div class="links">
-        <a href="/legal/">Légal</a>
-        <a href="/legal/cgv/">CGV Premium</a>
-        <a href="/legal/remboursement/">Remboursement</a>
-        <a href="/legal/confidentialite/">Confidentialité</a>
-        <a href="/legal/cookies/">Cookies</a>
-        <a href="/support.html">Support</a>
+        <a href="/legal/" data-i18n="footer_legal">Legal</a>
+        <a href="/legal/cgv/" data-i18n="footer_terms">Premium terms</a>
+        <a href="/legal/remboursement/" data-i18n="footer_refund">Refunds</a>
+        <a href="/legal/confidentialite/" data-i18n="footer_privacy">Privacy</a>
+        <a href="/legal/cookies/" data-i18n="footer_cookies">Cookies</a>
+        <a href="/support.html" data-i18n="footer_support">Support</a>
       </div>
     </footer>
   </div>
 
   <script src="/assets/config.js?v=20260401u"></script>
-  <script src="/assets/site.js?v=20260401t"></script>
+  <script src="/assets/translations.js?v=20260402b"></script>
+  <script src="/assets/translations-static-pages.js?v=20260402a"></script>
+  <script src="/assets/translations-seo-pages.js?v=20260402a"></script>
+  <script src="/assets/i18n.js?v=20260402b"></script>
+  <script src="/assets/site.js?v=20260402a"></script>
 </body>
 </html>
