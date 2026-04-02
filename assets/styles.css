@@ -458,6 +458,21 @@ body[data-page="account"] .section-intro {
   max-width: none;
 }
 
+body[data-page="seo-article"] .section-head,
+body[data-page="seo-article"] .section-head > div,
+body[data-page="seo-article"] .section-head h1,
+body[data-page="seo-article"] .section-intro {
+  max-width: none;
+}
+
+body[data-page="seo-article"] .section-head h1 {
+  text-wrap: balance;
+}
+
+body[data-page="seo-article"] .section-intro {
+  line-height: 1.82;
+}
+
 .hero-actions,
 .hero-meta {
   display: flex;
@@ -2473,7 +2488,7 @@ body.has-overlay {
 
 .home-demo-section .section-intro {
   max-width: none;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .home-demo-frame {
@@ -2531,7 +2546,7 @@ body.has-overlay {
 .download-hero-section .section-intro {
   max-width: none;
   line-height: 1.9;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .grid-2,
