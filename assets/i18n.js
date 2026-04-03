@@ -1,5 +1,6 @@
 (function () {
   const STORAGE_KEY = 'riftskin_lang';
+  const STORAGE_SOURCE_KEY = 'riftskin_lang_source';
   const DEFAULT_SUPPORTED = ['en', 'fr', 'es', 'pt'];
   const PAGE_SUPPORTED = {
     admin: ['en', 'fr']
@@ -24,14 +25,48 @@
     return PAGE_SUPPORTED[page] ? PAGE_SUPPORTED[page].slice() : DEFAULT_SUPPORTED.slice();
   }
 
+  function getSavedLanguageSource() {
+    try {
+      return String(localStorage.getItem(STORAGE_SOURCE_KEY) || '').trim().toLowerCase();
+    } catch (_error) {
+      return '';
+    }
+  }
+
+  function getRequestedLanguage() {
+    try {
+      const url = new URL(window.location.href);
+      return normalizeLanguageCode(url.searchParams.get('lang') || '');
+    } catch (_error) {
+      return '';
+    }
+  }
+
   function getLanguage() {
     const supported = getSupportedLanguages();
     if (currentLanguage && supported.indexOf(currentLanguage) !== -1) return currentLanguage;
 
+    const requested = getRequestedLanguage();
+    if (supported.indexOf(requested) !== -1) {
+      currentLanguage = requested;
+      return currentLanguage;
+    }
+
     const saved = normalizeLanguageCode(localStorage.getItem(STORAGE_KEY) || '');
-    if (supported.indexOf(saved) !== -1) {
+    const savedSource = getSavedLanguageSource();
+    if (supported.indexOf(saved) !== -1 && (savedSource === 'user' || savedSource === 'query')) {
       currentLanguage = saved;
       return currentLanguage;
+    }
+
+    // Clear legacy persisted values so English remains the default language.
+    if (saved && savedSource !== 'user' && savedSource !== 'query') {
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(STORAGE_SOURCE_KEY);
+      } catch (_error) {
+        // Ignore storage write failures and continue with English.
+      }
     }
 
     currentLanguage = 'en';
@@ -176,13 +211,14 @@
     setDocumentLanguage(getLanguage());
   }
 
-  function setLanguage(lang, persist) {
+  function setLanguage(lang, persist, source) {
     const next = normalizeLanguageCode(lang);
     if (getSupportedLanguages().indexOf(next) === -1) return;
     currentLanguage = next;
 
     if (persist !== false) {
       localStorage.setItem(STORAGE_KEY, next);
+      localStorage.setItem(STORAGE_SOURCE_KEY, source === 'query' ? 'query' : 'user');
     }
 
     applyTranslations(document);
@@ -197,8 +233,14 @@
     if (select && !select.dataset.bound) {
       select.dataset.bound = '1';
       select.addEventListener('change', function () {
-        setLanguage(select.value, true);
+        setLanguage(select.value, true, 'user');
       });
+    }
+
+    const requested = getRequestedLanguage();
+    if (requested && getSupportedLanguages().indexOf(requested) !== -1) {
+      setLanguage(requested, true, 'query');
+      return;
     }
 
     applyTranslations(document);
