@@ -67,6 +67,8 @@
   const releaseLatestEl = document.querySelector('[data-admin-release-latest]');
   const releasePublishedEl = document.querySelector('[data-admin-release-published]');
   const releaseCountEl = document.querySelector('[data-admin-release-count]');
+  const releaseLatestDownloadsEl = document.querySelector('[data-admin-release-latest-downloads]');
+  const releaseTotalDownloadsEl = document.querySelector('[data-admin-release-total-downloads]');
   const releasesBody = document.querySelector('[data-admin-releases-body]');
   const releasesMsg = document.querySelector('[data-admin-releases-msg]');
 
@@ -548,11 +550,13 @@
     if (releaseLatestEl) releaseLatestEl.textContent = releaseSummary.latestTag || '-';
     if (releasePublishedEl) releasePublishedEl.textContent = releaseSummary.latestPublishedAt ? formatDate(releaseSummary.latestPublishedAt) : '-';
     if (releaseCountEl) releaseCountEl.textContent = formatNumber(safeArray(releaseSummary.releases).length);
+    if (releaseLatestDownloadsEl) releaseLatestDownloadsEl.textContent = formatNumber(releaseSummary.latestDownloads || 0);
+    if (releaseTotalDownloadsEl) releaseTotalDownloadsEl.textContent = formatNumber(releaseSummary.totalDownloads || 0);
 
     if (!releasesBody) return;
     const rows = safeArray(releaseSummary.releases);
     if (!rows.length) {
-      releasesBody.innerHTML = '<tr><td colspan="4">' + escapeHtml(t('site_admin_empty_releases', 'No public releases loaded.')) + '</td></tr>';
+      releasesBody.innerHTML = '<tr><td colspan="5">' + escapeHtml(t('site_admin_empty_releases', 'No public releases loaded.')) + '</td></tr>';
       return;
     }
     releasesBody.innerHTML = rows.map(function (row) {
@@ -564,6 +568,7 @@
         + '<td><strong>' + escapeHtml(row.tag || '-') + '</strong></td>'
         + '<td>' + escapeHtml(row.name || '-') + '</td>'
         + '<td>' + escapeHtml(formatDate(row.publishedAt)) + '</td>'
+        + '<td>' + escapeHtml(formatNumber(row.downloadCount || 0)) + '</td>'
         + '<td>' + escapeHtml(flags.join(' · ')) + '</td>'
         + '</tr>';
     }).join('');

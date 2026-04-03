@@ -884,6 +884,8 @@ Deno.serve(async (req) => {
     let releaseSummary: Record<string, unknown> = {
       latestTag: null,
       latestPublishedAt: null,
+      latestDownloads: 0,
+      totalDownloads: 0,
       releases: [],
     }
     try {
@@ -897,6 +899,14 @@ Deno.serve(async (req) => {
         const ghPayload = await ghResponse.json()
         const releases = Array.isArray(ghPayload)
           ? ghPayload.map((row: Record<string, unknown>) => ({
+            assetCount: Array.isArray(row.assets) ? row.assets.length : 0,
+            downloadCount: Array.isArray(row.assets)
+              ? row.assets.reduce((sum, asset) => {
+                if (!asset || typeof asset !== "object") return sum
+                const value = Number((asset as Record<string, unknown>).download_count)
+                return sum + (Number.isFinite(value) ? value : 0)
+              }, 0)
+              : 0,
             tag: normalizeText(row.tag_name),
             name: normalizeText(row.name),
             publishedAt: isoOrNull(row.published_at),
@@ -909,6 +919,8 @@ Deno.serve(async (req) => {
         releaseSummary = {
           latestTag: latest?.tag || null,
           latestPublishedAt: latest?.publishedAt || null,
+          latestDownloads: Number(latest?.downloadCount || 0),
+          totalDownloads: releases.reduce((sum, row) => sum + Number(row.downloadCount || 0), 0),
           releases,
         }
       }
