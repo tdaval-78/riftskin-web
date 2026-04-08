@@ -173,9 +173,9 @@ textarea:focus-visible,
 
 .nav a {
   color: var(--text-secondary);
-  padding: 10px 12px;
+  padding: 10px 11px;
   border-radius: 999px;
-  font-size: 1.04rem;
+  font-size: 0.96rem;
   transition: color 160ms ease, background 160ms ease, transform 160ms ease;
 }
 
@@ -1590,6 +1590,30 @@ body.has-overlay {
   margin: 12px 0 10px;
   font-size: clamp(1.24rem, 1.8vw, 1.68rem);
   line-height: 1.1;
+}
+
+.skin-source-kicker-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.skin-source-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 0.86rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+.skin-source-badge-recommended {
+  color: #d7ffe7;
+  border: 1px solid rgba(84, 214, 138, 0.34);
+  background: rgba(84, 214, 138, 0.16);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .skin-source-card-empty {
