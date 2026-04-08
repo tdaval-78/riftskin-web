@@ -1560,6 +1560,45 @@ body.has-overlay {
   border: 0;
 }
 
+.skin-sources-hero-section .section-head {
+  margin-bottom: 18px;
+}
+
+.skin-sources-head {
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.88fr);
+}
+
+.skin-source-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 18px;
+}
+
+.skin-source-card {
+  min-height: 240px;
+  padding: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(211, 176, 75, 0.08), transparent 28%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
+    rgba(10, 15, 23, 0.82);
+  box-shadow: var(--shadow-md);
+}
+
+.skin-source-card h3 {
+  margin: 12px 0 10px;
+  font-size: clamp(1.24rem, 1.8vw, 1.68rem);
+  line-height: 1.1;
+}
+
+.skin-source-card-empty {
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  text-align: left;
+}
+
 .premium-activation-section {
   background:
     radial-gradient(circle at 0% 0%, rgba(211, 176, 75, 0.08), transparent 26%),

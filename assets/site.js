@@ -134,6 +134,29 @@
     el.setAttribute('href', cfg.publicReleasesUrl || 'https://github.com/tdaval-78/riftskin-updates/releases');
   });
 
+  document.querySelectorAll('[data-nav]').forEach(function (nav) {
+    if (nav.querySelector('[data-link="get-skins"]')) return;
+
+    const link = document.createElement('a');
+    link.setAttribute('data-link', 'get-skins');
+    link.setAttribute('href', '/get-skins.html');
+    link.setAttribute('data-i18n', 'nav_get_skins');
+    link.textContent = 'Obtenir skin';
+
+    const downloadLink = nav.querySelector('[data-link="download"]');
+    if (downloadLink && downloadLink.nextSibling) {
+      nav.insertBefore(link, downloadLink.nextSibling);
+    } else if (downloadLink) {
+      nav.appendChild(link);
+    } else {
+      nav.insertBefore(link, nav.firstChild || null);
+    }
+  });
+
+  if (window.RiftSkinI18n && typeof window.RiftSkinI18n.apply === 'function') {
+    window.RiftSkinI18n.apply(document);
+  }
+
   const active = document.body.getAttribute('data-page');
   if (active) {
     document.querySelectorAll('[data-link]').forEach(function (el) {
