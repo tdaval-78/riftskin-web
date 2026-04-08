@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
   <url>
     <loc>https://riftskin.com/</loc>
-    <lastmod>2026-04-02</lastmod>
+    <lastmod>2026-04-08</lastmod>
   </url>
   <url>
     <loc>https://riftskin.com/download.html</loc>
-    <lastmod>2026-03-28</lastmod>
+    <lastmod>2026-04-08</lastmod>
   </url>
   <url>
     <loc>https://riftskin.com/pricing.html</loc>
@@ -14,7 +15,7 @@
   </url>
   <url>
     <loc>https://riftskin.com/faq.html</loc>
-    <lastmod>2026-03-28</lastmod>
+    <lastmod>2026-04-08</lastmod>
   </url>
   <url>
     <loc>https://riftskin.com/support.html</loc>
@@ -26,15 +27,15 @@
   </url>
   <url>
     <loc>https://riftskin.com/skins-custom-lol-mac.html</loc>
-    <lastmod>2026-03-28</lastmod>
+    <lastmod>2026-04-08</lastmod>
   </url>
   <url>
     <loc>https://riftskin.com/comment-installer-skins-custom-lol-mac.html</loc>
-    <lastmod>2026-03-28</lastmod>
+    <lastmod>2026-04-08</lastmod>
   </url>
   <url>
     <loc>https://riftskin.com/utiliser-skins-custom-lol-mac.html</loc>
-    <lastmod>2026-03-28</lastmod>
+    <lastmod>2026-04-08</lastmod>
   </url>
   <url>
     <loc>https://riftskin.com/macos-bloque-riftskin-comment-autoriser-app.html</loc>
@@ -50,7 +51,7 @@
   </url>
   <url>
     <loc>https://riftskin.com/custom-skins-lol.html</loc>
-    <lastmod>2026-04-02</lastmod>
+    <lastmod>2026-04-08</lastmod>
   </url>
   <url>
     <loc>https://riftskin.com/lol-custom-skins.html</loc>
@@ -66,15 +67,43 @@
   </url>
   <url>
     <loc>https://riftskin.com/riftskin-demo-video.html</loc>
-    <lastmod>2026-04-02</lastmod>
+    <lastmod>2026-04-08</lastmod>
+    <video:video>
+      <video:thumbnail_loc>https://i.ytimg.com/vi/nMEVeieWeew/hqdefault.jpg</video:thumbnail_loc>
+      <video:title>How to Download RIFTSKIN on Mac</video:title>
+      <video:description>Dedicated watch page for the RIFTSKIN download video on Mac, focused on starting the desktop workflow for custom skins on League of Legends.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/nMEVeieWeew</video:player_loc>
+    </video:video>
   </url>
   <url>
     <loc>https://riftskin.com/riftskin-update-video.html</loc>
-    <lastmod>2026-04-03</lastmod>
+    <lastmod>2026-04-08</lastmod>
+    <video:video>
+      <video:thumbnail_loc>https://i.ytimg.com/vi/-YFnKl5i6VU/hqdefault.jpg</video:thumbnail_loc>
+      <video:title>How to Update RIFTSKIN on Mac</video:title>
+      <video:description>Dedicated watch page for the RIFTSKIN update video on Mac, covering the in-app update flow and the macOS installer handoff.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/-YFnKl5i6VU</video:player_loc>
+    </video:video>
   </url>
   <url>
     <loc>https://riftskin.com/import-custom-skins-riftskin.html</loc>
-    <lastmod>2026-04-03</lastmod>
+    <lastmod>2026-04-08</lastmod>
+    <video:video>
+      <video:thumbnail_loc>https://i.ytimg.com/vi/K4HcBs1ybWw/hqdefault.jpg</video:thumbnail_loc>
+      <video:title>How to Import Custom Skins in RIFTSKIN</video:title>
+      <video:description>Dedicated watch page for the RIFTSKIN import video on Mac, focused on adding a compatible custom skin to the library before injection.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/K4HcBs1ybWw</video:player_loc>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://riftskin.com/inject-custom-skins-riftskin.html</loc>
+    <lastmod>2026-04-08</lastmod>
+    <video:video>
+      <video:thumbnail_loc>https://i.ytimg.com/vi/HoZchs3ESVk/hqdefault.jpg</video:thumbnail_loc>
+      <video:title>How to Inject a Custom Skin in RIFTSKIN</video:title>
+      <video:description>Dedicated watch page for the RIFTSKIN injection video on Mac, focused on the real injection step after setup and import.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/HoZchs3ESVk</video:player_loc>
+    </video:video>
   </url>
   <url>
     <loc>https://riftskin.com/legal/</loc>
