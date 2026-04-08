@@ -2233,12 +2233,12 @@ Object.assign(window.RiftSkinTranslations.en, {
     site_get_skins_empty_title: "How to read a pack quickly",
     site_get_skins_empty_desc: "Base-compatible usually means strong odds of working. Slot-specific means the correct Riot skin must be selected in game. Very old packs are the most likely to fail even if import succeeds.",
     site_get_skins_tips_h2: "Before importing a skin",
-    site_get_skins_tip_1_title: "Check the format first",
-    site_get_skins_tip_1_desc: "Stay on .fantome or .zip packs so they remain aligned with the current import flow.",
-    site_get_skins_tip_2_title: "Spot base vs slot-specific",
-    site_get_skins_tip_2_desc: "A pack that replaces skin0 or the base files is usually safer. A pack that targets only skin4, skin55, or another slot will only work on that exact Riot skin.",
-    site_get_skins_tip_3_title: "Watch for old releases",
-    site_get_skins_tip_3_desc: "If a pack is old, built before a champion ASU, or no longer maintained, it may still import but fail in game because the current Riot files changed.",
+    site_get_skins_tip_1_title: "Check the source status",
+    site_get_skins_tip_1_desc: "Before downloading a custom skin, always check on the source page that it is clearly marked as working, updated, or compatible with the current League of Legends version.",
+    site_get_skins_tip_2_title: "Prefer reliable packs",
+    site_get_skins_tip_2_desc: "Base-compatible packs are usually the safest. Older packs, slot-specific skins, or outdated chromas may still import into RIFTSKIN but can bug or fail in game.",
+    site_get_skins_tip_3_title: "Use the RIFTSKIN analysis",
+    site_get_skins_tip_3_desc: "RIFTSKIN checks imported packs and labels them as normally functional, may possibly bug, or likely non functional. This check helps detect common issues, but it is not exhaustive.",
     site_get_skins_tag_external_source: "external source",
     site_get_skins_tag_mods_skins: "mods and skins",
     site_get_skins_tag_custom_skins: "custom skins",
@@ -2882,12 +2882,12 @@ Object.assign(window.RiftSkinTranslations.fr, {
   site_get_skins_empty_title: "Comment lire un pack rapidement",
   site_get_skins_empty_desc: "Base-compatible veut en general dire forte chance de fonctionnement. Lie a un slot veut dire que le bon skin Riot doit etre selectionne en jeu. Les tres vieux packs sont les plus susceptibles d'echouer meme si l'import reussit.",
   site_get_skins_tips_h2: "Avant d'importer un skin",
-  site_get_skins_tip_1_title: "Verifiez d'abord le format",
-  site_get_skins_tip_1_desc: "Restez sur des packs .fantome ou .zip pour garder un flux d'import aligne avec l'application actuelle.",
-  site_get_skins_tip_2_title: "Reperez base ou slot precis",
-  site_get_skins_tip_2_desc: "Un pack qui remplace skin0 ou les fichiers de base est en general plus sur. Un pack qui cible seulement skin4, skin55 ou un autre slot ne marchera que sur ce skin Riot exact.",
-  site_get_skins_tip_3_title: "Surveillez les anciennes releases",
-  site_get_skins_tip_3_desc: "Si un pack est ancien, cree avant un ASU, ou plus maintenu, il peut encore s'importer mais echouer en jeu parce que les fichiers Riot actuels ont change.",
+  site_get_skins_tip_1_title: "Vérifiez le statut de la source",
+  site_get_skins_tip_1_desc: "Avant de télécharger un skin custom, vérifiez toujours sur la page source qu'il est clairement indiqué comme fonctionnel, mis à jour ou compatible avec la version actuelle de League of Legends.",
+  site_get_skins_tip_2_title: "Privilégiez les packs fiables",
+  site_get_skins_tip_2_desc: "Les packs base-compatible sont généralement les plus sûrs. Les packs anciens, les skins liés à un slot précis ou les chromas obsolètes peuvent encore s'importer dans RIFTSKIN mais buguer ou échouer en jeu.",
+  site_get_skins_tip_3_title: "Utilisez l'analyse RIFTSKIN",
+  site_get_skins_tip_3_desc: "RIFTSKIN vérifie les packs importés et les étiquette comme normalement fonctionnels, susceptibles de buguer, ou probablement non fonctionnels. Ce contrôle aide à détecter les problèmes courants, mais il n'est pas exhaustif.",
   site_get_skins_tag_external_source: "source externe",
   site_get_skins_tag_mods_skins: "mods et skins",
   site_get_skins_tag_custom_skins: "skins custom",
@@ -4412,5 +4412,29 @@ Object.assign(window.RiftSkinTranslations.zh, {
   site_get_skins_source_github_kicker: "GITHUB",
   site_get_skins_source_github_title: "GitHub 搜索",
   site_get_skins_source_github_desc: "打开一个以 \"Skin lol\" 为核心的 GitHub 搜索，浏览其他可能包含皮肤、皮肤包或相关项目的仓库。",
-  site_get_skins_source_github_cta: "在 GitHub 上搜索"
+  site_get_skins_source_github_cta: "在 GitHub 上搜索",
+  site_get_skins_tip_1_title: "检查来源状态",
+  site_get_skins_tip_1_desc: "在下载自定义皮肤之前，请务必先在来源页面确认它是否被明确标记为可用、已更新，或兼容当前的 League of Legends 版本。",
+  site_get_skins_tip_2_title: "优先选择可靠的皮肤包",
+  site_get_skins_tip_2_desc: "base-compatible 的皮肤包通常最安全。较旧的皮肤包、特定槽位皮肤或过时的炫彩即使能导入 RIFTSKIN，也可能在游戏里出错或失效。",
+  site_get_skins_tip_3_title: "使用 RIFTSKIN 分析",
+  site_get_skins_tip_3_desc: "RIFTSKIN 会检查导入的皮肤包，并标记为通常可用、可能会出错，或大概率不可用。这个检查有助于发现常见问题，但并不穷尽。"
+});
+
+Object.assign(window.RiftSkinTranslations.es, {
+  site_get_skins_tip_1_title: "Comprueba el estado de la fuente",
+  site_get_skins_tip_1_desc: "Antes de descargar una custom skin, comprueba siempre en la pagina de origen que este claramente marcada como funcional, actualizada o compatible con la version actual de League of Legends.",
+  site_get_skins_tip_2_title: "Prioriza packs fiables",
+  site_get_skins_tip_2_desc: "Los packs base-compatible suelen ser los mas seguros. Los packs antiguos, las skins ligadas a un slot concreto o los chromas desactualizados pueden seguir importandose en RIFTSKIN, pero pueden fallar o dar bugs en partida.",
+  site_get_skins_tip_3_title: "Usa el analisis de RIFTSKIN",
+  site_get_skins_tip_3_desc: "RIFTSKIN revisa los packs importados y los etiqueta como normalmente funcionales, posiblemente con bugs, o probablemente no funcionales. Esta comprobacion ayuda a detectar problemas comunes, pero no es exhaustiva."
+});
+
+Object.assign(window.RiftSkinTranslations.pt, {
+  site_get_skins_tip_1_title: "Verifique o estado da fonte",
+  site_get_skins_tip_1_desc: "Antes de descarregar uma skin custom, verifique sempre na pagina de origem se ela esta claramente marcada como funcional, atualizada ou compativel com a versao atual do League of Legends.",
+  site_get_skins_tip_2_title: "Dê prioridade a packs fiaveis",
+  site_get_skins_tip_2_desc: "Os packs base-compatible costumam ser os mais seguros. Packs antigos, skins ligadas a um slot especifico ou chromas desatualizados ainda podem ser importados no RIFTSKIN, mas podem dar bugs ou falhar em jogo.",
+  site_get_skins_tip_3_title: "Use a analise do RIFTSKIN",
+  site_get_skins_tip_3_desc: "O RIFTSKIN verifica os packs importados e identifica-os como normalmente funcionais, possivelmente com bugs, ou provavelmente nao funcionais. Esta verificacao ajuda a detetar problemas comuns, mas nao e exaustiva."
 });
