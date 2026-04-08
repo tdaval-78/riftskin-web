@@ -1631,6 +1631,56 @@ body.has-overlay {
   text-align: left;
 }
 
+.import-guidance-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.import-guidance-card {
+  min-height: 100%;
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  padding: 22px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(56, 122, 205, 0.08), transparent 28%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
+    rgba(10, 15, 23, 0.82);
+}
+
+.import-guidance-topline {
+  display: flex;
+  align-items: center;
+}
+
+.import-guidance-index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(84, 214, 138, 0.22);
+  background: rgba(84, 214, 138, 0.1);
+  color: #d7ffe7;
+  font-size: 0.84rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.import-guidance-card h3 {
+  margin: 0;
+  font-size: clamp(1.14rem, 1.45vw, 1.42rem);
+  line-height: 1.18;
+}
+
+.import-guidance-card .subtle {
+  margin: 0;
+  line-height: 1.78;
+}
+
 .premium-activation-section {
   background:
     radial-gradient(circle at 0% 0%, rgba(211, 176, 75, 0.08), transparent 26%),
@@ -3770,6 +3820,7 @@ body[data-page="support"] .notice {
 
   .pricing-hero-section .section-head,
   .account-hero-grid,
+  .import-guidance-grid,
   .features-2x2,
   .pricing-benefits-grid {
     grid-template-columns: 1fr;
@@ -3900,6 +3951,7 @@ body[data-page="support"] .notice {
   .fit-grid,
   .admin-grid,
   .account-hero-grid,
+  .import-guidance-grid,
   .features-2x2,
   .field-row,
   .field-row-3 {
