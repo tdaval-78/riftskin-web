@@ -895,6 +895,10 @@
         isPrimingVideo = false;
         hasPrimedVideo = warmedUp || canScrubVideo();
         syncProductPosterVisibility();
+        if (isScrollScrubMode() && isTourVisible) {
+          setTourProgress(pendingProgress !== null ? pendingProgress : getTourProgressFromScroll());
+          requestTourSync();
+        }
       }
     }
 
