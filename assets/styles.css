@@ -1070,6 +1070,61 @@ body.has-overlay {
   background: rgba(255, 255, 255, 0.08);
 }
 
+.download-confirm-modal {
+  width: min(100%, 680px);
+}
+
+.download-confirm-checklist {
+  display: grid;
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.download-confirm-check {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+  padding: 16px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.025);
+  color: var(--text-secondary);
+  font-size: 0.98rem;
+  line-height: 1.65;
+}
+
+.download-confirm-check input {
+  width: 20px;
+  height: 20px;
+  margin: 3px 0 0;
+  accent-color: #34d47a;
+}
+
+.download-confirm-check span {
+  color: var(--text-primary);
+}
+
+.download-confirm-check:has(input:checked) {
+  border-color: rgba(84, 214, 138, 0.24);
+  background:
+    radial-gradient(circle at top left, rgba(84, 214, 138, 0.08), transparent 38%),
+    rgba(255, 255, 255, 0.03);
+}
+
+@media (max-width: 640px) {
+  .download-confirm-modal {
+    padding: 24px 18px 18px;
+  }
+
+  .download-confirm-check {
+    grid-template-columns: 18px minmax(0, 1fr);
+    gap: 12px;
+    padding: 14px;
+    font-size: 0.94rem;
+  }
+}
+
 .pricing-tier-cta-free {
   background: linear-gradient(180deg, #3c78c6, #24518d);
   border-color: rgba(104, 167, 245, 0.4);

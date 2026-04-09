@@ -175,6 +175,89 @@
     });
   });
 
+  const downloadConfirmOverlay = document.querySelector('[data-download-confirm-overlay]');
+  const downloadConfirmSubmit = document.querySelector('[data-download-confirm-submit]');
+  const downloadConfirmChecks = Array.from(document.querySelectorAll('[data-download-confirm-check]'));
+  const downloadConfirmCloseButtons = Array.from(document.querySelectorAll('[data-download-confirm-close]'));
+  let pendingDownloadUrl = '';
+  let pendingDownloadLabel = '';
+
+  function syncDownloadConfirmState() {
+    if (!downloadConfirmSubmit || !downloadConfirmChecks.length) return;
+    const allChecked = downloadConfirmChecks.every(function (input) {
+      return input.checked;
+    });
+    downloadConfirmSubmit.disabled = !allChecked;
+    downloadConfirmSubmit.classList.toggle('is-disabled', !allChecked);
+    downloadConfirmSubmit.setAttribute('aria-disabled', allChecked ? 'false' : 'true');
+  }
+
+  function closeDownloadConfirm() {
+    if (!downloadConfirmOverlay) return;
+    downloadConfirmOverlay.hidden = true;
+    document.body.classList.remove('has-overlay');
+    pendingDownloadUrl = '';
+    pendingDownloadLabel = '';
+    downloadConfirmChecks.forEach(function (input) {
+      input.checked = false;
+    });
+    syncDownloadConfirmState();
+  }
+
+  function openDownloadConfirm(trigger) {
+    if (!downloadConfirmOverlay || !downloadConfirmSubmit) return false;
+    pendingDownloadUrl = trigger.getAttribute('href') || '';
+    pendingDownloadLabel = (trigger.textContent || '').trim();
+    downloadConfirmOverlay.hidden = false;
+    document.body.classList.add('has-overlay');
+    downloadConfirmChecks.forEach(function (input) {
+      input.checked = false;
+    });
+    syncDownloadConfirmState();
+    const firstCheck = downloadConfirmChecks[0];
+    if (firstCheck) firstCheck.focus();
+    return true;
+  }
+
+  if (downloadConfirmOverlay && downloadConfirmSubmit && downloadConfirmChecks.length) {
+    document.querySelectorAll('[data-download-installer]').forEach(function (el) {
+      el.addEventListener('click', function (event) {
+        if (el.hasAttribute('data-download-confirm-bypass')) return;
+        event.preventDefault();
+        openDownloadConfirm(el);
+      });
+    });
+
+    downloadConfirmChecks.forEach(function (input) {
+      input.addEventListener('change', syncDownloadConfirmState);
+    });
+
+    downloadConfirmCloseButtons.forEach(function (button) {
+      button.addEventListener('click', closeDownloadConfirm);
+    });
+
+    downloadConfirmSubmit.addEventListener('click', function () {
+      if (!pendingDownloadUrl) return;
+      if (!downloadConfirmChecks.every(function (input) { return input.checked; })) {
+        syncDownloadConfirmState();
+        return;
+      }
+      pushAnalyticsEvent('riftskin_download_confirmed', {
+        link_text: pendingDownloadLabel,
+        link_href: pendingDownloadUrl
+      });
+      const targetUrl = pendingDownloadUrl;
+      closeDownloadConfirm();
+      window.location.assign(targetUrl);
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && downloadConfirmOverlay && !downloadConfirmOverlay.hidden) {
+        closeDownloadConfirm();
+      }
+    });
+  }
+
   document.querySelectorAll('[data-home-premium-cta], [data-premium-cta]').forEach(function (el) {
     el.addEventListener('click', function () {
       pushAnalyticsEvent('riftskin_pricing_click', {

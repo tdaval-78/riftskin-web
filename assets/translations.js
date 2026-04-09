@@ -4438,3 +4438,53 @@ Object.assign(window.RiftSkinTranslations.pt, {
   site_get_skins_tip_3_title: "Use a analise do RIFTSKIN",
   site_get_skins_tip_3_desc: "O RIFTSKIN verifica os packs importados e identifica-os como normalmente funcionais, possivelmente com bugs, ou provavelmente nao funcionais. Esta verificacao ajuda a detetar problemas comuns, mas nao e exaustiva."
 });
+
+Object.assign(window.RiftSkinTranslations.en, {
+  site_download_confirm_kicker: "Before download",
+  site_download_confirm_title: "Confirm before downloading",
+  site_download_confirm_body: "Please confirm all three points before starting the macOS installer.",
+  site_download_confirm_check_1: "I confirm that I am downloading the software on a Mac ARM device such as M1, M2, M3, M4, or M5.",
+  site_download_confirm_check_2: "I understand that RIFTSKIN is not responsible if I choose to use the software in a way that goes against its intended purpose, for example by importing official skins. RIFTSKIN was designed to align with Riot's policy allowing personal use of custom skins.",
+  site_download_confirm_check_3: "I understand that some custom skins may no longer work if they are outdated for the current League of Legends version.",
+  site_download_confirm_submit: "Download"
+});
+
+Object.assign(window.RiftSkinTranslations.fr, {
+  site_download_confirm_kicker: "Avant le téléchargement",
+  site_download_confirm_title: "Confirmez avant de télécharger",
+  site_download_confirm_body: "Veuillez confirmer ces trois points avant de lancer l'installeur macOS.",
+  site_download_confirm_check_1: "Je confirme que je télécharge le logiciel sur un Mac ARM, par exemple M1, M2, M3, M4 ou M5.",
+  site_download_confirm_check_2: "Je comprends que RIFTSKIN n'est pas responsable si je décide d'utiliser le logiciel d'une manière contraire à son usage prévu, par exemple pour importer des skins officiels. RIFTSKIN a été conçu pour rester conforme à la politique de Riot autorisant l'usage personnel de skins custom.",
+  site_download_confirm_check_3: "Je comprends que certains skins custom peuvent ne plus fonctionner s'ils ne sont plus à jour avec la version actuelle de League of Legends.",
+  site_download_confirm_submit: "Télécharger"
+});
+
+Object.assign(window.RiftSkinTranslations.es, {
+  site_download_confirm_kicker: "Antes de descargar",
+  site_download_confirm_title: "Confirma antes de descargar",
+  site_download_confirm_body: "Confirma estos tres puntos antes de iniciar el instalador de macOS.",
+  site_download_confirm_check_1: "Confirmo que estoy descargando el software en un Mac ARM, por ejemplo M1, M2, M3, M4 o M5.",
+  site_download_confirm_check_2: "Entiendo que RIFTSKIN no se hace responsable si decido usar el software de una forma contraria a su uso previsto, por ejemplo importando skins oficiales. RIFTSKIN fue diseñado para ajustarse a la politica de Riot que permite el uso personal de skins custom.",
+  site_download_confirm_check_3: "Entiendo que algunas skins custom pueden dejar de funcionar si ya no estan actualizadas para la version actual de League of Legends.",
+  site_download_confirm_submit: "Descargar"
+});
+
+Object.assign(window.RiftSkinTranslations.pt, {
+  site_download_confirm_kicker: "Antes do download",
+  site_download_confirm_title: "Confirme antes de descarregar",
+  site_download_confirm_body: "Confirme estes tres pontos antes de iniciar o instalador do macOS.",
+  site_download_confirm_check_1: "Confirmo que estou a descarregar o software num Mac ARM, por exemplo M1, M2, M3, M4 ou M5.",
+  site_download_confirm_check_2: "Compreendo que o RIFTSKIN nao e responsavel se eu decidir usar o software de uma forma contraria ao uso previsto, por exemplo para importar skins oficiais. O RIFTSKIN foi concebido para estar alinhado com a politica da Riot que permite o uso pessoal de skins custom.",
+  site_download_confirm_check_3: "Compreendo que algumas skins custom podem deixar de funcionar se deixarem de estar atualizadas para a versao atual do League of Legends.",
+  site_download_confirm_submit: "Descarregar"
+});
+
+Object.assign(window.RiftSkinTranslations.zh, {
+  site_download_confirm_kicker: "下载前",
+  site_download_confirm_title: "下载前请确认",
+  site_download_confirm_body: "在启动 macOS 安装包之前，请先确认以下三点。",
+  site_download_confirm_check_1: "我确认自己正在 Mac ARM 设备上下载安装软件，例如 M1、M2、M3、M4 或 M5。",
+  site_download_confirm_check_2: "我理解，如果我选择以偏离软件预期用途的方式使用 RIFTSKIN，例如导入官方皮肤，RIFTSKIN 不承担责任。RIFTSKIN 的设计目标是符合 Riot 关于个人使用自定义皮肤的政策。",
+  site_download_confirm_check_3: "我理解，某些自定义皮肤如果未针对当前 League of Legends 版本保持更新，可能将无法正常工作。",
+  site_download_confirm_submit: "下载"
+});
