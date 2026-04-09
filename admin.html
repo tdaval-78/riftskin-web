@@ -7,7 +7,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self' mailto:; img-src 'self' data: https://www.google-analytics.com https://jfmrwxmlncvzoremcmbi.supabase.co; style-src 'self' 'unsafe-inline'; script-src 'self' https://cdn.jsdelivr.net https://cdn.paddle.com https://www.googletagmanager.com; connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://analytics.google.com https://jfmrwxmlncvzoremcmbi.supabase.co https://api.paddle.com https://sandbox-api.paddle.com https://checkout.paddle.com https://sandbox-checkout.paddle.com; frame-src https://checkout.paddle.com https://sandbox-checkout.paddle.com https://www.googletagmanager.com;" />
   <title data-i18n="site_admin_title">RIFTSKIN - Admin</title>
   <meta name="description" data-i18n-content="site_admin_meta_desc" content="Gérez le statut desktop public de RiftSkin et le message de service depuis la console admin." />
-  <link rel="stylesheet" href="/assets/styles.css?v=20260401r" />
+  <link rel="stylesheet" href="/assets/styles.css?v=20260409b" />
   <!-- Google Tag Manager -->
   <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-TBCZT7QR');</script>
   <!-- End Google Tag Manager -->
@@ -408,13 +408,28 @@
             </div>
           </div>
 
-          <div class="admin-metric-grid admin-metric-grid-5">
+          <div class="admin-metric-grid admin-metric-grid-6">
             <div class="panel admin-metric-card"><span class="legal-card-kicker" data-i18n="site_admin_releases_metric_latest">Dernière version</span><strong data-admin-release-latest>-</strong></div>
             <div class="panel admin-metric-card"><span class="legal-card-kicker" data-i18n="site_admin_releases_metric_published">Dernière publication</span><strong data-admin-release-published>-</strong></div>
             <div class="panel admin-metric-card"><span class="legal-card-kicker" data-i18n="site_admin_releases_metric_count">Releases chargées</span><strong data-admin-release-count>-</strong></div>
             <div class="panel admin-metric-card"><span class="legal-card-kicker" data-i18n="site_admin_releases_metric_latest_downloads">Téléchargements dernière version</span><strong data-admin-release-latest-downloads>-</strong></div>
             <div class="panel admin-metric-card"><span class="legal-card-kicker" data-i18n="site_admin_releases_metric_total_downloads">Téléchargements total observés</span><strong data-admin-release-total-downloads>-</strong></div>
+            <div class="panel admin-metric-card"><span class="legal-card-kicker" data-i18n="site_admin_releases_metric_total_tracked">Téléchargements tracés via le site</span><strong data-admin-release-total-tracked>-</strong></div>
           </div>
+
+          <div class="field-row field-row-3 admin-releases-filters" style="margin-top:12px;">
+            <label>
+              <span data-i18n="site_admin_releases_filter_country_label">Filtrer par pays</span>
+              <input type="text" data-admin-release-filter-country data-i18n-placeholder="site_admin_releases_filter_country_placeholder" placeholder="FR, France..." />
+            </label>
+            <label>
+              <span data-i18n="site_admin_releases_filter_ip_label">Filtrer par IP</span>
+              <input type="text" data-admin-release-filter-ip data-i18n-placeholder="site_admin_releases_filter_ip_placeholder" placeholder="203.0.113..." />
+            </label>
+            <div class="admin-releases-filter-count" data-admin-release-filter-count></div>
+          </div>
+
+          <p class="subtle admin-releases-note" data-i18n="site_admin_releases_tracking_note">Les détails ci-dessous couvrent les téléchargements tracés depuis le site RIFTSKIN. Les téléchargements directs depuis GitHub restent comptés dans le total GitHub mais ne peuvent pas être attribués à une IP ou un pays ici.</p>
 
           <div class="keys-table-wrap admin-table-wrap" style="margin-top:12px;">
             <table class="keys-table admin-table">
@@ -450,9 +465,9 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/assets/config.js?v=20260401u"></script>
-  <script src="/assets/translations.js?v=20260402c"></script>
+  <script src="/assets/translations.js?v=20260409b"></script>
   <script src="/assets/i18n.js?v=20260402b"></script>
-  <script src="/assets/site.js?v=20260402a"></script>
-  <script src="/assets/admin.js?v=20260402a"></script>
+  <script src="/assets/site.js?v=20260409b"></script>
+  <script src="/assets/admin.js?v=20260409b"></script>
 </body>
 </html>

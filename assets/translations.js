@@ -4488,3 +4488,103 @@ Object.assign(window.RiftSkinTranslations.zh, {
   site_download_confirm_check_3: "我理解，某些自定义皮肤如果未针对当前 League of Legends 版本保持更新，可能将无法正常工作。在这种情况下，我们建议尝试其他皮肤。",
   site_download_confirm_submit: "下载"
 });
+
+Object.assign(window.RiftSkinTranslations.en, {
+  site_admin_releases_metric_total_tracked: "Tracked downloads via site",
+  site_admin_releases_filter_country_label: "Filter by country",
+  site_admin_releases_filter_country_placeholder: "FR, France...",
+  site_admin_releases_filter_ip_label: "Filter by IP",
+  site_admin_releases_filter_ip_placeholder: "203.0.113...",
+  site_admin_releases_tracking_note: "The details below only cover downloads tracked through the RIFTSKIN website. Direct downloads from GitHub still count in the GitHub total but cannot be tied to an IP or country here.",
+  site_admin_releases_empty_filtered: "No tracked downloads match the current filters.",
+  site_admin_releases_site_tracked: "Tracked on site",
+  site_admin_releases_details_title: "Tracked downloads for this release",
+  site_admin_releases_details_col_time: "Downloaded at",
+  site_admin_releases_details_col_country: "Country",
+  site_admin_releases_details_col_ip: "IP address",
+  site_admin_releases_details_col_asset: "Asset",
+  site_admin_releases_details_col_source: "Source page",
+  site_admin_releases_details_empty: "No tracked downloads for this release yet.",
+  site_admin_releases_count_releases: "releases",
+  site_admin_releases_count_downloads: "tracked downloads"
+});
+
+Object.assign(window.RiftSkinTranslations.fr, {
+  site_admin_releases_metric_total_tracked: "Téléchargements tracés via le site",
+  site_admin_releases_filter_country_label: "Filtrer par pays",
+  site_admin_releases_filter_country_placeholder: "FR, France...",
+  site_admin_releases_filter_ip_label: "Filtrer par IP",
+  site_admin_releases_filter_ip_placeholder: "203.0.113...",
+  site_admin_releases_tracking_note: "Les détails ci-dessous couvrent uniquement les téléchargements tracés depuis le site RIFTSKIN. Les téléchargements directs depuis GitHub restent comptés dans le total GitHub mais ne peuvent pas être reliés ici à une IP ou à un pays.",
+  site_admin_releases_empty_filtered: "Aucun téléchargement tracé ne correspond aux filtres actuels.",
+  site_admin_releases_site_tracked: "Tracés sur le site",
+  site_admin_releases_details_title: "Téléchargements tracés pour cette release",
+  site_admin_releases_details_col_time: "Téléchargé le",
+  site_admin_releases_details_col_country: "Pays",
+  site_admin_releases_details_col_ip: "Adresse IP",
+  site_admin_releases_details_col_asset: "Asset",
+  site_admin_releases_details_col_source: "Page source",
+  site_admin_releases_details_empty: "Aucun téléchargement tracé pour cette release pour le moment.",
+  site_admin_releases_count_releases: "releases",
+  site_admin_releases_count_downloads: "téléchargements tracés"
+});
+
+Object.assign(window.RiftSkinTranslations.es, {
+  site_admin_releases_metric_total_tracked: "Descargas rastreadas desde el sitio",
+  site_admin_releases_filter_country_label: "Filtrar por pais",
+  site_admin_releases_filter_country_placeholder: "FR, Francia...",
+  site_admin_releases_filter_ip_label: "Filtrar por IP",
+  site_admin_releases_filter_ip_placeholder: "203.0.113...",
+  site_admin_releases_tracking_note: "Los detalles de abajo solo cubren las descargas rastreadas a traves del sitio web de RIFTSKIN. Las descargas directas desde GitHub siguen contando en el total de GitHub, pero aqui no pueden vincularse a una IP o a un pais.",
+  site_admin_releases_empty_filtered: "Ninguna descarga rastreada coincide con los filtros actuales.",
+  site_admin_releases_site_tracked: "Rastreadas en el sitio",
+  site_admin_releases_details_title: "Descargas rastreadas para esta release",
+  site_admin_releases_details_col_time: "Descargado a las",
+  site_admin_releases_details_col_country: "Pais",
+  site_admin_releases_details_col_ip: "Direccion IP",
+  site_admin_releases_details_col_asset: "Asset",
+  site_admin_releases_details_col_source: "Pagina de origen",
+  site_admin_releases_details_empty: "Todavia no hay descargas rastreadas para esta release.",
+  site_admin_releases_count_releases: "releases",
+  site_admin_releases_count_downloads: "descargas rastreadas"
+});
+
+Object.assign(window.RiftSkinTranslations.pt, {
+  site_admin_releases_metric_total_tracked: "Downloads rastreados pelo site",
+  site_admin_releases_filter_country_label: "Filtrar por pais",
+  site_admin_releases_filter_country_placeholder: "FR, Franca...",
+  site_admin_releases_filter_ip_label: "Filtrar por IP",
+  site_admin_releases_filter_ip_placeholder: "203.0.113...",
+  site_admin_releases_tracking_note: "Os detalhes abaixo cobrem apenas os downloads rastreados atraves do site da RIFTSKIN. Os downloads diretos do GitHub continuam a contar no total do GitHub, mas aqui nao podem ser associados a um IP ou a um pais.",
+  site_admin_releases_empty_filtered: "Nenhum download rastreado corresponde aos filtros atuais.",
+  site_admin_releases_site_tracked: "Rastreados no site",
+  site_admin_releases_details_title: "Downloads rastreados para esta release",
+  site_admin_releases_details_col_time: "Descarregado em",
+  site_admin_releases_details_col_country: "Pais",
+  site_admin_releases_details_col_ip: "Endereco IP",
+  site_admin_releases_details_col_asset: "Asset",
+  site_admin_releases_details_col_source: "Pagina de origem",
+  site_admin_releases_details_empty: "Ainda nao existem downloads rastreados para esta release.",
+  site_admin_releases_count_releases: "releases",
+  site_admin_releases_count_downloads: "downloads rastreados"
+});
+
+Object.assign(window.RiftSkinTranslations.zh, {
+  site_admin_releases_metric_total_tracked: "通过网站追踪的下载",
+  site_admin_releases_filter_country_label: "按国家筛选",
+  site_admin_releases_filter_country_placeholder: "FR, 法国...",
+  site_admin_releases_filter_ip_label: "按 IP 筛选",
+  site_admin_releases_filter_ip_placeholder: "203.0.113...",
+  site_admin_releases_tracking_note: "下方详情仅包含通过 RIFTSKIN 网站追踪到的下载。直接从 GitHub 下载仍会计入 GitHub 总数，但这里无法关联到 IP 或国家。",
+  site_admin_releases_empty_filtered: "没有追踪下载符合当前筛选条件。",
+  site_admin_releases_site_tracked: "网站追踪",
+  site_admin_releases_details_title: "此 release 的追踪下载",
+  site_admin_releases_details_col_time: "下载时间",
+  site_admin_releases_details_col_country: "国家",
+  site_admin_releases_details_col_ip: "IP 地址",
+  site_admin_releases_details_col_asset: "资源",
+  site_admin_releases_details_col_source: "来源页面",
+  site_admin_releases_details_empty: "该 release 暂无追踪下载。",
+  site_admin_releases_count_releases: "个 release",
+  site_admin_releases_count_downloads: "次追踪下载"
+});

@@ -23,6 +23,15 @@
   const authStorage = window.localStorage || window.sessionStorage;
   window.dataLayer = window.dataLayer || [];
 
+  function buildTrackedDownloadUrl(assetKey) {
+    const supabaseUrl = String(cfg.supabaseUrl || '').replace(/\/+$/, '');
+    if (!supabaseUrl) return '';
+    const url = new URL(supabaseUrl + '/functions/v1/public-download-redirect');
+    url.searchParams.set('asset', assetKey);
+    url.searchParams.set('source', window.location.pathname || '/');
+    return url.toString();
+  }
+
   function getSharedSupabaseClient() {
     if (!window.supabase || !cfg.supabaseUrl || !cfg.supabaseAnonKey) return null;
     if (window.__riftskinSupabaseClient) {
@@ -122,13 +131,13 @@
   }
 
   document.querySelectorAll('[data-download-installer]').forEach(function (el) {
-    el.setAttribute('href', cfg.downloadInstallerUrl || 'https://github.com/tdaval-78/riftskin-updates/releases/latest');
+    el.setAttribute('href', buildTrackedDownloadUrl('macos-installer') || cfg.downloadInstallerUrl || 'https://github.com/tdaval-78/riftskin-updates/releases/latest');
   });
   document.querySelectorAll('[data-download-windows]').forEach(function (el) {
-    el.setAttribute('href', cfg.downloadWindowsUrl || cfg.publicReleasesUrl || 'https://github.com/tdaval-78/riftskin-updates/releases/latest');
+    el.setAttribute('href', buildTrackedDownloadUrl('windows-installer') || cfg.downloadWindowsUrl || cfg.publicReleasesUrl || 'https://github.com/tdaval-78/riftskin-updates/releases/latest');
   });
   document.querySelectorAll('[data-download-direct]').forEach(function (el) {
-    el.setAttribute('href', cfg.downloadDirectAppUrl || 'https://github.com/tdaval-78/riftskin-updates/releases/latest');
+    el.setAttribute('href', buildTrackedDownloadUrl('direct-app') || cfg.downloadDirectAppUrl || 'https://github.com/tdaval-78/riftskin-updates/releases/latest');
   });
   document.querySelectorAll('[data-public-releases]').forEach(function (el) {
     el.setAttribute('href', cfg.publicReleasesUrl || 'https://github.com/tdaval-78/riftskin-updates/releases');

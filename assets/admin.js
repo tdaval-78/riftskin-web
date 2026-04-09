@@ -69,12 +69,18 @@
   const releaseCountEl = document.querySelector('[data-admin-release-count]');
   const releaseLatestDownloadsEl = document.querySelector('[data-admin-release-latest-downloads]');
   const releaseTotalDownloadsEl = document.querySelector('[data-admin-release-total-downloads]');
+  const releaseTotalTrackedEl = document.querySelector('[data-admin-release-total-tracked]');
   const releasesBody = document.querySelector('[data-admin-releases-body]');
   const releasesMsg = document.querySelector('[data-admin-releases-msg]');
+  const releaseFilterCountry = document.querySelector('[data-admin-release-filter-country]');
+  const releaseFilterIp = document.querySelector('[data-admin-release-filter-ip]');
+  const releaseFilterCount = document.querySelector('[data-admin-release-filter-count]');
 
   const CUSTOM_SERVICE_TEMPLATE = '__custom__';
   const DEFAULT_ADMIN_VIEW = 'overview';
   let latestSalesRows = [];
+  let latestReleaseRows = [];
+  const expandedReleaseTags = new Set();
   const SERVICE_MESSAGE_TEMPLATES = [
     {
       id: 'ok_general',
@@ -163,6 +169,24 @@
       style: 'currency',
       currency: normalizedCurrency
     }).format((Number(valueMinor || 0) || 0) / 100);
+  }
+
+  function normalizeFilter(value) {
+    return String(value == null ? '' : value).trim().toLowerCase();
+  }
+
+  function getCountryLabel(code) {
+    const normalized = String(code || '').trim().toUpperCase();
+    if (!normalized) return '-';
+    try {
+      const locale = document.documentElement.lang || undefined;
+      const displayNames = new Intl.DisplayNames(locale ? [locale] : undefined, { type: 'region' });
+      const label = displayNames.of(normalized);
+      if (label && label !== normalized) return label + ' (' + normalized + ')';
+    } catch (_error) {
+      // Ignore locale lookup failures.
+    }
+    return normalized;
   }
 
   function escapeHtml(value) {
@@ -552,11 +576,22 @@
     if (releaseCountEl) releaseCountEl.textContent = formatNumber(safeArray(releaseSummary.releases).length);
     if (releaseLatestDownloadsEl) releaseLatestDownloadsEl.textContent = formatNumber(releaseSummary.latestDownloads || 0);
     if (releaseTotalDownloadsEl) releaseTotalDownloadsEl.textContent = formatNumber(releaseSummary.totalDownloads || 0);
+    if (releaseTotalTrackedEl) releaseTotalTrackedEl.textContent = formatNumber(releaseSummary.totalTrackedDownloads || 0);
 
     if (!releasesBody) return;
-    const rows = safeArray(releaseSummary.releases);
-    if (!rows.length) {
+    latestReleaseRows = safeArray(releaseSummary.releases);
+    if (!latestReleaseRows.length) {
       releasesBody.innerHTML = '<tr><td colspan="5">' + escapeHtml(t('site_admin_empty_releases', 'No public releases loaded.')) + '</td></tr>';
+      if (releaseFilterCount) releaseFilterCount.textContent = '';
+      return;
+    }
+    syncReleaseFilters();
+  }
+
+  function renderReleaseRows(rows) {
+    if (!releasesBody) return;
+    if (!rows.length) {
+      releasesBody.innerHTML = '<tr><td colspan="5">' + escapeHtml(t('site_admin_releases_empty_filtered', 'No tracked downloads match the current filters.')) + '</td></tr>';
       return;
     }
     releasesBody.innerHTML = rows.map(function (row) {
@@ -564,14 +599,84 @@
       if (row.isDraft) flags.push(t('site_admin_release_flag_draft', 'Draft'));
       if (row.isPrerelease) flags.push(t('site_admin_release_flag_prerelease', 'Prerelease'));
       if (!flags.length) flags.push(t('site_admin_release_flag_public', 'Public'));
-      return '<tr>'
-        + '<td><strong>' + escapeHtml(row.tag || '-') + '</strong></td>'
+      const trackedEvents = safeArray(row.filteredTrackedDownloads || row.trackedDownloads);
+      const trackedCount = Number(row.filteredTrackedDownloadCount != null ? row.filteredTrackedDownloadCount : row.trackedDownloadCount || 0);
+      const expanded = !!(row.tag && expandedReleaseTags.has(row.tag));
+      const detailId = 'release-details-' + escapeHtml(String(row.tag || 'unknown').replace(/[^a-zA-Z0-9_-]/g, '-'));
+      const detailRows = trackedEvents.length
+        ? trackedEvents.map(function (eventRow) {
+          return '<tr>'
+            + '<td>' + escapeHtml(formatDate(eventRow.createdAt)) + '</td>'
+            + '<td>' + escapeHtml(getCountryLabel(eventRow.countryCode)) + '</td>'
+            + '<td>' + escapeHtml(eventRow.ipAddress || '-') + '</td>'
+            + '<td>' + escapeHtml(eventRow.assetName || '-') + '</td>'
+            + '<td>' + escapeHtml(eventRow.sourcePage || '-') + '</td>'
+            + '</tr>';
+        }).join('')
+        : '<tr><td colspan="5">' + escapeHtml(t('site_admin_releases_details_empty', 'No tracked downloads for this release yet.')) + '</td></tr>';
+      return '<tr class="admin-release-row' + (expanded ? ' is-expanded' : '') + '">'
+        + '<td><button class="admin-release-toggle" type="button" data-release-toggle="' + escapeHtml(row.tag || '') + '" aria-expanded="' + (expanded ? 'true' : 'false') + '" aria-controls="' + detailId + '"><strong>' + escapeHtml(row.tag || '-') + '</strong></button></td>'
         + '<td>' + escapeHtml(row.name || '-') + '</td>'
         + '<td>' + escapeHtml(formatDate(row.publishedAt)) + '</td>'
-        + '<td>' + escapeHtml(formatNumber(row.downloadCount || 0)) + '</td>'
+        + '<td><div>' + escapeHtml(formatNumber(row.downloadCount || 0)) + '</div><div class="admin-release-tracked-meta">' + escapeHtml(t('site_admin_releases_site_tracked', 'Tracked on site')) + ': ' + escapeHtml(formatNumber(trackedCount)) + '</div></td>'
         + '<td>' + escapeHtml(flags.join(' · ')) + '</td>'
+        + '</tr>'
+        + '<tr class="admin-release-details-row' + (expanded ? '' : ' is-hidden') + '" id="' + detailId + '">'
+        + '<td colspan="5">'
+        + '<div class="admin-release-details-card">'
+        + '<div class="admin-release-details-summary">'
+        + '<strong>' + escapeHtml(t('site_admin_releases_details_title', 'Tracked downloads for this release')) + '</strong>'
+        + '<span>' + escapeHtml(formatNumber(trackedCount)) + ' ' + escapeHtml(t('site_admin_releases_count_downloads', 'tracked downloads')) + '</span>'
+        + '</div>'
+        + '<div class="keys-table-wrap admin-release-details-table-wrap">'
+        + '<table class="keys-table admin-release-details-table">'
+        + '<thead><tr>'
+        + '<th>' + escapeHtml(t('site_admin_releases_details_col_time', 'Downloaded at')) + '</th>'
+        + '<th>' + escapeHtml(t('site_admin_releases_details_col_country', 'Country')) + '</th>'
+        + '<th>' + escapeHtml(t('site_admin_releases_details_col_ip', 'IP address')) + '</th>'
+        + '<th>' + escapeHtml(t('site_admin_releases_details_col_asset', 'Asset')) + '</th>'
+        + '<th>' + escapeHtml(t('site_admin_releases_details_col_source', 'Source page')) + '</th>'
+        + '</tr></thead>'
+        + '<tbody>' + detailRows + '</tbody>'
+        + '</table>'
+        + '</div>'
+        + '</div>'
+        + '</td>'
         + '</tr>';
     }).join('');
+  }
+
+  function syncReleaseFilters() {
+    if (!releasesBody) return;
+    const countryNeedle = normalizeFilter(releaseFilterCountry && releaseFilterCountry.value);
+    const ipNeedle = normalizeFilter(releaseFilterIp && releaseFilterIp.value);
+    const hasFilters = !!(countryNeedle || ipNeedle);
+    const filteredRows = latestReleaseRows.map(function (row) {
+      const trackedEvents = safeArray(row.trackedDownloads).filter(function (eventRow) {
+        const countryLabel = normalizeFilter(getCountryLabel(eventRow.countryCode));
+        const countryCode = normalizeFilter(eventRow.countryCode);
+        const ipAddress = normalizeFilter(eventRow.ipAddress);
+        const countryMatches = !countryNeedle || countryLabel.indexOf(countryNeedle) !== -1 || countryCode.indexOf(countryNeedle) !== -1;
+        const ipMatches = !ipNeedle || ipAddress.indexOf(ipNeedle) !== -1;
+        return countryMatches && ipMatches;
+      });
+      return Object.assign({}, row, {
+        filteredTrackedDownloads: trackedEvents,
+        filteredTrackedDownloadCount: trackedEvents.length
+      });
+    }).filter(function (row) {
+      return !hasFilters || row.filteredTrackedDownloadCount > 0;
+    });
+
+    const totalTracked = filteredRows.reduce(function (sum, row) {
+      return sum + Number(row.filteredTrackedDownloadCount || 0);
+    }, 0);
+    if (releaseFilterCount) {
+      releaseFilterCount.textContent = formatNumber(filteredRows.length) + ' ' + t('site_admin_releases_count_releases', 'releases')
+        + ' · '
+        + formatNumber(totalTracked) + ' ' + t('site_admin_releases_count_downloads', 'tracked downloads');
+    }
+    renderReleaseRows(filteredRows);
   }
 
   function renderStackChart(target, items) {
@@ -740,6 +845,27 @@
     input.addEventListener('input', syncSalesFilters);
     input.addEventListener('change', syncSalesFilters);
   });
+
+  [releaseFilterCountry, releaseFilterIp].forEach(function (input) {
+    if (!input) return;
+    input.addEventListener('input', syncReleaseFilters);
+    input.addEventListener('change', syncReleaseFilters);
+  });
+
+  if (releasesBody) {
+    releasesBody.addEventListener('click', function (event) {
+      const toggle = event.target && event.target.closest ? event.target.closest('[data-release-toggle]') : null;
+      if (!toggle) return;
+      const tag = toggle.getAttribute('data-release-toggle') || '';
+      if (!tag) return;
+      if (expandedReleaseTags.has(tag)) {
+        expandedReleaseTags.delete(tag);
+      } else {
+        expandedReleaseTags.add(tag);
+      }
+      syncReleaseFilters();
+    });
+  }
 
   if (adminServiceForm) {
     const serviceMessageInput = getServiceMessageInput();

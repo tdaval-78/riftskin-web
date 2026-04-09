@@ -76,3 +76,8 @@ entrypoint = "./functions/account-subscription-summary/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/admin-dashboard/index.ts"
+
+[functions.public-download-redirect]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/public-download-redirect/index.ts"

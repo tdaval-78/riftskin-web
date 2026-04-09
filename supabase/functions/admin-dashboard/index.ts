@@ -336,6 +336,7 @@ Deno.serve(async (req) => {
       accessResult,
       keyRedemptionsResult,
       runtimeStateResult,
+      releaseDownloadEventsResult,
     ] = await Promise.all([
       listAllAuthUsers(serviceClient),
       serviceClient.from("profiles").select("id, username"),
@@ -343,6 +344,11 @@ Deno.serve(async (req) => {
       serviceClient.from("user_access").select("user_id, source, granted_at, expires_at, is_active"),
       serviceClient.from("key_redemptions").select("user_id, key_id, redeemed_at").order("redeemed_at", { ascending: false }),
       serviceClient.from("app_service_status").select("service_message, published_at, updated_at").eq("channel", "admin-reset-baseline").maybeSingle(),
+      serviceClient
+        .from("release_download_events")
+        .select("release_tag, asset_name, source_page, country_code, ip_address, created_at")
+        .order("created_at", { ascending: false })
+        .limit(5000),
     ])
 
     if (profilesResult.error) {
@@ -359,6 +365,9 @@ Deno.serve(async (req) => {
     }
     if (runtimeStateResult.error) {
       return json({ error: "load_runtime_state_failed", detail: runtimeStateResult.error.message }, 500)
+    }
+    if (releaseDownloadEventsResult.error) {
+      return json({ error: "load_release_download_events_failed", detail: releaseDownloadEventsResult.error.message }, 500)
     }
     const accountRows = authUsers
     const resetBaselineIso = isoOrNull(runtimeStateResult.data?.service_message)
@@ -886,10 +895,27 @@ Deno.serve(async (req) => {
       latestPublishedAt: null,
       latestDownloads: 0,
       totalDownloads: 0,
+      latestTrackedDownloads: 0,
+      totalTrackedDownloads: 0,
       releases: [],
     }
+    const trackedEventsByTag = new Map<string, Array<Record<string, unknown>>>()
+    for (const row of releaseDownloadEventsResult.data || []) {
+      const releaseTag = normalizeText(row.release_tag)
+      if (!releaseTag) continue
+      const item = {
+        createdAt: isoOrNull(row.created_at),
+        assetName: normalizeText(row.asset_name) || null,
+        sourcePage: normalizeText(row.source_page) || null,
+        countryCode: normalizeText(row.country_code).toUpperCase() || null,
+        ipAddress: normalizeText(row.ip_address) || null,
+      }
+      const existing = trackedEventsByTag.get(releaseTag) || []
+      existing.push(item)
+      trackedEventsByTag.set(releaseTag, existing)
+    }
     try {
-      const ghResponse = await fetch("https://api.github.com/repos/tdaval-78/riftskin-updates/releases?per_page=10", {
+      const ghResponse = await fetch("https://api.github.com/repos/tdaval-78/riftskin-updates/releases?per_page=25", {
         headers: {
           Accept: "application/vnd.github+json",
           "User-Agent": "RIFTSKIN-admin-dashboard",
@@ -913,6 +939,8 @@ Deno.serve(async (req) => {
             isDraft: row.draft === true,
             isPrerelease: row.prerelease === true,
             url: normalizeText(row.html_url),
+            trackedDownloads: trackedEventsByTag.get(normalizeText(row.tag_name)) || [],
+            trackedDownloadCount: (trackedEventsByTag.get(normalizeText(row.tag_name)) || []).length,
           })).filter((row) => row.tag)
           : []
         const latest = releases[0] || null
@@ -921,6 +949,8 @@ Deno.serve(async (req) => {
           latestPublishedAt: latest?.publishedAt || null,
           latestDownloads: Number(latest?.downloadCount || 0),
           totalDownloads: releases.reduce((sum, row) => sum + Number(row.downloadCount || 0), 0),
+          latestTrackedDownloads: Number(latest?.trackedDownloadCount || 0),
+          totalTrackedDownloads: releases.reduce((sum, row) => sum + Number(row.trackedDownloadCount || 0), 0),
           releases,
         }
       }

@@ -3270,6 +3270,28 @@ textarea {
   gap: 14px;
 }
 
+.admin-releases-filters {
+  display: grid;
+  gap: 14px;
+  align-items: end;
+}
+
+.admin-releases-filter-count {
+  display: flex;
+  align-items: center;
+  min-height: 52px;
+  padding: 0 16px;
+  border: 1px solid rgba(71, 97, 130, 0.28);
+  border-radius: 18px;
+  background: rgba(12, 18, 26, 0.55);
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.admin-releases-note {
+  margin: 0;
+}
+
 .admin-sales-filter-count {
   white-space: nowrap;
 }
@@ -3342,6 +3364,92 @@ textarea {
   overflow-wrap: anywhere;
   word-break: break-word;
   text-wrap: balance;
+}
+
+.admin-release-row td {
+  vertical-align: top;
+}
+
+.admin-release-row.is-expanded td {
+  border-bottom-color: transparent;
+}
+
+.admin-release-toggle {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.admin-release-toggle::before {
+  content: "+";
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  border: 1px solid rgba(93, 128, 161, 0.34);
+  background: rgba(16, 24, 35, 0.8);
+  color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.admin-release-toggle[aria-expanded="true"]::before {
+  content: "−";
+}
+
+.admin-release-tracked-meta {
+  margin-top: 4px;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+}
+
+.admin-release-details-row.is-hidden {
+  display: none;
+}
+
+.admin-release-details-row td {
+  padding: 0;
+  border-bottom: 1px solid rgba(93, 128, 161, 0.22);
+}
+
+.admin-release-details-card {
+  display: grid;
+  gap: 14px;
+  padding: 18px 20px 20px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.008)),
+    rgba(10, 16, 24, 0.86);
+}
+
+.admin-release-details-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--text-secondary);
+}
+
+.admin-release-details-summary strong {
+  color: var(--text-primary);
+}
+
+.admin-release-details-table-wrap {
+  border-radius: 18px;
+}
+
+.admin-release-details-table {
+  min-width: 680px;
 }
 
 .admin-bar-column {
@@ -4161,6 +4269,10 @@ body[data-page="support"] .notice {
   .admin-panel-block .field-row:last-child .btn {
     width: 100%;
     min-width: 0;
+  }
+
+  .admin-releases-filters {
+    grid-template-columns: 1fr;
   }
 
   .admin-bar-chart {
