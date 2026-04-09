@@ -761,8 +761,10 @@
 
   const productTour = document.querySelector('[data-product-tour]');
   const productVideo = document.querySelector('[data-product-video]');
+  const productPoster = document.querySelector('[data-product-poster]');
   const productProgressFill = document.querySelector('[data-product-progress-fill]');
   const productProgressTrack = document.querySelector('[data-product-progress-track]');
+  const productWindow = productVideo ? productVideo.closest('.product-tour-window') : null;
 
   if (productTour && productVideo && productProgressTrack) {
     let rafId = 0;
@@ -812,11 +814,21 @@
       return !!(productVideo.duration && Number.isFinite(productVideo.duration) && productVideo.readyState >= 2);
     }
 
+    function syncProductPosterVisibility() {
+      if (!productWindow) return;
+      const isReady = canScrubVideo();
+      productWindow.classList.toggle('is-video-ready', isReady);
+      if (productPoster) {
+        productPoster.setAttribute('aria-hidden', isReady ? 'true' : 'false');
+      }
+    }
+
     function setTourProgress(progress) {
       const safeProgress = clamp(progress, 0, 1);
       if (!canScrubVideo()) {
         pendingProgress = safeProgress;
         setTourUi(safeProgress);
+        syncProductPosterVisibility();
         return;
       }
       pendingProgress = null;
@@ -832,6 +844,7 @@
         }
       }
       setTourUi(safeProgress);
+      syncProductPosterVisibility();
       return safeProgress;
     }
 
@@ -881,12 +894,14 @@
         productVideo.pause();
         isPrimingVideo = false;
         hasPrimedVideo = warmedUp || canScrubVideo();
+        syncProductPosterVisibility();
       }
     }
 
     function applyProductTourMode() {
       productVideo.muted = true;
       productVideo.playsInline = true;
+      syncProductPosterVisibility();
       if (!canScrubVideo()) {
         setTourUi(pendingProgress !== null ? pendingProgress : 0);
         if (isScrollScrubMode()) {
@@ -926,6 +941,7 @@
     productVideo.addEventListener('timeupdate', function () {
       if (isScrollScrubMode() || !productVideo.duration) return;
       setTourUi((productVideo.currentTime || 0) / productVideo.duration);
+      syncProductPosterVisibility();
     });
 
     productVideo.addEventListener('ended', function () {
@@ -1015,6 +1031,7 @@
         productVideo.load();
       } catch (_err) {}
     }
+    syncProductPosterVisibility();
 
     if ('IntersectionObserver' in window) {
       const productTourObserver = new IntersectionObserver(function (entries) {

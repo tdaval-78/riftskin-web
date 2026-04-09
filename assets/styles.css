@@ -2707,6 +2707,25 @@ body.has-overlay {
   background: #090c12;
 }
 
+.product-tour-poster {
+  position: absolute;
+  inset: 53px 0 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 180ms ease;
+}
+
+.product-tour-window.is-video-ready .product-tour-poster {
+  opacity: 0;
+}
+
+.product-tour-poster img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 .home-demo-section {
   background:
     radial-gradient(circle at 100% 0%, rgba(211, 176, 75, 0.08), transparent 26%),
