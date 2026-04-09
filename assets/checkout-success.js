@@ -1,4 +1,5 @@
 (function () {
+  window.dataLayer = window.dataLayer || [];
   const cfg = window.RiftSkinConfig || {};
   const supabaseUrl = cfg.supabaseUrl || '';
   const supabaseAnonKey = cfg.supabaseAnonKey || '';
@@ -10,6 +11,32 @@
   const licenseCodeEl = document.querySelector('[data-license-code]');
   const licenseMetaEl = document.querySelector('[data-license-meta]');
   const i18n = window.RiftSkinI18n;
+  let checkoutSuccessTracked = false;
+
+  function pushAnalyticsEvent(eventName, params) {
+    if (!eventName) return;
+    const payload = Object.assign({
+      event: eventName,
+      page_type: 'checkout_success',
+      page_path: window.location.pathname
+    }, params || {});
+    window.dataLayer.push(payload);
+    if (typeof window.gtag === 'function') {
+      const gaPayload = Object.assign({}, payload);
+      delete gaPayload.event;
+      try {
+        window.gtag('event', eventName, gaPayload);
+      } catch (_err) {
+        // Keep dataLayer tracking even if the global gtag helper is unavailable or fails.
+      }
+    }
+  }
+
+  function trackCheckoutSuccess(meta) {
+    if (checkoutSuccessTracked) return;
+    checkoutSuccessTracked = true;
+    pushAnalyticsEvent('riftskin_checkout_success', meta || {});
+  }
 
   function normalizeLanguage(value) {
     const normalized = String(value || '').trim().toLowerCase();
@@ -140,6 +167,10 @@
           clearPendingCheckout();
           const summaryResponse = await loadSummary(session);
           const summary = summaryResponse && summaryResponse.subscription ? summaryResponse.subscription : null;
+          trackCheckoutSuccess({
+            access_source: 'reconcile',
+            has_license: true
+          });
           setLicense(
             reconcile.activationKeyCode,
             summary && summary.currentPeriodEndsAt ? formatDate(summary.currentPeriodEndsAt) : ''
@@ -152,6 +183,10 @@
         const summary = summaryResponse && summaryResponse.subscription ? summaryResponse.subscription : null;
         if (summary && summary.activationKeyCode) {
           clearPendingCheckout();
+          trackCheckoutSuccess({
+            access_source: 'summary',
+            has_license: true
+          });
           setLicense(
             summary.activationKeyCode,
             summary.currentPeriodEndsAt ? formatDate(summary.currentPeriodEndsAt) : ''

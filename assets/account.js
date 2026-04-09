@@ -3,11 +3,21 @@
 
   function pushAnalyticsEvent(eventName, params) {
     if (!eventName) return;
-    window.dataLayer.push(Object.assign({
+    const payload = Object.assign({
       event: eventName,
       page_type: document.body.getAttribute('data-page') || 'unknown',
       page_path: window.location.pathname
-    }, params || {}));
+    }, params || {});
+    window.dataLayer.push(payload);
+    if (typeof window.gtag === 'function') {
+      const gaPayload = Object.assign({}, payload);
+      delete gaPayload.event;
+      try {
+        window.gtag('event', eventName, gaPayload);
+      } catch (_err) {
+        // Keep dataLayer tracking even if the global gtag helper is unavailable or fails.
+      }
+    }
   }
 
   const cfg = window.RiftSkinConfig || {};

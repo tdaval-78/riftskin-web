@@ -32,6 +32,32 @@
     return url.toString();
   }
 
+  function getDirectDownloadUrlForAsset(assetKey) {
+    if (assetKey === 'windows-installer') {
+      return cfg.downloadWindowsUrl || cfg.publicReleasesUrl || 'https://github.com/tdaval-78/riftskin-updates/releases/latest';
+    }
+    if (assetKey === 'direct-app') {
+      return cfg.downloadDirectAppUrl || cfg.downloadInstallerUrl || 'https://github.com/tdaval-78/riftskin-updates/releases/latest/download/RiftSkin-macos-installer.pkg';
+    }
+    return cfg.downloadInstallerUrl || 'https://github.com/tdaval-78/riftskin-updates/releases/latest/download/RiftSkin-macos-installer.pkg';
+  }
+
+  function resolveDownloadNavigationUrl(url) {
+    const raw = String(url || '').trim();
+    if (!raw) return '';
+
+    try {
+      const parsed = new URL(raw, window.location.origin);
+      const isTrackedSupabaseDownload = /\/functions\/v1\/public-download-redirect\/?$/.test(parsed.pathname);
+      if (!isTrackedSupabaseDownload) return parsed.toString();
+
+      const assetKey = parsed.searchParams.get('asset') || 'macos-installer';
+      return getDirectDownloadUrlForAsset(assetKey);
+    } catch (_err) {
+      return raw;
+    }
+  }
+
   function getSharedSupabaseClient() {
     if (!window.supabase || !cfg.supabaseUrl || !cfg.supabaseAnonKey) return null;
     if (window.__riftskinSupabaseClient) {
@@ -123,11 +149,21 @@
 
   function pushAnalyticsEvent(eventName, params) {
     if (!eventName) return;
-    window.dataLayer.push(Object.assign({
+    const payload = Object.assign({
       event: eventName,
       page_type: document.body.getAttribute('data-page') || 'unknown',
       page_path: window.location.pathname
-    }, params || {}));
+    }, params || {});
+    window.dataLayer.push(payload);
+    if (typeof window.gtag === 'function') {
+      const gaPayload = Object.assign({}, payload);
+      delete gaPayload.event;
+      try {
+        window.gtag('event', eventName, gaPayload);
+      } catch (_err) {
+        // Keep dataLayer tracking even if the global gtag helper is unavailable or fails.
+      }
+    }
   }
 
   document.querySelectorAll('[data-download-installer]').forEach(function (el) {
@@ -270,7 +306,7 @@
         link_text: pendingDownloadLabel,
         link_href: pendingDownloadUrl
       });
-      const targetUrl = pendingDownloadUrl;
+      const targetUrl = resolveDownloadNavigationUrl(pendingDownloadUrl);
       closeDownloadConfirm();
       window.location.assign(targetUrl);
     });
