@@ -4588,3 +4588,23 @@ Object.assign(window.RiftSkinTranslations.zh, {
   site_admin_releases_count_releases: "个 release",
   site_admin_releases_count_downloads: "次追踪下载"
 });
+
+Object.assign(window.RiftSkinTranslations.en, {
+  site_home_premium_payment_note: "Secure payment via Stripe"
+});
+
+Object.assign(window.RiftSkinTranslations.fr, {
+  site_home_premium_payment_note: "Paiement par Stripe sécurisé"
+});
+
+Object.assign(window.RiftSkinTranslations.es, {
+  site_home_premium_payment_note: "Pago seguro con Stripe"
+});
+
+Object.assign(window.RiftSkinTranslations.pt, {
+  site_home_premium_payment_note: "Pagamento seguro com Stripe"
+});
+
+Object.assign(window.RiftSkinTranslations.zh, {
+  site_home_premium_payment_note: "通过 Stripe 安全支付"
+});

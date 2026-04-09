@@ -763,6 +763,30 @@ body[data-page="video-guide"] .panel .subtle {
   box-shadow: 0 6px 18px rgba(35, 181, 93, 0.24);
 }
 
+.hero-premium-payment-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+  padding: 10px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(93, 128, 161, 0.24);
+  background: rgba(16, 24, 35, 0.62);
+  color: #edf4ff;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.hero-premium-payment-note::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #4fa8ff, #2567b2);
+  box-shadow: 0 0 0 4px rgba(79, 168, 255, 0.14);
+  flex: 0 0 auto;
+}
+
 .hero-side-grid {
   display: grid;
   gap: 10px;
