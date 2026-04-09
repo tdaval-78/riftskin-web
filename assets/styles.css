@@ -994,6 +994,10 @@ body.has-overlay {
   overflow: hidden;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 .maintenance-modal-overlay {
   position: fixed;
   inset: 0;

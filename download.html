@@ -104,7 +104,7 @@
           <h3 data-i18n="site_download_card_1_title">Téléchargez et installez RIFTSKIN sur Mac</h3>
           <p class="subtle" data-i18n="site_download_card_1_desc">Téléchargez l'installeur macOS puis terminez l'installation pour commencer à utiliser vos skins custom sur League of Legends.</p>
           <div class="hero-actions">
-            <a class="btn btn-primary" data-download-installer href="https://github.com/tdaval-78/riftskin-updates/releases/latest/download/RiftSkin-macos-installer.pkg" data-i18n="site_download_cta">Télécharger pour macOS</a>
+            <a class="btn btn-primary" data-download-installer data-download-confirm-trigger href="https://github.com/tdaval-78/riftskin-updates/releases/latest/download/RiftSkin-macos-installer.pkg" data-i18n="site_download_cta">Télécharger pour macOS</a>
           </div>
           <div class="capability-tags">
             <span data-i18n="site_download_tag_1">installeur macOS</span>
@@ -334,7 +334,7 @@
 
   <div class="maintenance-modal-overlay download-confirm-overlay" data-download-confirm-overlay hidden>
     <div class="maintenance-modal-backdrop" data-download-confirm-close></div>
-    <div class="maintenance-modal download-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="download-confirm-title">
+    <div class="maintenance-modal download-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="download-confirm-title" data-download-confirm-modal>
       <button class="maintenance-modal-close" type="button" data-download-confirm-close aria-label="Close">×</button>
       <span class="maintenance-modal-kicker" data-i18n="site_download_confirm_kicker">Before download</span>
       <h2 class="maintenance-modal-title" id="download-confirm-title" data-i18n="site_download_confirm_title">Confirm before downloading</h2>

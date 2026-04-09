@@ -176,9 +176,11 @@
   });
 
   const downloadConfirmOverlay = document.querySelector('[data-download-confirm-overlay]');
+  const downloadConfirmModal = document.querySelector('[data-download-confirm-modal]');
   const downloadConfirmSubmit = document.querySelector('[data-download-confirm-submit]');
   const downloadConfirmChecks = Array.from(document.querySelectorAll('[data-download-confirm-check]'));
   const downloadConfirmCloseButtons = Array.from(document.querySelectorAll('[data-download-confirm-close]'));
+  const downloadConfirmTriggers = Array.from(document.querySelectorAll('[data-download-confirm-trigger]'));
   let pendingDownloadUrl = '';
   let pendingDownloadLabel = '';
 
@@ -220,9 +222,8 @@
   }
 
   if (downloadConfirmOverlay && downloadConfirmSubmit && downloadConfirmChecks.length) {
-    document.querySelectorAll('[data-download-installer]').forEach(function (el) {
+    downloadConfirmTriggers.forEach(function (el) {
       el.addEventListener('click', function (event) {
-        if (el.hasAttribute('data-download-confirm-bypass')) return;
         event.preventDefault();
         openDownloadConfirm(el);
       });
@@ -235,6 +236,20 @@
     downloadConfirmCloseButtons.forEach(function (button) {
       button.addEventListener('click', closeDownloadConfirm);
     });
+
+    if (downloadConfirmOverlay) {
+      downloadConfirmOverlay.addEventListener('click', function (event) {
+        if (event.target === downloadConfirmOverlay || event.target.hasAttribute('data-download-confirm-close')) {
+          closeDownloadConfirm();
+        }
+      });
+    }
+
+    if (downloadConfirmModal) {
+      downloadConfirmModal.addEventListener('click', function (event) {
+        event.stopPropagation();
+      });
+    }
 
     downloadConfirmSubmit.addEventListener('click', function () {
       if (!pendingDownloadUrl) return;
